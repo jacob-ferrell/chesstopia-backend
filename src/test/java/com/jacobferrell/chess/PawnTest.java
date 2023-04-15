@@ -8,12 +8,11 @@ public class PawnTest {
     @Test
     public void testPawn() {
         ChessBoard board = new ChessBoard();
-        ChessPiece piece = board.getPieceAtPosition(1, 6);
+        ChessPiece piece = board.getPieceAtPosition(3, 6);
         Pawn pawn = (Pawn) piece;
-        pawn.setHasMoved();
         Set<Position> possibleMoves = pawn.generatePossibleMoves();
         for (Position i : possibleMoves) {
-            System.out.println(i.getY() + "," + i.getX());
+            System.out.println(i);
         }
     }
 

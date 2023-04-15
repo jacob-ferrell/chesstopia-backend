@@ -1,5 +1,7 @@
 package com.jacobferrell.chess.model;
 
+import com.jacobferrell.chess.chessboard.ChessBoard;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -34,8 +36,12 @@ public class GameModel {
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<MoveModel> moves;
 
+    @Builder.Default
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private Set<Piece> pieces;
+    private Set<Piece> pieces = new ChessBoard().getPieceData();
+
+    @Builder.Default
+    private boolean whitesTurn = true;
 
 
 }

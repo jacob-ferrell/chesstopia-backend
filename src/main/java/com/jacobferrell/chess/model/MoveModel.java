@@ -4,12 +4,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
 import jakarta.persistence.*;
 
 @Data
 @RequiredArgsConstructor
+@AllArgsConstructor
 @Entity
+@Builder
 @Table(name = "moves")
 public class MoveModel {
     @Id

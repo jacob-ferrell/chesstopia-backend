@@ -5,7 +5,7 @@ import java.util.HashSet;
 
 public class Pawn extends ChessPiece {
     private char SYMBOL = '♙';
-    private String name = "PAWN";
+    public String name = "PAWN";
 
     public Pawn(PieceColor color, Position pos, ChessBoard board) {
         super(color, pos, board);

@@ -176,6 +176,21 @@ public class ChessBoard {
         }
     }
 
+    public Set<Piece> getPieceData() {
+        Set<Piece> pieces = new HashSet<>();
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (!isSpaceOccupied(i, j)) {
+                    continue;
+                }
+                ChessPiece piece = getPieceAtPosition(i, j);
+                String color = piece.getColor() == PieceColor.WHITE ? "WHITE" : "BLACK";
+                pieces.add(Piece.builder().type(piece.getName()).color(color).x(i).y(j).build());
+            }
+        }
+        return pieces;
+    }
+
     public Set<ChessPiece> getGraveyard() {
         return graveyard;
     }

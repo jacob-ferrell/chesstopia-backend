@@ -5,7 +5,7 @@ import java.util.Set;
 
 public class Bishop extends ChessPiece {
     private char SYMBOL;
-    private String name = "BISHOP";
+    public String name = "BISHOP";
 
     public Bishop(PieceColor color, Position pos, ChessBoard board) {
         super(color, pos, board);

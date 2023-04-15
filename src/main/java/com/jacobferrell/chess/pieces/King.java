@@ -7,7 +7,7 @@ import java.util.HashSet;
 
 public class King extends ChessPiece {
     protected char SYMBOL;
-    private String name = "KING";
+    public String name = "KING";
 
     public King(PieceColor color, Position pos, ChessBoard board) {
         super(color, pos, board);

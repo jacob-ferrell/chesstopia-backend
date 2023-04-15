@@ -25,9 +25,4 @@ public class Piece {
     private int x;
 
     private int y;
-
-    @Builder.Default
-    private boolean onBoard = true;
-
-   
 }

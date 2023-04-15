@@ -147,6 +147,11 @@ public abstract class ChessPiece {
         return true;
     }
 
+    @Override
+    public String toString() {
+        return getName() + ", " + getColor() +  " [" + getYPosition() + ", " + getXPosition() + "]";
+    }
+
     public ChessBoard getBoard() {
         return this.board;
     }
