@@ -20,9 +20,9 @@ public class MoveModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "piece_id")
-    private Piece piece;
+    private String pieceType;
+
+    private String pieceColor;
 
     @Column(name = "from_x")
     private int fromX;

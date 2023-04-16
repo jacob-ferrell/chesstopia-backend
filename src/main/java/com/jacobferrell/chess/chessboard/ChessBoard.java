@@ -92,6 +92,7 @@ public class ChessBoard {
         board[y][x] = piece;
         piece.setXPosition(x);
         piece.setYPosition(y);
+        piece.setHasMoved();
     }
 
     public void setPositionToNull(int x, int y) {
@@ -185,7 +186,8 @@ public class ChessBoard {
                 }
                 ChessPiece piece = getPieceAtPosition(i, j);
                 String color = piece.getColor() == PieceColor.WHITE ? "WHITE" : "BLACK";
-                pieces.add(Piece.builder().type(piece.getName()).color(color).x(i).y(j).build());
+                boolean hasMoved = piece.getHasMoved();
+                pieces.add(Piece.builder().type(piece.getName()).color(color).x(i).y(j).hasMoved(hasMoved).build());
             }
         }
         return pieces;
