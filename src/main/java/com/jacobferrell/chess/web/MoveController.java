@@ -45,7 +45,8 @@ public class MoveController {
         if (!game.board.isSpaceOccupied(x, y)) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        Set<Position> possibleMoves = game.board.getPieceAtPosition(x, y).generatePossibleMoves();
+        ChessPiece piece = game.board.getPieceAtPosition(x, y);
+        Set<Position> possibleMoves = piece.removeMovesIntoCheck(piece.generatePossibleMoves());
         Map<String, Set<Position>> responseBody = new HashMap<>();
         responseBody.put("possibleMoves", possibleMoves);
         return ResponseEntity.ok().body(responseBody);
@@ -73,6 +74,7 @@ public class MoveController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         ChessPiece selectedPiece = game.board.getPieceAtPosition(x0, y0);
+        System.out.println(selectedPiece.hasMoved);
         Set<Position> possibleMoves = selectedPiece.generatePossibleMoves();
         if (!possibleMoves.stream().anyMatch(pos -> pos.equals(new Position(x1, y1)))) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

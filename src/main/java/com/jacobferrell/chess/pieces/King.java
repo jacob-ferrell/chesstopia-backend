@@ -36,7 +36,9 @@ public class King extends ChessPiece {
         possibleMoves.addAll(getHorizontalMoves());
         possibleMoves.addAll(getVerticalMoves());
         possibleMoves.addAll(getDiagonalMoves());
-        return possibleMoves;
+        return possibleMoves.stream()
+                .filter(move -> Math.max(Math.abs(xPosition - move.x), Math.abs(yPosition - move.y)) < 2)
+                .collect(Collectors.toSet());
     }
 
     public boolean isInCheck() {
@@ -51,9 +53,9 @@ public class King extends ChessPiece {
 
     public boolean isInCheckMate() {
         Set<Move> possiblePlayerMoves = board.getAllPossibleMoves()
-                                             .stream()
-                                             .filter(move -> move.piece.color != this.color)
-                                             .collect(Collectors.toSet());
+                .stream()
+                .filter(move -> move.piece.color != this.color)
+                .collect(Collectors.toSet());
         for (Move move : possiblePlayerMoves) {
             ChessBoard simulatedBoard = move.simulateMove(board);
             if (simulatedBoard.hasBothKings() && !simulatedBoard.getPlayerKing(color).isInCheck()) {

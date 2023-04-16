@@ -10,6 +10,7 @@ public class PawnTest {
         ChessBoard board = new ChessBoard();
         ChessPiece piece = board.getPieceAtPosition(3, 6);
         Pawn pawn = (Pawn) piece;
+        board.setPieceAtPosition(3, 4, pawn);
         Set<Position> possibleMoves = pawn.generatePossibleMoves();
         for (Position i : possibleMoves) {
             System.out.println(i);

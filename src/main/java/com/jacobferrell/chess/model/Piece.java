@@ -27,5 +27,5 @@ public class Piece {
     private int y;
 
     @Builder.Default
-    private boolean hasMoved = false;
+    public boolean hasMoved = false;
 }

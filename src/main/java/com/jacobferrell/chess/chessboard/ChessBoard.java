@@ -150,6 +150,7 @@ public class ChessBoard {
             PieceColor color = piece.getColor() == "WHITE" ? PieceColor.WHITE : PieceColor.BLACK;
             int x = piece.getX();
             int y = piece.getY();
+            boolean hasMoved = piece.hasMoved;
             switch (piece.getType()) {
                 case "ROOK":
                     board[y][x] = new Rook(color, new Position(x, y), this);
@@ -173,6 +174,9 @@ public class ChessBoard {
                 case "KNIGHT":
                     board[y][x] = new Knight(color, new Position(x, y), this);
                     break;
+            }
+            if (hasMoved) {
+                board[y][x].setHasMoved();
             }
         }
     }

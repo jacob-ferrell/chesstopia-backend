@@ -3,13 +3,15 @@ package com.jacobferrell.chess.pieces;
 import com.jacobferrell.chess.chessboard.*;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.stream.Collectors;
+
 
 public abstract class ChessPiece {
     protected PieceColor color;
     protected int xPosition;
     protected int yPosition;
     protected int counter;
-    protected boolean hasMoved = false;
+    public boolean hasMoved;
     protected ChessBoard board;
 
     public ChessPiece(PieceColor color, Position pos, ChessBoard board) {
@@ -17,15 +19,11 @@ public abstract class ChessPiece {
         this.xPosition = pos.getX();
         this.yPosition = pos.getY();
         this.board = board;
+        this.hasMoved = false;
     }
 
     public boolean isValidMove(int x, int y) {
         if (Math.min(x, y) < 0 || Math.max(x, y) > 7) {
-            return false;
-        }
-        counter++;
-        if (this instanceof King && counter > 1) {
-            counter = 0;
             return false;
         }
         if (!board.isSpaceOccupied(x, y)) {
@@ -47,7 +45,7 @@ public abstract class ChessPiece {
     public abstract String getName();
 
     public void setHasMoved() {
-        hasMoved = true;
+        this.hasMoved = true;
     }
 
     public boolean getHasMoved() {
@@ -134,6 +132,14 @@ public abstract class ChessPiece {
         setXPosition(x);
         setYPosition(y);
         setHasMoved();
+    }
+
+    public Set<Position> removeMovesIntoCheck(Set<Position> moves) {
+        return moves.stream().filter(pos -> {
+            Move move = new Move(this, pos);
+            ChessBoard simulatedBoard = move.simulateMove(board);
+            return simulatedBoard.hasBothKings() && !simulatedBoard.getPlayerKing(color).isInCheck(); 
+        }).collect(Collectors.toSet());
     }
 
     public PieceColor getColor() {

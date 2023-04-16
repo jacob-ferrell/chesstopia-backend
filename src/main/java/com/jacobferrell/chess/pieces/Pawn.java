@@ -39,11 +39,11 @@ public class Pawn extends ChessPiece {
     }
 
     private Set<Position> getPawnDiagonalMoves(Set<Position> possibleMoves, int yMultiplier) {
-        int currentX = getXPosition();
-        int currentY = getYPosition();
+        int currentX = xPosition;
+        int currentY = yPosition;
         for (int x = currentX - 1; x < currentX + 2 && x < 8; x++) {
             int y = currentY + (1 * yMultiplier);
-            if (x < 0 || x == currentX || !board.isSpaceOccupied(x, y)) {
+            if (Math.min(x, y) < 0 || y > 8 || x == currentX || !board.isSpaceOccupied(x, y)) {
                 continue;
             }
             ChessPiece otherPiece = board.getPieceAtPosition(x, y);
@@ -59,7 +59,7 @@ public class Pawn extends ChessPiece {
     private Set<Position> getPawnVerticalMoves(Set<Position> possibleMoves, int yMultiplier) {
         int currentX = getXPosition();
         int currentY = getYPosition();
-        int maxSpaces = getHasMoved() ? 1 : 2;
+        int maxSpaces = hasMoved ? 1 : 2;
         int yMovement = 1 * yMultiplier;
         int x = currentX;
         int spacesMoved = 0;
