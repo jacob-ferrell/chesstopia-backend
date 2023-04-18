@@ -4,8 +4,7 @@ import com.jacobferrell.chess.model.*;
 import com.jacobferrell.chess.chessboard.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-
-
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import java.util.*;
 
 @Component
@@ -21,10 +20,11 @@ public class Initializer implements CommandLineRunner {
 
     @Override
     public void run(String... strings) {
-
-        User player1 = User.builder().name("Jacob").build();
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        String password = passwordEncoder.encode("asdf");
+        User player1 = User.builder().name("Jacob").email("boomkablamo@gmail.com").password(password).role(Role.ADMIN).build();
         userRepository.save(player1);
-        User player2 = User.builder().name("Cindy").build();
+        User player2 = User.builder().name("Cindy").email("cindy@a.com").password(password).role(Role.USER).build();
         userRepository.save(player2);
         GameModel game = GameModel.builder().player1(player1).player2(player2).build();
         gameRepository.save(game);
