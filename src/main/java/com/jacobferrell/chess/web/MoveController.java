@@ -41,6 +41,7 @@ public class MoveController {
         }
         // TODO: Add authentication to test if player is moving their own piece
         GameModel gameData = optionalGame.get();
+        System.out.println(gameData);
         Game game = createGameFromData(gameData);
         if (!game.board.isSpaceOccupied(x, y)) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -105,8 +106,8 @@ public class MoveController {
     }
 
     private Game createGameFromData(GameModel data) {
-        Player player1 = getPlayerFromUser(data.getPlayer1(), PieceColor.WHITE);
-        Player player2 = getPlayerFromUser(data.getPlayer2(), PieceColor.BLACK);
+        Player player1 = getPlayerFromUser(data.getWhitePlayer(), PieceColor.WHITE);
+        Player player2 = getPlayerFromUser(data.getBlackPlayer(), PieceColor.BLACK);
         Game game = new Game(player1, player2);
         Set<Piece> pieces = data.getPieces();
         game.board.setBoardFromData(pieces);

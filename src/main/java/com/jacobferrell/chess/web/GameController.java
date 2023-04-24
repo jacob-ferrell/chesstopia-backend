@@ -1,6 +1,7 @@
 package com.jacobferrell.chess.web;
 
 import com.jacobferrell.chess.model.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.jacobferrell.chess.chessboard.*;
 import com.jacobferrell.chess.config.JwtService;
 import com.jacobferrell.chess.game.*;
@@ -24,6 +25,7 @@ import java.util.HashSet;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class GameController {
     private final Logger log = LoggerFactory.getLogger(GameController.class);
     private GameRepository gameRepository;
@@ -46,19 +48,22 @@ public class GameController {
     }
 
 
-    @CrossOrigin(origins = "http://localhost:5173")
     @GetMapping("/games/user/{id}")
-    Collection<GameModel> getUserGames(HttpServletRequest request) {
+    public Object getUserGames(@PathVariable Long id, HttpServletRequest request) {
         Optional<User> optionalUser = userRepository.findByEmail(getEmailFromToken(request));
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
-            return gameRepository.findByPlayer(user);
+        if (!optionalUser.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            
         }
-        /* token = token.substring(7);
-        String userEmail = jwtService.extractUsername(token);
-        Optional<User> user = userRepository.findByEmail(userEmail); */
+        User user = optionalUser.get();
+        if (user.getId() != id) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        @JsonIgnoreProperties(value = { "password" })
+        class UserMixin extends User {}
+        return gameRepository.findByPlayer(user);
 
-        return gameRepository.findAll();
+
     }
 
     @CrossOrigin(origins = "http://localhost:5173")
@@ -84,22 +89,21 @@ public class GameController {
         players.add(player1);
         players.add(player2);
         double rand = Math.random();
-        User whitePlayer = rand >= .5 ? player1 : player2;
-        GameModel newGame = GameModel.builder().players(players).whitePlayer(whitePlayer).build();
+        User whitePlayer;
+        User blackPlayer;
+        if (rand >= .5) {
+            whitePlayer = player1;
+            blackPlayer = player2;
+        }
+        else {
+            whitePlayer = player2;
+            blackPlayer = player1;
+        }
+        GameModel newGame = GameModel.builder().players(players).whitePlayer(whitePlayer).blackPlayer(blackPlayer).build();
         gameRepository.save(newGame);
         return ResponseEntity.created(new URI("/api/game/" + newGame.getId()))
                 .body(newGame);
     }
-
-    /* @PostMapping("/employees")
-    ResponseEntity<?> newGame(@RequestBody GameModel newGame) {
-
-        EntityModel<GameModel> entityModel = assembler.toModel(repository.save(newEmployee));
-
-        return ResponseEntity //
-                .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()) //
-                .body(entityModel);
-    } */
 
 
 

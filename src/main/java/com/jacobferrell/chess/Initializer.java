@@ -23,17 +23,33 @@ public class Initializer implements CommandLineRunner {
 
     @Override
     public void run(String... strings) {
-        /* Set<User> players = new HashSet<>();
-        String password = passwordEncoder.encode("asdf");
-        User player1 = User.builder().name("Jacob").email("boomkablamo@gmail.com").password(password).role(Role.ADMIN).build();
-        userRepository.save(player1);
-        players.add(player1);
-        User player2 = User.builder().name("Cindy").email("cindy@a.com").password(password).role(Role.USER).build();
-        userRepository.save(player2);
-        players.add(player2);
-        GameModel game = GameModel.builder().players(players).build();
+        GameModel game = GameModel.builder()
+            .build();
         gameRepository.save(game);
-        gameRepository.findAll().forEach(System.out::println); */
+
+        var player1 = User.builder()
+            .name("Jacob")
+            .email("boomkablamo@gmail.com")
+            .password(passwordEncoder.encode("asdf"))
+            .role(Role.USER)
+            .build();
+        userRepository.save(player1);
+        var player2 = User.builder()
+            .name("Cindy")
+            .email("cindy@gmail.com")
+            .password(passwordEncoder.encode("asdf"))
+            .role(Role.USER)
+            .build();
+        userRepository.save(player2);
+
+        Set<User> players = new HashSet<>();
+        players.add(player1);
+        players.add(player2);
+
+        game.setPlayers(players);
+        game.setWhitePlayer(player1);
+        game.setBlackPlayer(player2);
+        gameRepository.save(game);
 
     }
 
