@@ -24,19 +24,6 @@ public class SecurityConfiguration {
 
     private final AuthenticationProvider authenticationProvider;
 
-    /*
-     * @Bean
-     * CorsConfigurationSource corsConfigurationSource() {
-     * CorsConfiguration configuration = new CorsConfiguration();
-     * configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
-     * configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT",
-     * "DELETE"));
-     * UrlBasedCorsConfigurationSource source = new
-     * UrlBasedCorsConfigurationSource();
-     * return source;
-     * }
-     */
-
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();

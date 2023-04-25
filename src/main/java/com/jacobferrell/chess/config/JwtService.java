@@ -5,22 +5,51 @@ import java.util.function.Function;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+
+import com.jacobferrell.chess.model.User;
+import com.jacobferrell.chess.model.UserRepository;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Service
 public class JwtService {
+    private UserRepository userRepository;
 
     private static final String SECRET_KEY = "743677397A24432646294A404E635266556A586E5A7234753778214125442A47";
 
+    public JwtService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
+    }
+
+    private String getEmailFromToken(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String jwt = authHeader.substring(7);
+            return extractUsername(jwt);
+        }
+        return null;
+    }
+
+    public User getUserFromRequest(HttpServletRequest request) {
+        Optional<User> optionalUser = userRepository.findByEmail(getEmailFromToken(request));
+        if (!optionalUser.isPresent()) {
+            return null;
+        }
+        User user = optionalUser.get();
+        return user;
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {

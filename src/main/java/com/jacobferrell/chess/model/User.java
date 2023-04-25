@@ -66,4 +66,8 @@ public class User implements UserDetails {
         return true;
     }
 
+    public boolean equals(User otherUser) {
+        return otherUser.getEmail() == this.getEmail();
+    }
+
 }

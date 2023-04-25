@@ -49,6 +49,7 @@ public class Initializer implements CommandLineRunner {
         game.setPlayers(players);
         game.setWhitePlayer(player1);
         game.setBlackPlayer(player2);
+        game.setCurrentTurn(player1);
         gameRepository.save(game);
 
     }

@@ -43,4 +43,7 @@ public class GameModel {
     @JoinTable(name = "game_black_player", joinColumns = @JoinColumn(name = "game_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
     private User blackPlayer;
 
+    @ManyToOne
+    private User currentTurn;
+
 }

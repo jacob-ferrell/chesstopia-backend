@@ -47,28 +47,30 @@ public class GameController {
         return null;
     }
 
+    private User getUserFromRequest(HttpServletRequest request) {
+        Optional<User> optionalUser = userRepository.findByEmail(getEmailFromToken(request));
+        if (!optionalUser.isPresent()) {
+            return null;
+        }
+        User user = optionalUser.get();
+        return user;
+    }
 
     @GetMapping("/games/user/{id}")
     public Object getUserGames(@PathVariable Long id, HttpServletRequest request) {
-        Optional<User> optionalUser = userRepository.findByEmail(getEmailFromToken(request));
-        if (!optionalUser.isPresent()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            
-        }
-        User user = optionalUser.get();
-        if (user.getId() != id) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
-        @JsonIgnoreProperties(value = { "password" })
-        class UserMixin extends User {}
+        User user =  jwtService.getUserFromRequest(request);
+        if (user == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        if (user.getId() != id) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         return gameRepository.findByPlayer(user);
-
 
     }
 
     @CrossOrigin(origins = "http://localhost:5173")
     @GetMapping("/game/{id}")
-    ResponseEntity<?> getGame(@PathVariable Long id) {
+    ResponseEntity<?> getGame(@PathVariable Long id, HttpServletRequest request) {
+        //TODO add auth
+        User user =  getUserFromRequest(request);
+        if (user == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         Optional<GameModel> game = gameRepository.findById(id);
         return game.map(response -> ResponseEntity.ok().body(response))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
@@ -94,18 +96,16 @@ public class GameController {
         if (rand >= .5) {
             whitePlayer = player1;
             blackPlayer = player2;
-        }
-        else {
+        } else {
             whitePlayer = player2;
             blackPlayer = player1;
         }
-        GameModel newGame = GameModel.builder().players(players).whitePlayer(whitePlayer).blackPlayer(blackPlayer).build();
+        GameModel newGame = GameModel.builder().players(players).whitePlayer(whitePlayer).blackPlayer(blackPlayer)
+                .build();
         gameRepository.save(newGame);
         return ResponseEntity.created(new URI("/api/game/" + newGame.getId()))
                 .body(newGame);
     }
-
-
 
     @CrossOrigin(origins = "http://localhost:5173")
     @PutMapping("/game/{id}")
@@ -122,7 +122,5 @@ public class GameController {
         gameRepository.deleteById(id);
         return ResponseEntity.ok().build();
     }
-
-
 
 }
