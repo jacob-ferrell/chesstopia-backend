@@ -21,7 +21,6 @@ public class Initializer implements CommandLineRunner {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @Override
     public void run(String... strings) {
         GameModel game = GameModel.builder()
             .build();

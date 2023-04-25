@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
+//import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
@@ -29,8 +29,8 @@ import java.util.HashMap;
 @RestController
 @RequestMapping("/api")
 public class MoveController {
-    @Autowired
-    private SimpMessagingTemplate messagingTemplate;
+    //@Autowired
+    //private SimpMessagingTemplate messagingTemplate;
 
     private final Logger log = LoggerFactory.getLogger(GameController.class);
     private GameRepository gameRepository;
@@ -116,7 +116,7 @@ public class MoveController {
         moves.add(move);
         switchTurns(gameData);
         gameRepository.save(gameData);
-        sendToSocket(gameData); 
+        //sendToSocket(gameData); 
         gameRepository.findAll().forEach(System.out::println);
         return ResponseEntity.created(new URI("/api/game/" + gameData.getId() + "/move/" + move.getId()))
                 .body(gameData);
@@ -133,7 +133,7 @@ public class MoveController {
 
     private void sendToSocket(GameModel gameData) {
         String destination = "/game/" + gameData.getId() + "/move";
-        messagingTemplate.convertAndSend(destination, gameData);
+        //messagingTemplate.convertAndSend(destination, gameData);
 
     }
 

@@ -1,4 +1,4 @@
-package com.jacobferrell.chess.config;
+/* package com.jacobferrell.chess.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -22,3 +22,4 @@ public class WebsocketConfig implements WebSocketMessageBrokerConfigurer {
          registry.addEndpoint("/ws").setAllowedOrigins("*").withSockJS();
     }
 }
+ */

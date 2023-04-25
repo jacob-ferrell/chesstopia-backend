@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jacobferrell.chess.config.JwtService;
 import com.jacobferrell.chess.model.User;
-import com.jacobferrell.chess.model.UserRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -17,11 +16,9 @@ import jakarta.servlet.http.HttpServletRequest;
 @RequestMapping("/api")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class UserController {
-    private UserRepository userRepository;
     private JwtService jwtService;
 
-    public UserController(UserRepository userRepository, JwtService jwtService) {
-        this.userRepository = userRepository;
+    public UserController(JwtService jwtService) {
         this.jwtService = jwtService;
     }
 

@@ -1,4 +1,4 @@
-package com.jacobferrell.chess.websocket;
+/* package com.jacobferrell.chess.websocket;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -20,3 +20,4 @@ public class WebsocketGameController {
         return move;
     }
 }
+ */
