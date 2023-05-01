@@ -65,16 +65,22 @@ public class MoveController {
         if (!optionalGame.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        User user =  jwtService.getUserFromRequest(request);
-        if (user == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        User user = jwtService.getUserFromRequest(request);
+        if (user == null)
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         GameModel gameData = optionalGame.get();
+        if (gameData.getWinner() != null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         boolean userIsPlayer = false;
         boolean isUsersTurn = gameData.getCurrentTurn().equals(user);
         for (User player : gameData.getPlayers()) {
-            if (player.getEmail() == user.getEmail()) userIsPlayer = true;
+            if (player.getEmail() == user.getEmail())
+                userIsPlayer = true;
         }
 
-        if (!userIsPlayer || !isUsersTurn) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        if (!userIsPlayer || !isUsersTurn)
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 
         String playerColor = gameData.getWhitePlayer().equals(user) ? "WHITE" : "BLACK";
 
@@ -90,7 +96,8 @@ public class MoveController {
 
         }
         String color = selectedPiece.getColor() == PieceColor.WHITE ? "WHITE" : "BLACK";
-        if (color != playerColor) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        if (color != playerColor)
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         MoveModel move = MoveModel.builder().pieceType(selectedPiece.getName()).pieceColor(color).fromX(x0).fromY(y0)
                 .toX(x1).toY(y1).build();
         Move chessMove = getMoveFromData(selectedPiece, move);
@@ -109,6 +116,7 @@ public class MoveController {
         }
         moves.add(move);
         switchTurns(gameData);
+        setPlayerInCheck(game, gameData, playerColor);
         gameRepository.save(gameData);
         gameRepository.findAll().forEach(System.out::println);
         return ResponseEntity.created(new URI("/api/game/" + gameData.getId() + "/move/" + move.getId()))
@@ -135,6 +143,24 @@ public class MoveController {
             return;
         }
         gameData.setCurrentTurn(gameData.getWhitePlayer());
+    }
+
+    private void setPlayerInCheck(Game game, GameModel gameData, String playerColor) {
+        PieceColor enemyColor = playerColor == "WHITE" ? PieceColor.BLACK : PieceColor.WHITE;
+        King enemyKing = game.board.getPlayerKing(enemyColor);
+        if (!enemyKing.isInCheck()) {
+            gameData.setPlayerInCheck(null);
+            return;
+        }
+
+        if (!enemyKing.isInCheckMate()) {
+            gameData.setPlayerInCheck(enemyColor.toString());
+            return;
+        }
+        User winner = playerColor.equals("WHITE") ? gameData.getWhitePlayer() : gameData.getBlackPlayer();
+
+        gameData.setWinner(winner);
+
     }
 
     private Move getMoveFromData(ChessPiece piece, MoveModel move) {

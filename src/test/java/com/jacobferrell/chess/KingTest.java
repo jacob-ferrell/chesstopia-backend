@@ -65,15 +65,15 @@ public class KingTest {
     public void testWhiteCheckMate() {
         ChessBoard board = new ChessBoard();
         board.clearBoard();
-        King blackKing = new King(PieceColor.BLACK, new Position(0, 0), board);
-        King whiteKing = new King(PieceColor.WHITE, new Position(7, 7), board);
-        board.setPieceAtPosition(7, 7, whiteKing);
-        board.setPieceAtPosition(0, 2, new Rook(PieceColor.WHITE, new Position(1, 4), board));
-        board.setPieceAtPosition(0, 1, new Queen(PieceColor.WHITE, new Position(5, 7), board));
-        board.setPieceAtPosition(0, 0, blackKing);
+        King whiteKing = new King(PieceColor.WHITE, new Position(0, 0), board);
+        King blackKing = new King(PieceColor.BLACK, new Position(7, 7), board);
+        board.setPieceAtPosition(7, 7, blackKing);
+        board.setPieceAtPosition(0, 2, new Rook(PieceColor.BLACK, new Position(1, 4), board));
+        board.setPieceAtPosition(0, 1, new Queen(PieceColor.BLACK, new Position(5, 7), board));
+        board.setPieceAtPosition(0, 0, whiteKing);
         System.out.println(board);
-        assertTrue(blackKing.isInCheckMate());
-        assertFalse(whiteKing.isInCheckMate());
+        assertTrue(whiteKing.isInCheckMate());
+        assertFalse(blackKing.isInCheckMate());
         board = new ChessBoard();
         assertFalse(
                 board.getPlayerKing(PieceColor.BLACK).isInCheckMate()

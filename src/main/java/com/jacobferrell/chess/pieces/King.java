@@ -54,11 +54,12 @@ public class King extends ChessPiece {
     public boolean isInCheckMate() {
         Set<Move> possiblePlayerMoves = board.getAllPossibleMoves()
                 .stream()
-                .filter(move -> move.piece.color != this.color)
+                .filter(move -> move.piece.color == this.color)
                 .collect(Collectors.toSet());
         for (Move move : possiblePlayerMoves) {
             ChessBoard simulatedBoard = move.simulateMove(board);
             if (simulatedBoard.hasBothKings() && !simulatedBoard.getPlayerKing(color).isInCheck()) {
+                System.out.println(move);
                 return false;
             }
         }

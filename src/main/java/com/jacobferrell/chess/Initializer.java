@@ -22,7 +22,7 @@ public class Initializer implements CommandLineRunner {
     }
 
     public void run(String... strings) {
-        GameModel game = GameModel.builder()
+        GameModel game = GameModel.builder().winner(null)
             .build();
         gameRepository.save(game);
 

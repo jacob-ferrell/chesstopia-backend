@@ -9,6 +9,9 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Builder;
 
+import java.util.Optional;
+
+
 import jakarta.persistence.*;
 import java.util.*;
 
@@ -45,5 +48,16 @@ public class GameModel {
 
     @ManyToOne
     private User currentTurn;
+
+    @Builder.Default
+    private String playerInCheck = null;
+
+    @ManyToOne
+    @JoinColumn(name = "winner_id")
+    private User winner;
+
+    /* public void setWinner(User user) {
+        winner = Optional.ofNullable(user);
+    } */
 
 }
