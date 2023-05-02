@@ -60,7 +60,6 @@ public class MoveController {
     ResponseEntity<GameModel> makeMove(@PathVariable Long gameId, @RequestParam int x0, @RequestParam int y0,
             @RequestParam int x1, @RequestParam int y1, HttpServletRequest request)
             throws URISyntaxException {
-        // TODO: add authentication to see if game and piece belong to player
         Optional<GameModel> optionalGame = gameRepository.findById(gameId);
         if (!optionalGame.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -104,6 +103,7 @@ public class MoveController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
         }
+        // Create move object and simulate the move to see if it is legal
         MoveModel move = MoveModel.builder().pieceType(selectedPiece.getName()).pieceColor(playerColor.toString())
                 .fromX(x0).fromY(y0)
                 .toX(x1).toY(y1).build();
@@ -112,6 +112,7 @@ public class MoveController {
         if (!simulatedBoard.hasBothKings() || simulatedBoard.getPlayerKing(selectedPiece.getColor()).isInCheck()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+        // Set and save the board, moves, turn, and playerInCheck
         game.board.setPieceAtPosition(x1, y1, selectedPiece);
         game.board.setPositionToNull(x0, y0);
         System.out.println(game.board);
