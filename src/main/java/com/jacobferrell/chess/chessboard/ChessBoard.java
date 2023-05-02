@@ -143,6 +143,65 @@ public class ChessBoard {
             }
         }
     }
+    // Return a set of Rooks which are capable of being castled for a given player
+    public Set<Rook> getCastleRooks(PieceColor color) {
+        Set<Rook> castleRooks = new HashSet<>();
+        King king = getPlayerKing(color);
+        if (king.hasMoved) {
+            return castleRooks;
+        }
+        for (int i = 0; i < 8; i++) {
+            outerloop:
+            for (int j = 0; j < 8; j++) {
+                if (!isSpaceOccupied(i, j)) {
+                    continue;
+                }
+                ChessPiece piece = getPieceAtPosition(i, j);
+                if (!(piece instanceof Rook) || piece.hasMoved || !piece.getColor().equals(color)) {
+                    continue;
+                }
+                int kingX = king.getXPosition();
+                int rookX = piece.getXPosition();
+                int y = king.getYPosition();
+                int max = Math.max(kingX, rookX);
+                int min = Math.min(kingX, rookX);
+                for (int n = min + 1; n < max; n++) {
+                    if (isSpaceOccupied(n, y)) {
+                        continue outerloop;
+                    }
+                    Move move = new Move(king, new Position(n, y));
+                    ChessBoard clonedBoard = move.simulateMove(this);
+                    if (clonedBoard.getPlayerKing(color).isInCheck()) {
+                        continue outerloop;
+                    }
+                    castleRooks.add((Rook) piece);
+                }
+                
+            }
+        }
+        return castleRooks;
+    }
+    /*
+     * public Set<ChessPiece> getCastlePieces() {
+     * Set<ChessPiece> castlePieces = new HashSet<>();
+     * for (int i = 0; i < 2; i++) {
+     * for (int n = 0; n < 8; n++) {
+     * for (int j = 0; j < 8; j++) {
+     * if (!isSpaceOccupied(i, j)) {
+     * continue;
+     * }
+     * ChessPiece piece = getPieceAtPosition(i, j);
+     * if (piece.hasMoved || (!(piece instanceof King) && !(piece instanceof Rook)))
+     * {
+     * continue;
+     * }
+     * }
+     * }
+     * }
+     * return castlePieces;
+     * 
+     * }
+     */
 
     public void setBoardFromData(Set<Piece> pieces) {
         clearBoard();
