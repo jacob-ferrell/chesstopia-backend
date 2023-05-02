@@ -58,9 +58,11 @@ public class GameController {
 
     @GetMapping("/games/user/{id}")
     public Object getUserGames(@PathVariable Long id, HttpServletRequest request) {
-        User user =  jwtService.getUserFromRequest(request);
-        if (user == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        if (user.getId() != id) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        User user = jwtService.getUserFromRequest(request);
+        if (user == null)
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        if (user.getId() != id)
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         return gameRepository.findByPlayer(user);
 
     }
@@ -68,10 +70,19 @@ public class GameController {
     @CrossOrigin(origins = "http://localhost:5173")
     @GetMapping("/game/{id}")
     ResponseEntity<?> getGame(@PathVariable Long id, HttpServletRequest request) {
-        //TODO add auth
-        User user =  getUserFromRequest(request);
-        if (user == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        // TODO add auth
+        User user = getUserFromRequest(request);
+        if (user == null)
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         Optional<GameModel> game = gameRepository.findById(id);
+        if (!game.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        GameModel foundGame = game.get();
+        Set<User> players = foundGame.getPlayers();
+        if (!players.contains(user)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         return game.map(response -> ResponseEntity.ok().body(response))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
@@ -101,6 +112,7 @@ public class GameController {
             blackPlayer = player1;
         }
         GameModel newGame = GameModel.builder().players(players).whitePlayer(whitePlayer).blackPlayer(blackPlayer)
+                .winner(null)
                 .build();
         gameRepository.save(newGame);
         return ResponseEntity.created(new URI("/api/game/" + newGame.getId()))
