@@ -13,12 +13,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 import java.util.HashSet;
@@ -70,7 +68,6 @@ public class GameController {
     @CrossOrigin(origins = "http://localhost:5173")
     @GetMapping("/game/{id}")
     ResponseEntity<?> getGame(@PathVariable Long id, HttpServletRequest request) {
-        // TODO add auth
         User user = getUserFromRequest(request);
         if (user == null)
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -89,8 +86,12 @@ public class GameController {
 
     @CrossOrigin(origins = "http://localhost:5173")
     @PostMapping("/games")
-    ResponseEntity<?> createGame(@RequestParam Long p1, @RequestParam Long p2) throws URISyntaxException {
+    ResponseEntity<?> createGame(@RequestParam Long p1, @RequestParam Long p2, HttpServletRequest request) throws URISyntaxException {
         log.info("Request to create game");
+        User user = getUserFromRequest(request);
+        if (user == null || user.getId() != p1) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         Optional<User> optionalPlayer1 = userRepository.findById(p1);
         Optional<User> optionalPlayer2 = userRepository.findById(p2);
         if (!optionalPlayer1.isPresent() || !optionalPlayer2.isPresent()) {
@@ -119,7 +120,7 @@ public class GameController {
                 .body(newGame);
     }
 
-    @CrossOrigin(origins = "http://localhost:5173")
+    /* @CrossOrigin(origins = "http://localhost:5173")
     @PutMapping("/game/{id}")
     ResponseEntity<GameModel> updateGame(@Valid @RequestBody GameModel game) {
         log.info("Request to update game: {}", game);
@@ -133,6 +134,6 @@ public class GameController {
         log.info("Request to delete game: {}", id);
         gameRepository.deleteById(id);
         return ResponseEntity.ok().build();
-    }
+    } */
 
 }
