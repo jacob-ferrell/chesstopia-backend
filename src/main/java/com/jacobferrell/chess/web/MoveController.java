@@ -66,39 +66,46 @@ public class MoveController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         User user = jwtService.getUserFromRequest(request);
-        if (user == null)
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         GameModel gameData = optionalGame.get();
+        Set<User> players = gameData.getPlayers();
+        // Test if current user is a player of the game
+        if (!players.contains(user)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        // Test if a winner has been declared, meaning the game is over
         if (gameData.getWinner() != null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        boolean userIsPlayer = false;
+        // Test if it is the current user's turn
         boolean isUsersTurn = gameData.getCurrentTurn().equals(user);
-        for (User player : gameData.getPlayers()) {
-            if (player.getEmail() == user.getEmail())
-                userIsPlayer = true;
+        if (!isUsersTurn) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        if (!userIsPlayer || !isUsersTurn)
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-
-        String playerColor = gameData.getWhitePlayer().equals(user) ? "WHITE" : "BLACK";
+        PieceColor playerColor = gameData.getWhitePlayer().equals(user) ? PieceColor.WHITE : PieceColor.BLACK;
 
         log.info("Request to create move");
+        // Convert game object from frontend into backend game object
         Game game = createGameFromData(gameData);
+        // Test that a piece has been selected and belongs to the current user
         if (!game.board.isSpaceOccupied(x0, y0)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         ChessPiece selectedPiece = game.board.getPieceAtPosition(x0, y0);
+        if (!selectedPiece.getColor().equals(playerColor)) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        // Test if the requested move is possible for the selected piece
         Set<Position> possibleMoves = selectedPiece.generatePossibleMoves();
         if (!possibleMoves.stream().anyMatch(pos -> pos.equals(new Position(x1, y1)))) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
         }
-        String color = selectedPiece.getColor() == PieceColor.WHITE ? "WHITE" : "BLACK";
-        if (color != playerColor)
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        MoveModel move = MoveModel.builder().pieceType(selectedPiece.getName()).pieceColor(color).fromX(x0).fromY(y0)
+        MoveModel move = MoveModel.builder().pieceType(selectedPiece.getName()).pieceColor(playerColor.toString())
+                .fromX(x0).fromY(y0)
                 .toX(x1).toY(y1).build();
         Move chessMove = getMoveFromData(selectedPiece, move);
         ChessBoard simulatedBoard = chessMove.simulateMove(game.board);
@@ -116,7 +123,7 @@ public class MoveController {
         }
         moves.add(move);
         switchTurns(gameData);
-        setPlayerInCheck(game, gameData, playerColor);
+        setPlayerInCheck(game, gameData, user);
         gameRepository.save(gameData);
         gameRepository.findAll().forEach(System.out::println);
         return ResponseEntity.created(new URI("/api/game/" + gameData.getId() + "/move/" + move.getId()))
@@ -145,8 +152,9 @@ public class MoveController {
         gameData.setCurrentTurn(gameData.getWhitePlayer());
     }
 
-    private void setPlayerInCheck(Game game, GameModel gameData, String playerColor) {
-        PieceColor enemyColor = playerColor == "WHITE" ? PieceColor.BLACK : PieceColor.WHITE;
+    private void setPlayerInCheck(Game game, GameModel gameData, User player) {
+        boolean isWhite = gameData.getWhitePlayer().equals(player);
+        PieceColor enemyColor = isWhite ? PieceColor.BLACK : PieceColor.WHITE;
         King enemyKing = game.board.getPlayerKing(enemyColor);
         if (!enemyKing.isInCheck()) {
             gameData.setPlayerInCheck(null);
@@ -157,9 +165,7 @@ public class MoveController {
             gameData.setPlayerInCheck(enemyColor.toString());
             return;
         }
-        User winner = playerColor.equals("WHITE") ? gameData.getWhitePlayer() : gameData.getBlackPlayer();
-
-        gameData.setWinner(winner);
+        gameData.setWinner(player);
 
     }
 
