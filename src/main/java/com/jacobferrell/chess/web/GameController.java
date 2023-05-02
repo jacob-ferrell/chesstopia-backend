@@ -1,11 +1,7 @@
 package com.jacobferrell.chess.web;
 
 import com.jacobferrell.chess.model.*;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.jacobferrell.chess.chessboard.*;
 import com.jacobferrell.chess.config.JwtService;
-import com.jacobferrell.chess.game.*;
-import com.jacobferrell.chess.pieces.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Optional;
@@ -36,24 +31,6 @@ public class GameController {
         this.jwtService = jwtService;
     }
 
-    private String getEmailFromToken(HttpServletRequest request) {
-        String authHeader = request.getHeader("Authorization");
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String jwt = authHeader.substring(7);
-            return jwtService.extractUsername(jwt);
-        }
-        return null;
-    }
-
-    private User getUserFromRequest(HttpServletRequest request) {
-        Optional<User> optionalUser = userRepository.findByEmail(getEmailFromToken(request));
-        if (!optionalUser.isPresent()) {
-            return null;
-        }
-        User user = optionalUser.get();
-        return user;
-    }
-
     @GetMapping("/games/user/{id}")
     public Object getUserGames(@PathVariable Long id, HttpServletRequest request) {
         User user = jwtService.getUserFromRequest(request);
@@ -68,7 +45,7 @@ public class GameController {
     @CrossOrigin(origins = "http://localhost:5173")
     @GetMapping("/game/{id}")
     ResponseEntity<?> getGame(@PathVariable Long id, HttpServletRequest request) {
-        User user = getUserFromRequest(request);
+        User user = jwtService.getUserFromRequest(request);
         if (user == null)
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         Optional<GameModel> game = gameRepository.findById(id);
@@ -88,7 +65,7 @@ public class GameController {
     @PostMapping("/games")
     ResponseEntity<?> createGame(@RequestParam Long p1, @RequestParam Long p2, HttpServletRequest request) throws URISyntaxException {
         log.info("Request to create game");
-        User user = getUserFromRequest(request);
+        User user = jwtService.getUserFromRequest(request);
         if (user == null || user.getId() != p1) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
