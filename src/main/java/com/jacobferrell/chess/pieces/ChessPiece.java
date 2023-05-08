@@ -153,6 +153,20 @@ public abstract class ChessPiece {
         return true;
     }
 
+    public boolean canCastle() {
+        if (this instanceof King) {
+            return board.getCastleRooks(color).size() > 0;
+        }
+        if (this instanceof Rook) {
+            for (Rook rook : board.getCastleRooks(color)) {
+                if (this.equals(rook)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public boolean equals(ChessPiece otherPiece) {
         boolean x = xPosition == otherPiece.getXPosition();
         boolean y = yPosition == otherPiece.getYPosition();
