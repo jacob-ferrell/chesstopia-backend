@@ -36,9 +36,12 @@ public class King extends ChessPiece {
         possibleMoves.addAll(getHorizontalMoves());
         possibleMoves.addAll(getVerticalMoves());
         possibleMoves.addAll(getDiagonalMoves());
-        return possibleMoves.stream()
+        possibleMoves = possibleMoves.stream()
                 .filter(move -> Math.max(Math.abs(xPosition - move.x), Math.abs(yPosition - move.y)) < 2)
                 .collect(Collectors.toSet());
+        possibleMoves.addAll(board.getCastleRooks(color).stream()
+                .map(r -> new Position(r.getXPosition(), r.getYPosition())).collect(Collectors.toSet()));
+        return possibleMoves;
     }
 
     public boolean isInCheck() {
