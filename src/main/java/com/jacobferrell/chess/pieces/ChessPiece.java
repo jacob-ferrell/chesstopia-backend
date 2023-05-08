@@ -153,6 +153,15 @@ public abstract class ChessPiece {
         return true;
     }
 
+    public boolean equals(ChessPiece otherPiece) {
+        boolean x = xPosition == otherPiece.getXPosition();
+        boolean y = yPosition == otherPiece.getYPosition();
+        boolean c = color == otherPiece.getColor();
+        boolean n = getName() == otherPiece.getName();
+        boolean h = hasMoved = otherPiece.hasMoved;
+        return (x && y && c && n && h);
+    }
+
     @Override
     public String toString() {
         return getName() + ", " + getColor() +  " [" + getYPosition() + ", " + getXPosition() + "]";
