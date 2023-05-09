@@ -113,8 +113,7 @@ public class MoveController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         // Set and save the board, moves, turn, and playerInCheck
-        game.board.setPieceAtPosition(x1, y1, selectedPiece);
-        game.board.setPositionToNull(x0, y0);
+        selectedPiece.makeMove(x1, y1);
         System.out.println(game.board);
         gameData.setPieces(game.board.getPieceData());
         Set<MoveModel> moves = gameData.getMoves();

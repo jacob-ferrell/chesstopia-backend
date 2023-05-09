@@ -5,7 +5,6 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.stream.Collectors;
 
-
 public abstract class ChessPiece {
     protected PieceColor color;
     protected int xPosition;
@@ -127,11 +126,29 @@ public abstract class ChessPiece {
         return possibleMoves;
     }
 
+    public void makeMove(int x, int y) {
+        Position prevPosition = new Position(xPosition, yPosition);
+        if (!board.isSpaceOccupied(x, y) || isEnemyPiece(board.getPieceAtPosition(x, y))) {
+            movePiece(x, y);
+            board.setPositionToNull(prevPosition.x, prevPosition.y);
+            return;
+        }
+        ChessPiece rook = board.getPieceAtPosition(x, y);
+        if (!(rook instanceof Rook)) {
+            return;
+        }
+        King king = board.getPlayerKing(color);
+        rook.movePiece(king.getXPosition(), king.getYPosition());
+        king.movePiece(x, y);
+
+    }
+
     public void movePiece(int x, int y) {
         board.setPieceAtPosition(x, y, this);
         setXPosition(x);
         setYPosition(y);
         setHasMoved();
+
     }
 
     public Set<Position> removeMovesIntoCheck(Set<Position> moves) {
@@ -154,30 +171,22 @@ public abstract class ChessPiece {
     }
 
     public boolean canCastle() {
-        if (this instanceof King) {
-            return board.getCastleRooks(color).size() > 0;
+        if (!(this instanceof Rook)) {
+            return false;
         }
-        if (this instanceof Rook) {
-            for (Rook rook : board.getCastleRooks(color)) {
-                if (this.equals(rook)) {
-                    return true;
-                }
+        Set<Rook> castleRooks = board.getCastleRooks(color);
+        for (Rook rook : castleRooks) {
+            if (this.equals(rook)) {
+                return true;
             }
         }
+
+        
         return false;
     }
 
-    public boolean equals(ChessPiece otherPiece) {
-        boolean x = xPosition == otherPiece.getXPosition();
-        boolean y = yPosition == otherPiece.getYPosition();
-        boolean c = color == otherPiece.getColor();
-        boolean n = getName() == otherPiece.getName();
-        boolean h = hasMoved = otherPiece.hasMoved;
-        return (x && y && c && n && h);
-    }
-
     @Override
-    public String toString() {
+    public String toString() { 
         return getName() + ", " + getColor() +  " [" + getYPosition() + ", " + getXPosition() + "]";
     }
 
