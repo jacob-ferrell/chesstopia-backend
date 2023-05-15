@@ -8,8 +8,10 @@ import com.jacobferrell.chess.pieces.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 //import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,6 +31,9 @@ public class MoveController {
     private final Logger log = LoggerFactory.getLogger(GameController.class);
     private GameRepository gameRepository;
     private JwtService jwtService;
+    
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
     public MoveController(GameRepository gameRepository, JwtService jwtService) {
         this.gameRepository = gameRepository;
@@ -125,6 +130,7 @@ public class MoveController {
         switchTurns(gameData);
         setPlayerInCheck(game, gameData, user);
         gameRepository.save(gameData);
+        messagingTemplate.convertAndSend("topic/game/" + gameId, gameData);
         gameRepository.findAll().forEach(System.out::println);
         return ResponseEntity.created(new URI("/api/game/" + gameData.getId() + "/move/" + move.getId()))
                 .body(gameData);
