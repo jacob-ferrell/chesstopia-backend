@@ -1,6 +1,8 @@
 package com.jacobferrell.chess.web;
 
 import com.jacobferrell.chess.model.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jacobferrell.chess.chessboard.*;
 import com.jacobferrell.chess.config.JwtService;
 import com.jacobferrell.chess.game.*;
@@ -31,7 +33,7 @@ public class MoveController {
     private final Logger log = LoggerFactory.getLogger(GameController.class);
     private GameRepository gameRepository;
     private JwtService jwtService;
-    
+
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
 
@@ -130,7 +132,7 @@ public class MoveController {
         switchTurns(gameData);
         setPlayerInCheck(game, gameData, user);
         gameRepository.save(gameData);
-        messagingTemplate.convertAndSend("topic/game/" + gameId, gameData);
+        messagingTemplate.convertAndSend("/topic/game/" + gameId, toJSON("moved"));
         gameRepository.findAll().forEach(System.out::println);
         return ResponseEntity.created(new URI("/api/game/" + gameData.getId() + "/move/" + move.getId()))
                 .body(gameData);
@@ -178,5 +180,17 @@ public class MoveController {
     private Move getMoveFromData(ChessPiece piece, MoveModel move) {
         Move chessMove = new Move(piece, new Position(move.getToX(), move.getToY()));
         return chessMove;
+    }
+
+    private String toJSON(Object object) {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        try {
+            String json = objectMapper.writeValueAsString(object);
+            return json;
+        } catch (JsonProcessingException e) {
+            System.out.println(e);
+            return null;
+        }
     }
 }
