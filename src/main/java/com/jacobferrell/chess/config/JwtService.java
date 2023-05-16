@@ -24,7 +24,7 @@ import jakarta.servlet.http.HttpServletRequest;
 public class JwtService {
     private UserRepository userRepository;
 
-    private static final String SECRET_KEY = "743677397A24432646294A404E635266556A586E5A7234753778214125442A47";
+    private static final String SECRET_KEY = ;
 
     public JwtService(UserRepository userRepository) {
         this.userRepository = userRepository;
