@@ -1,25 +1,32 @@
-package com.jacobferrell.chess.auth;
+package com.jacobferrell.chess.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.jacobferrell.chess.config.JwtService;
+import com.jacobferrell.chess.auth.AuthenticationRequest;
+import com.jacobferrell.chess.auth.AuthenticationResponse;
+import com.jacobferrell.chess.auth.RegisterRequest;
 import com.jacobferrell.chess.model.Role;
 import com.jacobferrell.chess.model.User;
-import com.jacobferrell.chess.model.UserRepository;
-
-import lombok.RequiredArgsConstructor;
+import com.jacobferrell.chess.repository.UserRepository;
 
 @Service
-@RequiredArgsConstructor
 public class AuthenticationService {
 
-    private final UserRepository repository;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
-    private final AuthenticationManager authenticationManager;
+    @Autowired
+    private UserRepository repository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JwtService jwtService;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
     
     public AuthenticationResponse register(RegisterRequest request) {
         var user = User.builder()

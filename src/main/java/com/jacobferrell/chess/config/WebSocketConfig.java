@@ -12,7 +12,7 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 import org.springframework.web.socket.messaging.SessionConnectEvent;
 
-import com.jacobferrell.chess.model.GameRepository;
+import com.jacobferrell.chess.repository.GameRepository;
 
 @Configuration
 @EnableWebSocketMessageBroker

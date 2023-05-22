@@ -11,7 +11,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.jacobferrell.chess.model.UserRepository;
+import com.jacobferrell.chess.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 

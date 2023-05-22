@@ -1,4 +1,4 @@
-package com.jacobferrell.chess.config;
+package com.jacobferrell.chess.service;
 
 import java.security.Key;
 import java.util.function.Function;
@@ -7,11 +7,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.jacobferrell.chess.model.User;
-import com.jacobferrell.chess.model.UserRepository;
+import com.jacobferrell.chess.repository.UserRepository;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -22,13 +23,11 @@ import jakarta.servlet.http.HttpServletRequest;
 
 @Service
 public class JwtService {
+    
+    @Autowired
     private UserRepository userRepository;
 
     private static final String SECRET_KEY = "743677397A24432646294A404E635266556A586E5A7234753778214125442A47";
-
-    public JwtService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);

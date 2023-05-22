@@ -1,6 +1,8 @@
 package com.jacobferrell.chess;
 
 import com.jacobferrell.chess.model.*;
+import com.jacobferrell.chess.repository.GameRepository;
+import com.jacobferrell.chess.repository.UserRepository;
 import com.jacobferrell.chess.chessboard.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;

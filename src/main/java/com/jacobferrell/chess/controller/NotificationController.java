@@ -1,4 +1,4 @@
-package com.jacobferrell.chess.web;
+package com.jacobferrell.chess.controller;
 
 import java.util.Optional;
 
@@ -9,16 +9,21 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
 import com.jacobferrell.chess.model.GameModel;
-import com.jacobferrell.chess.model.GameRepository;
 import com.jacobferrell.chess.model.Notification;
-import com.jacobferrell.chess.model.NotificationRepository;
+import com.jacobferrell.chess.repository.GameRepository;
+import com.jacobferrell.chess.repository.NotificationRepository;
 
 @Controller
 public class NotificationController {
 
-    @Autowired private SimpMessagingTemplate messagingTemplate;
-    @Autowired private NotificationRepository notificationRepository;
-    @Autowired private GameRepository gameRepository;
+    @Autowired 
+    private SimpMessagingTemplate messagingTemplate;
+
+    @Autowired 
+    private NotificationRepository notificationRepository;
+
+    @Autowired 
+    private GameRepository gameRepository;
 
     @MessageMapping("/notify")
     public void processNotification(@Payload Notification notification) {

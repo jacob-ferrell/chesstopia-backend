@@ -1,4 +1,4 @@
-package com.jacobferrell.chess.web;
+package com.jacobferrell.chess.service;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,11 +15,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jacobferrell.chess.chessboard.ChessBoard;
 import com.jacobferrell.chess.chessboard.Position;
-import com.jacobferrell.chess.config.JwtService;
 import com.jacobferrell.chess.game.Game;
 import com.jacobferrell.chess.game.Player;
 import com.jacobferrell.chess.model.GameModel;
-import com.jacobferrell.chess.model.GameRepository;
 import com.jacobferrell.chess.model.MoveModel;
 import com.jacobferrell.chess.model.Piece;
 import com.jacobferrell.chess.model.User;
@@ -27,13 +25,14 @@ import com.jacobferrell.chess.pieces.ChessPiece;
 import com.jacobferrell.chess.pieces.King;
 import com.jacobferrell.chess.pieces.Move;
 import com.jacobferrell.chess.pieces.PieceColor;
+import com.jacobferrell.chess.repository.GameRepository;
 
 import org.springframework.security.access.AccessDeniedException;
 
 import jakarta.servlet.http.HttpServletRequest;
 
 @Service
-public class MoveServiceImpl implements MoveService {
+public class MoveService {
     
     @Autowired
     private GameRepository gameRepository;
@@ -44,7 +43,6 @@ public class MoveServiceImpl implements MoveService {
     @Autowired
     private JwtService jwtService;
 
-    @Override
     public Set<Position> getPossibleMoves(long gameId, int x, int y) {
         // TODO: Add authentication to test if player is moving their own piece
         Optional<GameModel> optionalGame = gameRepository.findById(gameId);
@@ -60,7 +58,6 @@ public class MoveServiceImpl implements MoveService {
         return piece.removeMovesIntoCheck(piece.generatePossibleMoves());
     }
 
-    @Override
     public Map<String, Object> makeMove(long gameId, int x0, int y0, int x1, int y1, HttpServletRequest request) {
         Optional<GameModel> optionalGame = gameRepository.findById(gameId);
         if (!optionalGame.isPresent()) {

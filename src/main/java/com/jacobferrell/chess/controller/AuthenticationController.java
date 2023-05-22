@@ -1,4 +1,4 @@
-package com.jacobferrell.chess.auth;
+package com.jacobferrell.chess.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -6,6 +6,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.jacobferrell.chess.auth.AuthenticationRequest;
+import com.jacobferrell.chess.auth.AuthenticationResponse;
+import com.jacobferrell.chess.auth.RegisterRequest;
+import com.jacobferrell.chess.service.AuthenticationService;
 
 import lombok.RequiredArgsConstructor;
 
