@@ -1,6 +1,8 @@
 HELP.md
 /src/main/resources
 src/main/resources
+/src/main/java/com/jacobferrell/chess/config/JwtService.java
+src/main/java/com/jacobferrell/chess/config/JwtService.java
 target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
@@ -33,3 +35,4 @@ build/
 
 ### VS Code ###
 .vscode/
+src/main/java/com/jacobferrell/chess/config/JwtService.java
