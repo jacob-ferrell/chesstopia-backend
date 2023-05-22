@@ -30,39 +30,13 @@ import java.util.HashMap;
 @RequestMapping("/api")
 public class MoveController {
 
-    private final Logger log = LoggerFactory.getLogger(GameController.class);
-    private GameRepository gameRepository;
-    private JwtService jwtService;
-
     @Autowired
-    private SimpMessagingTemplate messagingTemplate;
-
-    public MoveController(GameRepository gameRepository, JwtService jwtService) {
-        this.gameRepository = gameRepository;
-        this.jwtService = jwtService;
-    }
+    private MoveService moveService;
 
     @CrossOrigin(origins = "http://localhost:5173")
     @GetMapping("/game/{gameId}/possible-moves")
     ResponseEntity<?> getPossibleMoves(@PathVariable Long gameId, @RequestParam int x, @RequestParam int y) {
-        Optional<GameModel> optionalGame = gameRepository.findById(gameId);
-        if (!optionalGame.isPresent()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        // TODO: Add authentication to test if player is moving their own piece
-        GameModel gameData = optionalGame.get();
-        Game game = createGameFromData(gameData);
-        ChessPiece piece = game.board.getPieceAtPosition(x, y);
-        if (piece == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        /* for (Position move : piece.generatePossibleMoves()) {
-            System.out.println(move);
-        }
-        for(Position p : piece.removeMovesIntoCheck(piece.generatePossibleMoves())) {
-            System.out.println(p);
-        } */
-        Set<Position> possibleMoves = piece.removeMovesIntoCheck(piece.generatePossibleMoves());
+        Set<Position> possibleMoves = moveService.getPossibleMoves(gameId, x, y);
         Map<String, Set<Position>> responseBody = new HashMap<>();
         responseBody.put("possibleMoves", possibleMoves);
         return ResponseEntity.ok().body(responseBody);
@@ -73,89 +47,11 @@ public class MoveController {
     ResponseEntity<GameModel> makeMove(@PathVariable Long gameId, @RequestParam int x0, @RequestParam int y0,
             @RequestParam int x1, @RequestParam int y1, HttpServletRequest request)
             throws URISyntaxException {
-        Optional<GameModel> optionalGame = gameRepository.findById(gameId);
-        if (!optionalGame.isPresent()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        User user = jwtService.getUserFromRequest(request);
-        if (user == null) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
-        GameModel gameData = optionalGame.get();
-        Set<User> players = gameData.getPlayers();
-        // Test if current user is a player of the game
-        if (!players.contains(user)) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
-        // Test if a winner has been declared, meaning the game is over
-        if (gameData.getWinner() != null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        // Test if it is the current user's turn
-        boolean isUsersTurn = gameData.getCurrentTurn().equals(user);
-        if (!isUsersTurn) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
-        PieceColor playerColor = gameData.getWhitePlayer().equals(user) ? PieceColor.WHITE : PieceColor.BLACK;
-
-        log.info("Request to create move");
-        // Convert game object from frontend into backend game object
-        Game game = createGameFromData(gameData);
-        // Test that a piece has been selected and belongs to the current user
-        if (!game.board.isSpaceOccupied(x0, y0)) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        ChessPiece selectedPiece = game.board.getPieceAtPosition(x0, y0);
-        if (!selectedPiece.getColor().equals(playerColor)) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        // Test if the requested move is possible for the selected piece
-        Set<Position> possibleMoves = selectedPiece.generatePossibleMoves();
-        if (!possibleMoves.stream().anyMatch(pos -> pos.equals(new Position(x1, y1)))) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-
-        }
-        // Create move object and simulate the move to see if it is legal
-        MoveModel move = MoveModel.builder().pieceType(selectedPiece.getName()).pieceColor(playerColor.toString())
-                .fromX(x0).fromY(y0)
-                .toX(x1).toY(y1).build();
-        Move chessMove = getMoveFromData(selectedPiece, move);
-        ChessBoard simulatedBoard = chessMove.simulateMove(game.board);
-        if (!simulatedBoard.hasBothKings() || simulatedBoard.getPlayerKing(selectedPiece.getColor()).isInCheck()) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        // Set and save the board, moves, turn, and playerInCheck
-        selectedPiece.makeMove(x1, y1);
-        System.out.println(game.board);
-        gameData.setPieces(game.board.getPieceData());
-        Set<MoveModel> moves = gameData.getMoves();
-        if (moves == null) {
-            moves = new HashSet<>();
-            gameData.setMoves(moves);
-        }
-        moves.add(move);
-        switchTurns(gameData);
-        setPlayerInCheck(game, gameData, user);
-        gameRepository.save(gameData);
-        messagingTemplate.convertAndSend("/topic/game/" + gameId, toJSON("moved"));
-        gameRepository.findAll().forEach(System.out::println);
+        Map<String, Object> moveData = moveService.makeMove(gameId, x0, y0, x1, y1, request);
+        GameModel gameData = (GameModel) moveData.get("gameData");
+        MoveModel move = (MoveModel) moveData.get("moveData");
         return ResponseEntity.created(new URI("/api/game/" + gameData.getId() + "/move/" + move.getId()))
-                .body(gameData);
-    }
-
-    private Game createGameFromData(GameModel data) {
-        Player player1 = getPlayerFromUser(data.getWhitePlayer(), PieceColor.WHITE);
-        Player player2 = getPlayerFromUser(data.getBlackPlayer(), PieceColor.BLACK);
-        Game game = new Game(player1, player2);
-        Set<Piece> pieces = data.getPieces();
-        game.board.setBoardFromData(pieces);
-        return game;
-    }
-
-    private Player getPlayerFromUser(User user, PieceColor color) {
-        Player player = new Player(user.getName(), color);
-        return player;
+                .body(gameData); 
     }
 
     private void switchTurns(GameModel gameData) {
