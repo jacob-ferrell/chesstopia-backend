@@ -13,7 +13,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Set;
 import java.util.Map;
-import java.util.HashMap;
 
 @RestController
 @RequestMapping("/api")
@@ -26,9 +25,7 @@ public class MoveController {
     @GetMapping("/game/{gameId}/possible-moves")
     ResponseEntity<?> getPossibleMoves(@PathVariable Long gameId, @RequestParam int x, @RequestParam int y) {
         Set<Position> possibleMoves = moveService.getPossibleMoves(gameId, x, y);
-        Map<String, Set<Position>> responseBody = new HashMap<>();
-        responseBody.put("possibleMoves", possibleMoves);
-        return ResponseEntity.ok().body(responseBody);
+        return ResponseEntity.ok().body(possibleMoves);
     }
 
     @CrossOrigin(origins = "http://localhost:5173")
