@@ -11,8 +11,7 @@ public class ChessBoard {
     private Set<ChessPiece> graveyard = new HashSet<>();
 
     public ChessBoard() {
-        this.board = new HashSet<>();
-        initializeBoard();
+        this.board = setBoard();
     }
 
     public ChessBoard getClone() {
@@ -24,7 +23,8 @@ public class ChessBoard {
         return clonedBoard;
     }
 
-    private void initializeBoard() {
+    private Set<ChessPiece> setBoard() {
+        Set<ChessPiece> board = new HashSet<>();
         // Initialize black pieces
         board.add(new Rook(PieceColor.BLACK, new Position(0, 0), this));
         board.add(new Knight(PieceColor.BLACK, new Position(1, 0), this));
@@ -50,6 +50,7 @@ public class ChessBoard {
         for (int i = 0; i < 8; i++) {
             board.add(new Pawn(PieceColor.WHITE, new Position(i, 6), this));
         }
+        return board;
     }
 
     public ChessPiece getPieceAtPosition(int x, int y) {
