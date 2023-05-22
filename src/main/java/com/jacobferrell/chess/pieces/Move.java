@@ -3,39 +3,32 @@ import com.jacobferrell.chess.chessboard.*;
 
 public class Move {
     protected ChessPiece piece;
-    protected Position to;
-    private Position from;
+    public Position position;
 
     public Move(ChessPiece piece, Position to) {
         this.piece = piece;
-        this.to = to;
-        this.from = new Position(piece.getXPosition(), piece.getYPosition());
+        this.position = to;
     }
 
     public ChessPiece getPiece() {
         return piece;
     }
 
-    public Position getToPosition() {
-        return to;
-    }
-
-    public Position getFromPosition() {
-        return from;
-    }
-
     public ChessBoard simulateMove(ChessBoard board) {
         ChessBoard clonedBoard = board.getClone();
         ChessPiece pieceToMove = piece.getClone(clonedBoard);
-        clonedBoard.setPieceAtPosition(to.x, to.y, pieceToMove);
-        clonedBoard.setPositionToNull(from.x, from.y);
+        clonedBoard.setPieceAtPosition(position.x, position.y, pieceToMove);
         return clonedBoard;
+    }
+
+    public boolean isLegal(ChessBoard board) {
+        return board.hasBothKings() && !board.getPlayerKing(piece.color).isInCheck(); 
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(piece.getName() + ": [" + to.getY() + ", " + to.getX() + "]");
+        sb.append(piece.getName() + ": [" + position.y + ", " + position.x + "]");
         return sb.toString();
     }
     

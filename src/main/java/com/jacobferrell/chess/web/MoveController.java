@@ -52,10 +52,16 @@ public class MoveController {
         // TODO: Add authentication to test if player is moving their own piece
         GameModel gameData = optionalGame.get();
         Game game = createGameFromData(gameData);
-        if (!game.board.isSpaceOccupied(x, y)) {
+        ChessPiece piece = game.board.getPieceAtPosition(x, y);
+        if (piece == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        ChessPiece piece = game.board.getPieceAtPosition(x, y);
+        /* for (Position move : piece.generatePossibleMoves()) {
+            System.out.println(move);
+        }
+        for(Position p : piece.removeMovesIntoCheck(piece.generatePossibleMoves())) {
+            System.out.println(p);
+        } */
         Set<Position> possibleMoves = piece.removeMovesIntoCheck(piece.generatePossibleMoves());
         Map<String, Set<Position>> responseBody = new HashMap<>();
         responseBody.put("possibleMoves", possibleMoves);

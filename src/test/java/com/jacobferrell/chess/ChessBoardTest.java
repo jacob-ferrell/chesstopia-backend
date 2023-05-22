@@ -35,7 +35,7 @@ public class ChessBoardTest {
 		assertTrue(board.hasBothKings());
 		board.setPieceAtPosition(7, 4, new King(PieceColor.WHITE, new Position(0, 4), board));
 		assertFalse(board.hasBothKings());
-		board.setPositionToNull(7, 4);
+		board.removePieceAtPosition(7, 4);
 		assertFalse(board.hasBothKings());
 	}
 }

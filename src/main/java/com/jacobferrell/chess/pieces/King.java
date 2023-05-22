@@ -25,7 +25,7 @@ public class King extends ChessPiece {
 
     @Override
     public ChessPiece getClone(ChessBoard board) {
-        King clone = new King(color, new Position(xPosition, yPosition), board);
+        King clone = new King(color, new Position(position.x, position.y), board);
         clone.hasMoved = hasMoved;
         return clone;
     }
@@ -37,19 +37,19 @@ public class King extends ChessPiece {
         possibleMoves.addAll(getVerticalMoves());
         possibleMoves.addAll(getDiagonalMoves());
         possibleMoves = possibleMoves.stream()
-                .filter(move -> Math.max(Math.abs(xPosition - move.x), Math.abs(yPosition - move.y)) < 2)
+                .filter(move -> Math.max(Math.abs(position.x - move.x), Math.abs(position.y - move.y)) < 2)
                 .collect(Collectors.toSet());
         possibleMoves.addAll(board.getCastleRooks(color).stream()
-                .map(r -> new Position(r.getXPosition(), r.getYPosition())).collect(Collectors.toSet()));
+                .map(r -> new Position(r.position.x, r.position.y)).collect(Collectors.toSet()));
         return possibleMoves;
     }
 
     public boolean isInCheck() {
-        Position currentPosition = new Position(xPosition, yPosition);
+        Position currentPosition = new Position(position.x, position.y);
         Set<Move> allPossibleMoves = board.getAllPossibleMoves();
         return !allPossibleMoves
                 .stream()
-                .filter(move -> move.piece.color != color && move.to.equals(currentPosition))
+                .filter(move -> move.piece.color != color && move.position.equals(currentPosition))
                 .collect(Collectors.toSet())
                 .isEmpty();
     }

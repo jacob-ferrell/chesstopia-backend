@@ -19,7 +19,7 @@ public class Queen extends ChessPiece {
 
     @Override
     public ChessPiece getClone(ChessBoard board) {
-        Queen clone = new Queen(color, new Position(xPosition, yPosition), board);
+        Queen clone = new Queen(color, new Position(position.x, position.y), board);
         clone.hasMoved = hasMoved;
         return clone;
     }

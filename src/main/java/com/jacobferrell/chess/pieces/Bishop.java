@@ -19,7 +19,7 @@ public class Bishop extends ChessPiece {
 
     @Override
     public ChessPiece getClone(ChessBoard board) {
-        Bishop clone = new Bishop(color, new Position(xPosition, yPosition), board);
+        Bishop clone = new Bishop(color, new Position(position.x, position.y), board);
         clone.hasMoved = hasMoved;
         return clone;
     }

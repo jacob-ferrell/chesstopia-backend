@@ -18,10 +18,8 @@ public class Turn {
     public ChessBoard simulateMove() {
         ChessBoard clonedBoard = board.getClone();
         ChessPiece pieceToMove = move.getPiece().getClone(clonedBoard);
-        Position to = move.getToPosition();
-        Position from = move.getFromPosition();
-        clonedBoard.setPieceAtPosition(to.getX(), to.getY(), pieceToMove);
-        clonedBoard.setPositionToNull(from.getX(), from.getY());
+        Position to = move.position;
+        clonedBoard.setPieceAtPosition(to.x, to.y, pieceToMove);
         return clonedBoard;
     }
 

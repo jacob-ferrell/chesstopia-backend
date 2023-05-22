@@ -24,7 +24,7 @@ public class Pawn extends ChessPiece {
 
     @Override
     public ChessPiece getClone(ChessBoard board) {
-        Pawn clone = new Pawn(color, new Position(xPosition, yPosition), board);
+        Pawn clone = new Pawn(color, new Position(position.x, position.y), board);
         clone.hasMoved = hasMoved;
         return clone;
     }
@@ -39,8 +39,8 @@ public class Pawn extends ChessPiece {
     }
 
     private Set<Position> getPawnDiagonalMoves(Set<Position> possibleMoves, int yMultiplier) {
-        int currentX = xPosition;
-        int currentY = yPosition;
+        int currentX = position.x;
+        int currentY = position.y;
         for (int x = currentX - 1; x < currentX + 2 && x < 8; x++) {
             int y = currentY + (1 * yMultiplier);
             if (Math.min(x, y) < 0 || y > 8 || x == currentX || !board.isSpaceOccupied(x, y)) {
@@ -57,8 +57,8 @@ public class Pawn extends ChessPiece {
     }
 
     private Set<Position> getPawnVerticalMoves(Set<Position> possibleMoves, int yMultiplier) {
-        int currentX = getXPosition();
-        int currentY = getYPosition();
+        int currentX = position.x;
+        int currentY = position.y;
         int maxSpaces = hasMoved ? 1 : 2;
         int yMovement = 1 * yMultiplier;
         int x = currentX;

@@ -20,7 +20,7 @@ public class Rook extends ChessPiece {
 
     @Override
     public ChessPiece getClone(ChessBoard clonedBoard) {
-        Rook clone = new Rook(this.color, new Position(this.xPosition, this.yPosition), clonedBoard);
+        Rook clone = new Rook(this.color, new Position(position.x, position.y), clonedBoard);
         clone.hasMoved = hasMoved;
         return clone;
     }
@@ -33,7 +33,7 @@ public class Rook extends ChessPiece {
         System.out.println("!!!!!!!!!!!! " + this + canCastle());
         if (canCastle()) {
             King king = board.getPlayerKing(color);
-            Position kingPosition = new Position(king.getXPosition(), king.getYPosition());
+            Position kingPosition = new Position(king.position.x, king.position.y);
             possibleMoves.add(kingPosition);
         }
         return possibleMoves;
@@ -48,7 +48,7 @@ public class Rook extends ChessPiece {
             return false;
         }
         Rook otherRook = (Rook) o;
-        return xPosition == otherRook.getXPosition() && yPosition == otherRook.getYPosition()
+        return position.x == otherRook.position.x && position.y == otherRook.position.y
                 && color == otherRook.getColor() && hasMoved == otherRook.hasMoved;
     }
 

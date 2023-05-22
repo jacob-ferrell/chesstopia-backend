@@ -24,7 +24,7 @@ public class Knight extends ChessPiece {
 
     @Override
     public ChessPiece getClone(ChessBoard board) {
-        Knight clone = new Knight(color, new Position(xPosition, yPosition), board);
+        Knight clone = new Knight(color, new Position(position.x, position.y), board);
         clone.hasMoved = hasMoved;
         return clone;
     }
@@ -45,9 +45,9 @@ public class Knight extends ChessPiece {
         Set<Position> possibleMoves = new HashSet<>();
         int x, y;
         for (int i = 0; i < 2; i++) {
-            x = getXPosition() + horizontal[i];
+            x = position.x + horizontal[i];
             for (int j = 0; j < 2; j++) {
-                y = getYPosition() + vertical[j];
+                y = position.y + vertical[j];
                 if (isValidMove(x, y)) {
                     possibleMoves.add(new Position(x, y));
                 }
