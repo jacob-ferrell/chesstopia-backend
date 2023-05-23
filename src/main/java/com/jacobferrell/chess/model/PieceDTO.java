@@ -13,7 +13,7 @@ import jakarta.persistence.*;
 @Entity
 @Builder
 @Table(name = "pieces")
-public class Piece {
+public class PieceDTO {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

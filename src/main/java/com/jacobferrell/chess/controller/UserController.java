@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.jacobferrell.chess.model.User;
+import com.jacobferrell.chess.model.UserDTO;
 import com.jacobferrell.chess.service.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,13 +24,13 @@ public class UserController {
 
     @GetMapping("/current-user")
     ResponseEntity<?> getCurrentUser(HttpServletRequest request) {
-        User user = userService.getCurrentUser(request);
+        UserDTO user = userService.getCurrentUser(request);
         return ResponseEntity.ok().body(user);
     }
 
     @PostMapping("/add-friend")
     ResponseEntity<?> addFriend(@RequestParam String email, HttpServletRequest request) {
-        User friend = userService.addFriend(email, request);
+        UserDTO friend = userService.addFriend(email, request);
         return ResponseEntity.ok().body(friend);
     }
 

@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 @Entity
 @Builder
 @Table(name = "games")
-public class Notification {
+public class NotificationDTO {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,15 +21,15 @@ public class Notification {
 
     @ManyToOne
     @JoinTable(name = "notification_game", joinColumns = @JoinColumn(name = "notification_id"), inverseJoinColumns = @JoinColumn(name = "game_id"))
-    private GameModel game;
+    private GameDTO game;
 
     @ManyToOne
     @JoinTable(name = "notification_from", joinColumns = @JoinColumn(name = "notification_id"), inverseJoinColumns = @JoinColumn(name = "from_id"))
-    private User from;
+    private UserDTO from;
 
     @ManyToOne
     @JoinTable(name = "notification_to", joinColumns = @JoinColumn(name = "notification_id"), inverseJoinColumns = @JoinColumn(name = "to_id"))
-    private User to;
+    private UserDTO to;
 
 
     

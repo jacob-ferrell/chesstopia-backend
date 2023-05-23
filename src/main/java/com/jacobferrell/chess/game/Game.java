@@ -1,6 +1,6 @@
 package com.jacobferrell.chess.game;
 import com.jacobferrell.chess.chessboard.*;
-import com.jacobferrell.chess.model.GameModel;
+import com.jacobferrell.chess.model.GameDTO;
 
 public class Game {
     private Player player1;

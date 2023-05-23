@@ -2,9 +2,9 @@ package com.jacobferrell.chess.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.jacobferrell.chess.model.MoveModel;
+import com.jacobferrell.chess.model.MoveDTO;
 
 
-public interface MoveRepository extends JpaRepository<MoveModel, Long> {
-    MoveModel findById(long id);
+public interface MoveRepository extends JpaRepository<MoveDTO, Long> {
+    MoveDTO findById(long id);
 }

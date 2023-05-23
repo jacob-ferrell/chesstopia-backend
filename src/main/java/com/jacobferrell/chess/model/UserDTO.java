@@ -20,7 +20,7 @@ import com.jacobferrell.chess.model.Role;
 @Entity
 @Builder
 @Table(name = "users")
-public class User implements UserDetails {
+public class UserDTO implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -42,7 +42,7 @@ public class User implements UserDetails {
         joinColumns = @JoinColumn(name = "user_id"),
         inverseJoinColumns = @JoinColumn(name = "friend_id")
     )
-    private Set<User> friends;
+    private Set<UserDTO> friends;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -74,7 +74,7 @@ public class User implements UserDetails {
         return true;
     }
 
-    public boolean equals(User otherUser) {
+    public boolean equals(UserDTO otherUser) {
         return otherUser.getEmail() == this.getEmail();
     }
 

@@ -1,7 +1,7 @@
 package com.jacobferrell.chess.controller;
 
-import com.jacobferrell.chess.model.GameModel;
-import com.jacobferrell.chess.model.MoveModel;
+import com.jacobferrell.chess.model.GameDTO;
+import com.jacobferrell.chess.model.MoveDTO;
 import com.jacobferrell.chess.chessboard.*;
 import com.jacobferrell.chess.service.MoveService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,12 +30,12 @@ public class MoveController {
 
     @CrossOrigin(origins = "http://localhost:5173")
     @PostMapping("/game/{gameId}/move")
-    ResponseEntity<GameModel> makeMove(@PathVariable Long gameId, @RequestParam int x0, @RequestParam int y0,
+    ResponseEntity<GameDTO> makeMove(@PathVariable Long gameId, @RequestParam int x0, @RequestParam int y0,
             @RequestParam int x1, @RequestParam int y1, HttpServletRequest request)
             throws URISyntaxException {
         Map<String, Object> moveData = moveService.makeMove(gameId, x0, y0, x1, y1, request);
-        GameModel gameData = (GameModel) moveData.get("gameData");
-        MoveModel move = (MoveModel) moveData.get("moveData");
+        GameDTO gameData = (GameDTO) moveData.get("gameData");
+        MoveDTO move = (MoveDTO) moveData.get("moveData");
         return ResponseEntity.created(new URI("/api/game/" + gameData.getId() + "/move/" + move.getId()))
                 .body(gameData); 
     }

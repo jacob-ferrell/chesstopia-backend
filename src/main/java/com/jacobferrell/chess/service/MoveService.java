@@ -17,10 +17,10 @@ import com.jacobferrell.chess.chessboard.ChessBoard;
 import com.jacobferrell.chess.chessboard.Position;
 import com.jacobferrell.chess.game.Game;
 import com.jacobferrell.chess.game.Player;
-import com.jacobferrell.chess.model.GameModel;
-import com.jacobferrell.chess.model.MoveModel;
-import com.jacobferrell.chess.model.Piece;
-import com.jacobferrell.chess.model.User;
+import com.jacobferrell.chess.model.GameDTO;
+import com.jacobferrell.chess.model.MoveDTO;
+import com.jacobferrell.chess.model.PieceDTO;
+import com.jacobferrell.chess.model.UserDTO;
 import com.jacobferrell.chess.pieces.ChessPiece;
 import com.jacobferrell.chess.pieces.King;
 import com.jacobferrell.chess.pieces.Move;
@@ -45,11 +45,11 @@ public class MoveService {
 
     public Set<Position> getPossibleMoves(long gameId, int x, int y) {
         // TODO: Add authentication to test if player is moving their own piece
-        Optional<GameModel> optionalGame = gameRepository.findById(gameId);
+        Optional<GameDTO> optionalGame = gameRepository.findById(gameId);
         if (!optionalGame.isPresent()) {
             throw new NotFoundException("Game not found with id: " + gameId);
         }
-        GameModel gameData = optionalGame.get();
+        GameDTO gameData = optionalGame.get();
         Game game = createGameFromData(gameData);
         ChessPiece piece = game.board.getPieceAtPosition(x, y);
         if (piece == null) {
@@ -59,16 +59,16 @@ public class MoveService {
     }
 
     public Map<String, Object> makeMove(long gameId, int x0, int y0, int x1, int y1, HttpServletRequest request) {
-        Optional<GameModel> optionalGame = gameRepository.findById(gameId);
+        Optional<GameDTO> optionalGame = gameRepository.findById(gameId);
         if (!optionalGame.isPresent()) {
             throw new NotFoundException("Game not found with id: " + gameId);
         }
-        User user = jwtService.getUserFromRequest(request);
+        UserDTO user = jwtService.getUserFromRequest(request);
         if (user == null) {
             throw new AccessDeniedException("Current user could not be verified");
         }
-        GameModel gameData = optionalGame.get();
-        Set<User> players = gameData.getPlayers();
+        GameDTO gameData = optionalGame.get();
+        Set<UserDTO> players = gameData.getPlayers();
         // Test if current user is a player of the game
         if (!players.contains(user)) {
             throw new AccessDeniedException("Current user is not a player of game with id: " + gameId);
@@ -101,7 +101,7 @@ public class MoveService {
 
         }
         // Create move object and simulate the move to see if it is legal
-        MoveModel move = MoveModel.builder().pieceType(selectedPiece.getName()).pieceColor(playerColor.toString())
+        MoveDTO move = MoveDTO.builder().pieceType(selectedPiece.getName()).pieceColor(playerColor.toString())
                 .fromX(x0).fromY(y0)
                 .toX(x1).toY(y1).build();
         Move chessMove = getMoveFromData(selectedPiece, move);
@@ -113,7 +113,7 @@ public class MoveService {
         selectedPiece.makeMove(x1, y1);
         System.out.println(game.board);
         gameData.setPieces(game.board.getPieceData());
-        Set<MoveModel> moves = gameData.getMoves();
+        Set<MoveDTO> moves = gameData.getMoves();
         if (moves == null) {
             moves = new HashSet<>();
             gameData.setMoves(moves);
@@ -130,21 +130,21 @@ public class MoveService {
         return moveData;
     }
 
-    private Game createGameFromData(GameModel data) {
+    private Game createGameFromData(GameDTO data) {
         Player player1 = getPlayerFromUser(data.getWhitePlayer(), PieceColor.WHITE);
         Player player2 = getPlayerFromUser(data.getBlackPlayer(), PieceColor.BLACK);
         Game game = new Game(player1, player2);
-        Set<Piece> pieces = data.getPieces();
+        Set<PieceDTO> pieces = data.getPieces();
         game.board.setBoardFromData(pieces);
         return game;
     }
 
-    private Player getPlayerFromUser(User user, PieceColor color) {
+    private Player getPlayerFromUser(UserDTO user, PieceColor color) {
         Player player = new Player(user.getName(), color);
         return player;
     }
 
-    private void switchTurns(GameModel gameData) {
+    private void switchTurns(GameDTO gameData) {
         if (gameData.getCurrentTurn().equals(gameData.getWhitePlayer())) {
             gameData.setCurrentTurn(gameData.getBlackPlayer());
             return;
@@ -152,7 +152,7 @@ public class MoveService {
         gameData.setCurrentTurn(gameData.getWhitePlayer());
     }
 
-    private void setPlayerInCheck(Game game, GameModel gameData, User player) {
+    private void setPlayerInCheck(Game game, GameDTO gameData, UserDTO player) {
         boolean isWhite = gameData.getWhitePlayer().equals(player);
         PieceColor enemyColor = isWhite ? PieceColor.BLACK : PieceColor.WHITE;
         King enemyKing = game.board.getPlayerKing(enemyColor);
@@ -169,7 +169,7 @@ public class MoveService {
 
     }
 
-    private Move getMoveFromData(ChessPiece piece, MoveModel move) {
+    private Move getMoveFromData(ChessPiece piece, MoveDTO move) {
         Move chessMove = new Move(piece, new Position(move.getToX(), move.getToY()));
         return chessMove;
     }

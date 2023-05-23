@@ -149,7 +149,6 @@ public abstract class ChessPiece {
         return moves.stream().filter(pos -> {
             Move move = new Move(this, pos);
             ChessBoard simulatedBoard = move.simulateMove(board);
-            System.out.println(simulatedBoard);
             return move.isLegal(simulatedBoard);
         }).collect(Collectors.toSet());
     }
@@ -175,8 +174,6 @@ public abstract class ChessPiece {
                 return true;
             }
         }
-
-        
         return false;
     }
 

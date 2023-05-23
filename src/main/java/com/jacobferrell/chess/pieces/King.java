@@ -61,8 +61,7 @@ public class King extends ChessPiece {
                 .collect(Collectors.toSet());
         for (Move move : possiblePlayerMoves) {
             ChessBoard simulatedBoard = move.simulateMove(board);
-            if (simulatedBoard.hasBothKings() && !simulatedBoard.getPlayerKing(color).isInCheck()) {
-                System.out.println(move);
+            if (move.isLegal(simulatedBoard)) {
                 return false;
             }
         }

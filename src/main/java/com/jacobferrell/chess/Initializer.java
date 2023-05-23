@@ -24,18 +24,18 @@ public class Initializer implements CommandLineRunner {
     }
 
     public void run(String... strings) {
-        GameModel game = GameModel.builder().winner(null)
+        GameDTO game = GameDTO.builder().winner(null)
             .build();
         gameRepository.save(game);
 
-        var player1 = User.builder()
+        var player1 = UserDTO.builder()
             .name("Jacob")
             .email("boomkablamo@gmail.com")
             .password(passwordEncoder.encode("asdf"))
             .role(Role.USER)
             .build();
         userRepository.save(player1);
-        var player2 = User.builder()
+        var player2 = UserDTO.builder()
             .name("Cindy")
             .email("cindy@gmail.com")
             .password(passwordEncoder.encode("asdf"))
@@ -43,7 +43,7 @@ public class Initializer implements CommandLineRunner {
             .build();
         userRepository.save(player2);
 
-        Set<User> players = new HashSet<>();
+        Set<UserDTO> players = new HashSet<>();
         players.add(player1);
         players.add(player2);
 

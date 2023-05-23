@@ -21,7 +21,7 @@ import java.util.*;
 @Entity
 @Builder
 @Table(name = "games")
-public class GameModel {
+public class GameDTO {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,32 +29,32 @@ public class GameModel {
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "game_players", joinColumns = @JoinColumn(name = "game_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private Set<User> players;
+    private Set<UserDTO> players;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private Set<MoveModel> moves;
+    private Set<MoveDTO> moves;
 
     @Builder.Default
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private Set<Piece> pieces = new ChessBoard().getPieceData();
+    private Set<PieceDTO> pieces = new ChessBoard().getPieceData();
 
     @ManyToOne
     @JoinTable(name = "game_white_player", joinColumns = @JoinColumn(name = "game_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private User whitePlayer;
+    private UserDTO whitePlayer;
 
     @ManyToOne
     @JoinTable(name = "game_black_player", joinColumns = @JoinColumn(name = "game_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private User blackPlayer;
+    private UserDTO blackPlayer;
 
     @ManyToOne
-    private User currentTurn;
+    private UserDTO currentTurn;
 
     @Builder.Default
     private String playerInCheck = null;
 
     @ManyToOne
     @JoinColumn(name = "winner_id")
-    private User winner;
+    private UserDTO winner;
 
     /* public void setWinner(User user) {
         winner = Optional.ofNullable(user);

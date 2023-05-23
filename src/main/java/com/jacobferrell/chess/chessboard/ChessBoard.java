@@ -4,7 +4,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.HashSet;
 import com.jacobferrell.chess.pieces.*;
-import com.jacobferrell.chess.model.Piece;
+import com.jacobferrell.chess.model.PieceDTO;
 
 public class ChessBoard {
     public Set<ChessPiece> board;
@@ -168,9 +168,9 @@ public class ChessBoard {
         return castleRooks;
     }
 
-    public void setBoardFromData(Set<Piece> pieces) {
+    public void setBoardFromData(Set<PieceDTO> pieces) {
         clearBoard();
-        for (Piece piece : pieces) {
+        for (PieceDTO piece : pieces) {
             PieceColor color = piece.getColor() == "WHITE" ? PieceColor.WHITE : PieceColor.BLACK;
             int x = piece.getX();
             int y = piece.getY();
@@ -205,8 +205,8 @@ public class ChessBoard {
         }
     }
 
-    public Set<Piece> getPieceData() {
-        Set<Piece> pieces = new HashSet<>();
+    public Set<PieceDTO> getPieceData() {
+        Set<PieceDTO> pieces = new HashSet<>();
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 if (!isSpaceOccupied(i, j)) {
@@ -215,7 +215,7 @@ public class ChessBoard {
                 ChessPiece piece = getPieceAtPosition(i, j);
                 String color = piece.getColor() == PieceColor.WHITE ? "WHITE" : "BLACK";
                 boolean hasMoved = piece.getHasMoved();
-                pieces.add(Piece.builder().type(piece.getName()).color(color).x(i).y(j).hasMoved(hasMoved).build());
+                pieces.add(PieceDTO.builder().type(piece.getName()).color(color).x(i).y(j).hasMoved(hasMoved).build());
             }
         }
         return pieces;

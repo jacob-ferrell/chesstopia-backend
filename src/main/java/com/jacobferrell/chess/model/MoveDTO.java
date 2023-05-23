@@ -15,7 +15,7 @@ import jakarta.persistence.*;
 @Entity
 @Builder
 @Table(name = "moves")
-public class MoveModel {
+public class MoveDTO {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

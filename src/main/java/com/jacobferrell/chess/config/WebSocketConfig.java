@@ -54,7 +54,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         public void onApplicationEvent(SessionConnectEvent event) {
             StompHeaderAccessor accessor = StompHeaderAccessor.wrap(event.getMessage());
             Long gameId = extractGameIdFromDestination(accessor.getDestination());
-            System.out.println("!!!!!!!!!!\n" + gameId);
             if (gameId != null) {
                 messagingTemplate.convertAndSend("/topic/game/" + gameId, gameRepository.findById(gameId));
             }

@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import com.jacobferrell.chess.model.User;
+import com.jacobferrell.chess.model.UserDTO;
 import com.jacobferrell.chess.repository.UserRepository;
 
 import io.jsonwebtoken.Claims;
@@ -42,12 +42,12 @@ public class JwtService {
         return null;
     }
 
-    public User getUserFromRequest(HttpServletRequest request) {
-        Optional<User> optionalUser = userRepository.findByEmail(getEmailFromToken(request));
+    public UserDTO getUserFromRequest(HttpServletRequest request) {
+        Optional<UserDTO> optionalUser = userRepository.findByEmail(getEmailFromToken(request));
         if (!optionalUser.isPresent()) {
             return null;
         }
-        User user = optionalUser.get();
+        UserDTO user = optionalUser.get();
         return user;
     }
 

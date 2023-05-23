@@ -30,7 +30,6 @@ public class Rook extends ChessPiece {
         Set<Position> possibleMoves = new HashSet<>();
         possibleMoves.addAll(getHorizontalMoves());
         possibleMoves.addAll(getVerticalMoves());
-        System.out.println("!!!!!!!!!!!! " + this + canCastle());
         if (canCastle()) {
             King king = board.getPlayerKing(color);
             Position kingPosition = new Position(king.position.x, king.position.y);

@@ -10,7 +10,7 @@ import com.jacobferrell.chess.auth.AuthenticationRequest;
 import com.jacobferrell.chess.auth.AuthenticationResponse;
 import com.jacobferrell.chess.auth.RegisterRequest;
 import com.jacobferrell.chess.model.Role;
-import com.jacobferrell.chess.model.User;
+import com.jacobferrell.chess.model.UserDTO;
 import com.jacobferrell.chess.repository.UserRepository;
 
 @Service
@@ -29,7 +29,7 @@ public class AuthenticationService {
     private AuthenticationManager authenticationManager;
     
     public AuthenticationResponse register(RegisterRequest request) {
-        var user = User.builder()
+        var user = UserDTO.builder()
             .name(request.getName())
             .email(request.getEmail())
             .password(passwordEncoder.encode(request.getPassword()))

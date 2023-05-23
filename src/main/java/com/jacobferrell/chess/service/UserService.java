@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.webjars.NotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.jacobferrell.chess.model.User;
+import com.jacobferrell.chess.model.UserDTO;
 import com.jacobferrell.chess.repository.UserRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,23 +21,23 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    public User getCurrentUser(HttpServletRequest request) {
-        User user = jwtService.getUserFromRequest(request);
+    public UserDTO getCurrentUser(HttpServletRequest request) {
+        UserDTO user = jwtService.getUserFromRequest(request);
         if (user == null) {
             throw new NotFoundException("Current user could not be authenticated");
         }
         return user;
     }
 
-    public User addFriend(String email, HttpServletRequest request) {
+    public UserDTO addFriend(String email, HttpServletRequest request) {
         //TODO: Make adding friends go both ways, currently it only adds the friend being requested to the list of the user making the request due to concurrency errors
-        User user = getCurrentUser(request);
-        Optional<User> friend = userRepository.findByEmail(email);
+        UserDTO user = getCurrentUser(request);
+        Optional<UserDTO> friend = userRepository.findByEmail(email);
         if (!friend.isPresent()) {
             throw new NotFoundException("User with email: " + email + " not found");
         }
-        User foundFriend = friend.get();
-        Set<User> userFriends = user.getFriends();
+        UserDTO foundFriend = friend.get();
+        Set<UserDTO> userFriends = user.getFriends();
         userFriends.add(foundFriend);
         user.setFriends(userFriends);
         userRepository.save(user);
