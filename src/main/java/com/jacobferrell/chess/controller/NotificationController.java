@@ -1,42 +1,38 @@
 package com.jacobferrell.chess.controller;
 
-import java.util.Optional;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import com.jacobferrell.chess.model.GameDTO;
 import com.jacobferrell.chess.model.NotificationDTO;
-import com.jacobferrell.chess.repository.GameRepository;
-import com.jacobferrell.chess.repository.NotificationRepository;
+import com.jacobferrell.chess.service.NotificationService;
 
-@Controller
+import jakarta.servlet.http.HttpServletRequest;
+
+@RestController
+@RequestMapping("/api")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class NotificationController {
 
-    @Autowired 
-    private SimpMessagingTemplate messagingTemplate;
+    @Autowired
+    private NotificationService notificationService;
 
-    @Autowired 
-    private NotificationRepository notificationRepository;
-
-    @Autowired 
-    private GameRepository gameRepository;
-
-    @MessageMapping("/notify")
-    public void processNotification(@Payload NotificationDTO notification) {
-        Optional<GameDTO> game = gameRepository.findById(notification.getGame().getId());
-        if (!game.isPresent()) {
-            return;
-        }
-        Long gameId =  game.get().getId();
-
-        notificationRepository.save(notification);
-
-        //messagingTemplate.convertAndSendToUser("/queue/moves", notification);
+    @GetMapping("/notifications/user/{id}")
+    public ResponseEntity<List<NotificationDTO>> getUserNotifications(@PathVariable Long id, HttpServletRequest request) {
+        return ResponseEntity.ok().body(notificationService.getUserNotifications(id, request));
     }
 
-    
+    @PutMapping("/notifications/{id}")
+    public ResponseEntity<NotificationDTO> updateNotification(@PathVariable Long id, HttpServletRequest request) {
+        return ResponseEntity.ok().body(notificationService.updateNotification(id, request));
+    }
+
+
 }

@@ -20,21 +20,21 @@ public class GameController {
     private GameService gameService;
 
     @GetMapping("/games/user/{id}")
-    public Object getUserGames(@PathVariable Long id, HttpServletRequest request) {
+    public ResponseEntity<List<GameDTO>> getUserGames(@PathVariable Long id, HttpServletRequest request) {
         List<GameDTO> userGames = gameService.getUserGames(id, request);
         return ResponseEntity.ok().body(userGames);
     }
 
     @CrossOrigin(origins = "http://localhost:5173")
     @GetMapping("/game/{id}")
-    ResponseEntity<?> getGame(@PathVariable Long id, HttpServletRequest request) {
+    ResponseEntity<GameDTO> getGame(@PathVariable Long id, HttpServletRequest request) {
         GameDTO game = gameService.getGame(id, request);
         return ResponseEntity.ok().body(game);
     }
 
     @CrossOrigin(origins = "http://localhost:5173")
     @PostMapping("/games")
-    ResponseEntity<?> createGame(@RequestParam Long p1, @RequestParam Long p2, HttpServletRequest request) throws URISyntaxException {
+    ResponseEntity<GameDTO> createGame(@RequestParam Long p1, @RequestParam Long p2, HttpServletRequest request) throws URISyntaxException {
         GameDTO newGame = gameService.createGame(p1, p2, request);
         return ResponseEntity.created(new URI("/api/game/" + newGame.getId()))
                 .body(newGame);

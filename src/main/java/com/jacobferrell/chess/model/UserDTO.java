@@ -11,6 +11,7 @@ import java.util.Collection;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.GrantedAuthority;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.jacobferrell.chess.model.Role;
 
 
@@ -30,9 +31,11 @@ public class UserDTO implements UserDetails {
     @Column(nullable = false, length = 50, unique = true)
     private String email;
       
+    @JsonIgnore
     @Column(nullable = false, length = 64)
     private String password;
 
+    @JsonIgnore
     @Enumerated(EnumType.STRING)
     private Role role;
 
@@ -42,9 +45,11 @@ public class UserDTO implements UserDetails {
         joinColumns = @JoinColumn(name = "user_id"),
         inverseJoinColumns = @JoinColumn(name = "friend_id")
     )
+    @JsonIgnore
     private Set<UserDTO> friends;
 
     @Override
+    @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;
     }
@@ -55,21 +60,25 @@ public class UserDTO implements UserDetails {
     }
  
     @Override
+    @JsonIgnore
     public boolean isAccountNonExpired() {
         return true;
     }
  
     @Override
+    @JsonIgnore
     public boolean isAccountNonLocked() {
         return true;
     }
  
     @Override
+    @JsonIgnore
     public boolean isCredentialsNonExpired() {
         return true;
     }
  
     @Override
+    @JsonIgnore
     public boolean isEnabled() {
         return true;
     }

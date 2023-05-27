@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Builder
-@Table(name = "games")
+@Table(name = "notifications")
 public class NotificationDTO {
 
     @Id
@@ -23,14 +23,15 @@ public class NotificationDTO {
     @JoinTable(name = "notification_game", joinColumns = @JoinColumn(name = "notification_id"), inverseJoinColumns = @JoinColumn(name = "game_id"))
     private GameDTO game;
 
-    @ManyToOne
+   /*  @ManyToOne
     @JoinTable(name = "notification_from", joinColumns = @JoinColumn(name = "notification_id"), inverseJoinColumns = @JoinColumn(name = "from_id"))
-    private UserDTO from;
+    private UserDTO from; */
 
     @ManyToOne
     @JoinTable(name = "notification_to", joinColumns = @JoinColumn(name = "notification_id"), inverseJoinColumns = @JoinColumn(name = "to_id"))
     private UserDTO to;
 
-
+    @Builder.Default
+    private boolean read = false;
     
 }

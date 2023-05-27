@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.webjars.NotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.jacobferrell.chess.model.GameDTO;
 import com.jacobferrell.chess.model.UserDTO;
 import com.jacobferrell.chess.repository.UserRepository;
 
@@ -28,6 +29,11 @@ public class UserService {
         }
         return user;
     }
+
+    public UserDTO getOtherPlayer(UserDTO currentUser, GameDTO game) {
+        Set<UserDTO> players = game.getPlayers();
+        return players.stream().filter(p -> p.getId() != currentUser.getId()).findFirst().orElse(null);
+    } 
 
     public UserDTO addFriend(String email, HttpServletRequest request) {
         //TODO: Make adding friends go both ways, currently it only adds the friend being requested to the list of the user making the request due to concurrency errors

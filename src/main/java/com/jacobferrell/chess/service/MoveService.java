@@ -19,6 +19,7 @@ import com.jacobferrell.chess.game.Game;
 import com.jacobferrell.chess.game.Player;
 import com.jacobferrell.chess.model.GameDTO;
 import com.jacobferrell.chess.model.MoveDTO;
+import com.jacobferrell.chess.model.NotificationDTO;
 import com.jacobferrell.chess.model.PieceDTO;
 import com.jacobferrell.chess.model.UserDTO;
 import com.jacobferrell.chess.pieces.ChessPiece;
@@ -43,6 +44,9 @@ public class MoveService {
     @Autowired
     private JwtService jwtService;
 
+    @Autowired
+    private NotificationService notificationService;
+
     public Set<Position> getPossibleMoves(long gameId, int x, int y) {
         // TODO: Add authentication to test if player is moving their own piece
         Optional<GameDTO> optionalGame = gameRepository.findById(gameId);
@@ -50,7 +54,7 @@ public class MoveService {
             throw new NotFoundException("Game not found with id: " + gameId);
         }
         GameDTO gameData = optionalGame.get();
-        Game game = createGameFromData(gameData);
+        Game game = createGameFromDTO(gameData);
         ChessPiece piece = game.board.getPieceAtPosition(x, y);
         if (piece == null) {
             throw new NotFoundException("Piece not found at position: " + x + "," + y);
@@ -85,7 +89,7 @@ public class MoveService {
 
         PieceColor playerColor = gameData.getWhitePlayer().equals(user) ? PieceColor.WHITE : PieceColor.BLACK;
         // Convert game object from frontend into backend game object
-        Game game = createGameFromData(gameData);
+        Game game = createGameFromDTO(gameData);
         // Test that a piece has been selected and belongs to the current user
         ChessPiece selectedPiece = game.board.getPieceAtPosition(x0, y0);
         if (selectedPiece == null) {
@@ -122,7 +126,11 @@ public class MoveService {
         switchTurns(gameData);
         setPlayerInCheck(game, gameData, user);
         gameRepository.save(gameData);
-        messagingTemplate.convertAndSend("/topic/game/" + gameId, toJSON("moved"));
+        //Send message to websocket URI specific to the game to notify other player of an update. 
+        //Include notification ID in message so that if other player is connected, the notifcation can automatically 
+        //be marked as read
+        NotificationDTO notification = notificationService.createNotification(user, gameData);
+        messagingTemplate.convertAndSend("/topic/game/" + gameId, toJSON(getMessageBody(gameData, notification)));
         gameRepository.findAll().forEach(System.out::println);
         Map<String, Object> moveData = new HashMap<>();
         moveData.put("gameData", gameData);
@@ -130,7 +138,7 @@ public class MoveService {
         return moveData;
     }
 
-    private Game createGameFromData(GameDTO data) {
+    private Game createGameFromDTO(GameDTO data) {
         Player player1 = getPlayerFromUser(data.getWhitePlayer(), PieceColor.WHITE);
         Player player2 = getPlayerFromUser(data.getBlackPlayer(), PieceColor.BLACK);
         Game game = new Game(player1, player2);
@@ -184,5 +192,12 @@ public class MoveService {
             System.out.println(e);
             return null;
         }
+    }
+
+    private Map<String, Object> getMessageBody(GameDTO game, NotificationDTO notification) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("game", game);
+        body.put("notification", notification);
+        return body;
     }
 }

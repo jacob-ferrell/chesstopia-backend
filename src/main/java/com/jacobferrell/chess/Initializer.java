@@ -3,7 +3,8 @@ package com.jacobferrell.chess;
 import com.jacobferrell.chess.model.*;
 import com.jacobferrell.chess.repository.GameRepository;
 import com.jacobferrell.chess.repository.UserRepository;
-import com.jacobferrell.chess.chessboard.*;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -12,16 +13,15 @@ import java.util.*;
 
 @Component
 public class Initializer implements CommandLineRunner {
-    private final GameRepository gameRepository;
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private GameRepository gameRepository;
 
-    public Initializer(GameRepository gameRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.gameRepository = gameRepository;
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public void run(String... strings) {
         GameDTO game = GameDTO.builder().winner(null)
