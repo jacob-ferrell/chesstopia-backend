@@ -2,6 +2,7 @@ package com.jacobferrell.chess.controller;
 
 import java.util.List;
 
+import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -32,6 +33,12 @@ public class NotificationController {
     @PutMapping("/notifications/{id}")
     public ResponseEntity<NotificationDTO> updateNotification(@PathVariable Long id, HttpServletRequest request) {
         return ResponseEntity.ok().body(notificationService.updateNotification(id, request));
+    }
+
+    @PutMapping("/game/{id}/notifications")
+    public ResponseEntity<?> clearNotificationsByGame(@PathVariable Long id, HttpServletRequest request) {
+        
+        return ResponseEntity.ok().body(notificationService.markAsReadForGame(id, request));
     }
 
 

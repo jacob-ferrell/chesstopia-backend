@@ -11,6 +11,7 @@ import org.webjars.NotFoundException;
 import com.jacobferrell.chess.model.GameDTO;
 import com.jacobferrell.chess.model.NotificationDTO;
 import com.jacobferrell.chess.model.UserDTO;
+import com.jacobferrell.chess.repository.GameRepository;
 import com.jacobferrell.chess.repository.NotificationRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,6 +21,9 @@ public class NotificationService {
 
     @Autowired 
     private NotificationRepository notificationRepository;
+
+    @Autowired
+    private GameRepository gameRepository;
 
     @Autowired
     private JwtService jwtService;
@@ -58,5 +62,20 @@ public class NotificationService {
         foundNotification.setRead(true);
         notificationRepository.save(foundNotification);
         return foundNotification;
+    }
+
+    public List<NotificationDTO> markAsReadForGame(long gameId, HttpServletRequest request) {
+        Optional<GameDTO> game = gameRepository.findById(gameId);
+        if (!game.isPresent()) {
+            throw new NotFoundException("Game with id: " + gameId + " could not be found");
+        }
+        GameDTO foundGame = game.get();
+        UserDTO user = jwtService.getUserFromRequest(request);
+        List<NotificationDTO> unreadNotifications = notificationRepository.findUnreadByGame(foundGame, user);
+        for (NotificationDTO n : unreadNotifications) {
+            n.setRead(true);
+            notificationRepository.save(n);
+        }
+        return unreadNotifications;
     }
 }
