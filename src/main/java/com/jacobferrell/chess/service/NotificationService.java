@@ -33,9 +33,6 @@ public class NotificationService {
 
     public List<NotificationDTO> getUserNotifications(long id, HttpServletRequest request) {
         UserDTO user = jwtService.getUserFromRequest(request);
-        if (user == null) {
-            throw new NotFoundException("User could not be authenticated");
-        }
         if (user.getId() != id) {
             throw new AccessDeniedException("Access Denied");
         }

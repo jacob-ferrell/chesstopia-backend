@@ -31,8 +31,9 @@ public class GameDTO {
     @JoinTable(name = "game_players", joinColumns = @JoinColumn(name = "game_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<UserDTO> players;
 
+    @Builder.Default
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private Set<MoveDTO> moves;
+    private Set<MoveDTO> moves = new HashSet<>();
 
     @Builder.Default
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)

@@ -23,8 +23,8 @@ public class MoveController {
 
     @CrossOrigin(origins = "http://localhost:5173")
     @GetMapping("/game/{gameId}/possible-moves")
-    ResponseEntity<?> getPossibleMoves(@PathVariable Long gameId, @RequestParam int x, @RequestParam int y) {
-        Set<Position> possibleMoves = moveService.getPossibleMoves(gameId, x, y);
+    ResponseEntity<?> getPossibleMoves(@PathVariable Long gameId, @RequestParam int x, @RequestParam int y, HttpServletRequest request) {
+        Set<Position> possibleMoves = moveService.getPossibleMoves(gameId, x, y, request);
         return ResponseEntity.ok().body(possibleMoves);
     }
 

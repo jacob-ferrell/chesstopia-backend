@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.webjars.NotFoundException;
 
 import com.jacobferrell.chess.model.UserDTO;
 import com.jacobferrell.chess.repository.UserRepository;
@@ -45,12 +46,12 @@ public class JwtService {
     }
 
     public UserDTO getUserFromRequest(HttpServletRequest request) {
-        Optional<UserDTO> optionalUser = userRepository.findByEmail(getEmailFromToken(request));
+        String email = getEmailFromToken(request);
+        Optional<UserDTO> optionalUser = userRepository.findByEmail(email);
         if (!optionalUser.isPresent()) {
-            return null;
+            throw new NotFoundException("User with email: " + email + "could not be found");
         }
-        UserDTO user = optionalUser.get();
-        return user;
+        return optionalUser.get();
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
