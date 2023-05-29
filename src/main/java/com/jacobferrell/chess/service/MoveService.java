@@ -47,6 +47,9 @@ public class MoveService {
     @Autowired
     private NotificationService notificationService;
 
+    @Autowired
+    private JsonService jsonService;
+
     public Set<Position> getPossibleMoves(long gameId, int x, int y, HttpServletRequest request) {
         UserDTO user = jwtService.getUserFromRequest(request);
         GameDTO gameData = getGameById(gameId);
@@ -81,7 +84,7 @@ public class MoveService {
         //so that if other player is connected, the notifcation can automatically 
         //be marked as read
         NotificationDTO notification = notificationService.createNotification(user, gameData);
-        messagingTemplate.convertAndSend("/topic/game/" + gameId, toJSON(getMessageBody(gameData, notification)));
+        messagingTemplate.convertAndSend("/topic/game/" + gameId, jsonService.toJSON(getMessageBody(gameData, notification)));
         Map<String, Object> moveData = new HashMap<>();
         moveData.put("gameData", gameData);
         moveData.put("moveData", move);
@@ -124,17 +127,6 @@ public class MoveService {
             return;
         }
         gameData.setWinner(player);
-    }
-
-    private String toJSON(Object object) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            String json = objectMapper.writeValueAsString(object);
-            return json;
-        } catch (JsonProcessingException e) {
-            System.out.println(e);
-            return null;
-        }
     }
 
     private Map<String, Object> getMessageBody(GameDTO game, NotificationDTO notification) {

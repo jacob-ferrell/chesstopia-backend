@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
@@ -22,14 +23,17 @@ public class NotificationService {
     @Autowired 
     private NotificationRepository notificationRepository;
 
-    @Autowired
-    private GameRepository gameRepository;
+    @Autowired 
+    private SimpMessagingTemplate messagingTemplate;
 
     @Autowired
     private JwtService jwtService;
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private JsonService jsonService;
 
     public List<NotificationDTO> getUserNotifications(long id, HttpServletRequest request) {
         UserDTO user = jwtService.getUserFromRequest(request);
@@ -43,6 +47,7 @@ public class NotificationService {
         UserDTO recipient = userService.getOtherPlayer(sender, game);
         NotificationDTO notification = NotificationDTO.builder().game(game).to(recipient).build();
         notificationRepository.save(notification);
+        messagingTemplate.convertAndSend("/topic/user/" + recipient.getId(), jsonService.toJSON(notification));
         return notification;
     }
 
@@ -61,15 +66,10 @@ public class NotificationService {
         return foundNotification;
     }
 
-    public List<NotificationDTO> markAsReadForGame(long gameId, HttpServletRequest request) {
-        Optional<GameDTO> game = gameRepository.findById(gameId);
-        if (!game.isPresent()) {
-            throw new NotFoundException("Game with id: " + gameId + " could not be found");
-        }
-        GameDTO foundGame = game.get();
-        UserDTO user = jwtService.getUserFromRequest(request);
-        List<NotificationDTO> unreadNotifications = notificationRepository.findUnreadByGame(foundGame, user);
+    public List<NotificationDTO> markAsReadForGame(GameDTO game, UserDTO user) {
+        List<NotificationDTO> unreadNotifications = notificationRepository.findUnreadByGame(game, user);
         for (NotificationDTO n : unreadNotifications) {
+            System.out.println(n);
             n.setRead(true);
             notificationRepository.save(n);
         }

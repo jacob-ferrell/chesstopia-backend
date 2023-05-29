@@ -29,11 +29,11 @@ public class GameService {
     @Autowired
     private JwtService jwtService;
 
+    @Autowired
+    private NotificationService notificationService;
+
     public List<GameDTO> getUserGames(long id, HttpServletRequest request) {
         UserDTO user = jwtService.getUserFromRequest(request);
-        if (user == null) {
-            throw new NotFoundException("User could not be authenticated");
-        }
         if (user.getId() != id) {
             throw new AccessDeniedException("Access Denied");
         }
@@ -43,9 +43,6 @@ public class GameService {
 
     public GameDTO getGame(long id, HttpServletRequest request) {
         UserDTO user = jwtService.getUserFromRequest(request);
-        if (user == null) {
-            throw new NotFoundException("User could not be authenticated");
-        }
         Optional<GameDTO> game = gameRepository.findById(id);
         if (!game.isPresent()) {
             throw new NotFoundException("Game with id: " + id + " could not be found");
@@ -55,12 +52,13 @@ public class GameService {
         if (!players.contains(user)) {
             throw new AccessDeniedException("Access Denied");
         }
+        notificationService.markAsReadForGame(foundGame, user);
         return foundGame;
     }
 
     public GameDTO createGame(long p1, long p2, HttpServletRequest request) {
         UserDTO user = jwtService.getUserFromRequest(request);
-        if (user == null || user.getId() != p1) {
+        if (user.getId() != p1) {
             throw new AccessDeniedException("Access Denied");
         }
         Optional<UserDTO> optionalPlayer1 = userRepository.findById(p1);

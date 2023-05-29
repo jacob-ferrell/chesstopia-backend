@@ -35,10 +35,5 @@ public class NotificationController {
         return ResponseEntity.ok().body(notificationService.updateNotification(id, request));
     }
 
-    @PutMapping("/game/{id}/notifications")
-    public ResponseEntity<?> clearNotificationsByGame(@PathVariable Long id, HttpServletRequest request) {
-        return ResponseEntity.ok().body(notificationService.markAsReadForGame(id, request));
-    }
-
 
 }
