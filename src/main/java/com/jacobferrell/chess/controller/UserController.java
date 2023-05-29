@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.jacobferrell.chess.model.UserDTO;
 import com.jacobferrell.chess.service.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,8 +33,8 @@ public class UserController {
     }
 
     @GetMapping("/user/{id}/friends")
-    ResponseEntity<?> getFriends(@PathVariable Long userId, HttpServletRequest request) {
-        return ResponseEntity.ok().body(userService.getFriends(userId, request));
+    ResponseEntity<?> getFriends(@PathVariable Long id, HttpServletRequest request) {
+        return ResponseEntity.ok().body(userService.getFriends(id, request));
     }
 
 }
