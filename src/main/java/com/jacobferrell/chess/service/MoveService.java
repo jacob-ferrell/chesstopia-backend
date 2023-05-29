@@ -11,8 +11,6 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jacobferrell.chess.chessboard.ChessBoard;
 import com.jacobferrell.chess.chessboard.Position;
 import com.jacobferrell.chess.game.Game;
