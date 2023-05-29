@@ -4,6 +4,8 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
+import org.springframework.security.access.AccessDeniedException;
 import org.webjars.NotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -54,6 +56,14 @@ public class UserService {
         userRepository.save(friend); */
 
 
+    }
+
+    public Set<UserDTO> getFriends(long userId, HttpServletRequest request) {
+        UserDTO user = getCurrentUser(request);
+        if (userId != user.getId()) {
+            throw new AccessDeniedException("Access Denied");
+        }
+        return user.getFriends();
     }
 
 }

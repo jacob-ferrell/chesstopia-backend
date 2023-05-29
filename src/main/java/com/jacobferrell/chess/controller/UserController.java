@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -24,14 +25,17 @@ public class UserController {
 
     @GetMapping("/current-user")
     ResponseEntity<?> getCurrentUser(HttpServletRequest request) {
-        UserDTO user = userService.getCurrentUser(request);
-        return ResponseEntity.ok().body(user);
+        return ResponseEntity.ok().body(userService.getCurrentUser(request));
     }
 
     @PostMapping("/add-friend")
     ResponseEntity<?> addFriend(@RequestParam String email, HttpServletRequest request) {
-        UserDTO friend = userService.addFriend(email, request);
-        return ResponseEntity.ok().body(friend);
+        return ResponseEntity.ok().body(userService.addFriend(email, request));
+    }
+
+    @GetMapping("/user/{id}/friends")
+    ResponseEntity<?> getFriends(@PathVariable Long userId, HttpServletRequest request) {
+        return ResponseEntity.ok().body(userService.getFriends(userId, request));
     }
 
 }
