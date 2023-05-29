@@ -12,7 +12,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.GrantedAuthority;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.jacobferrell.chess.model.Role;
 
 
 @Data
@@ -39,13 +38,13 @@ public class UserDTO implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @JsonIgnore
     @ManyToMany
     @JoinTable(
         name = "friends",
         joinColumns = @JoinColumn(name = "user_id"),
         inverseJoinColumns = @JoinColumn(name = "friend_id")
     )
-    @JsonIgnore
     private Set<UserDTO> friends;
 
     @Override

@@ -1,16 +1,19 @@
 package com.jacobferrell.chess.service;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
 import org.springframework.security.access.AccessDeniedException;
 import org.webjars.NotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.jacobferrell.chess.model.Friendship;
 import com.jacobferrell.chess.model.GameDTO;
 import com.jacobferrell.chess.model.UserDTO;
+import com.jacobferrell.chess.repository.FriendshipRepository;
 import com.jacobferrell.chess.repository.UserRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,6 +26,9 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private FriendshipRepository friendshipRepository;
 
     public UserDTO getCurrentUser(HttpServletRequest request) {
         UserDTO user = jwtService.getUserFromRequest(request);
@@ -37,33 +43,31 @@ public class UserService {
         return players.stream().filter(p -> p.getId() != currentUser.getId()).findFirst().orElse(null);
     } 
 
-    public UserDTO addFriend(String email, HttpServletRequest request) {
-        //TODO: Make adding friends go both ways, currently it only adds the friend being requested to the list of the user making the request due to concurrency errors
+    public Friendship addFriend(String email, HttpServletRequest request) {
         UserDTO user = getCurrentUser(request);
         Optional<UserDTO> friend = userRepository.findByEmail(email);
         if (!friend.isPresent()) {
             throw new NotFoundException("User with email: " + email + " not found");
         }
         UserDTO foundFriend = friend.get();
-        Set<UserDTO> userFriends = user.getFriends();
-        userFriends.add(foundFriend);
-        user.setFriends(userFriends);
-        userRepository.save(user);
-        return foundFriend;
-        /* Set<User> friendFriends = friend.getFriends();
-        friendFriends.add(user);
-        friend.setFriends(friendFriends);
-        userRepository.save(friend); */
-
-
+        Optional<Friendship> existingFriendship = friendshipRepository.findByUsers(user, foundFriend);
+        if (existingFriendship.isPresent()) {
+            return existingFriendship.get();
+        }
+        Set<UserDTO> users = new HashSet<>();
+        users.add(user);
+        users.add(foundFriend);
+        Friendship friendship = Friendship.builder().users(users).build();
+        friendshipRepository.save(friendship);
+        return friendship;
     }
 
-    public Set<UserDTO> getFriends(long userId, HttpServletRequest request) {
+    public List<Friendship> getFriends(long userId, HttpServletRequest request) {
         UserDTO user = getCurrentUser(request);
         if (userId != user.getId()) {
             throw new AccessDeniedException("Access Denied");
         }
-        return user.getFriends();
+        return friendshipRepository.findByUser(user);
     }
 
 }
