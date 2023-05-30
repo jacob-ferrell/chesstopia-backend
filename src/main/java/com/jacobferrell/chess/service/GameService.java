@@ -32,11 +32,8 @@ public class GameService {
     @Autowired
     private NotificationService notificationService;
 
-    public List<GameDTO> getUserGames(long id, HttpServletRequest request) {
+    public List<GameDTO> getUserGames(HttpServletRequest request) {
         UserDTO user = jwtService.getUserFromRequest(request);
-        if (user.getId() != id) {
-            throw new AccessDeniedException("Access Denied");
-        }
         return gameRepository.findByPlayer(user);
 
     }
@@ -56,19 +53,14 @@ public class GameService {
         return foundGame;
     }
 
-    public GameDTO createGame(long p1, long p2, HttpServletRequest request) {
-        UserDTO user = jwtService.getUserFromRequest(request);
-        if (user.getId() != p1) {
-            throw new AccessDeniedException("Access Denied");
-        }
-        Optional<UserDTO> optionalPlayer1 = userRepository.findById(p1);
+    public GameDTO createGame(long p2, HttpServletRequest request) {
+        UserDTO player1 = jwtService.getUserFromRequest(request);
         Optional<UserDTO> optionalPlayer2 = userRepository.findById(p2);
-        if (!optionalPlayer1.isPresent() || !optionalPlayer2.isPresent()) {
-            throw new NotFoundException("One or both of the provided user ids do not exist");
+        if (optionalPlayer2.isPresent()) {
+            throw new NotFoundException("The provided user id do not exist");
         }
         //Randomly assign players to white/black
         Set<UserDTO> players = new HashSet<>();
-        UserDTO player1 = optionalPlayer1.get();
         UserDTO player2 = optionalPlayer2.get();
         players.add(player1);
         players.add(player2);

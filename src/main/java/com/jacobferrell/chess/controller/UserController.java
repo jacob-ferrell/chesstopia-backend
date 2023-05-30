@@ -32,9 +32,9 @@ public class UserController {
         return ResponseEntity.ok().body(userService.addFriend(email, request));
     }
 
-    @GetMapping("/user/{id}/friends")
-    ResponseEntity<?> getFriends(@PathVariable Long id, HttpServletRequest request) {
-        return ResponseEntity.ok().body(userService.getFriends(id, request));
+    @GetMapping("/friends")
+    ResponseEntity<?> getFriends(HttpServletRequest request) {
+        return ResponseEntity.ok().body(userService.getFriends(request));
     }
 
 }

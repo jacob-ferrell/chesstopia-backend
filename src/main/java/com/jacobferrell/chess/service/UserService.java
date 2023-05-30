@@ -62,11 +62,8 @@ public class UserService {
         return friendship;
     }
 
-    public List<Friendship> getFriends(long userId, HttpServletRequest request) {
+    public List<Friendship> getFriends(HttpServletRequest request) {
         UserDTO user = getCurrentUser(request);
-        if (userId != user.getId()) {
-            throw new AccessDeniedException("Access Denied");
-        }
         return friendshipRepository.findByUser(user);
     }
 

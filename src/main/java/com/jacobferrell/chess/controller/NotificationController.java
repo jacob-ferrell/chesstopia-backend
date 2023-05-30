@@ -25,9 +25,9 @@ public class NotificationController {
     @Autowired
     private NotificationService notificationService;
 
-    @GetMapping("/notifications/user/{id}")
-    public ResponseEntity<List<NotificationDTO>> getUserNotifications(@PathVariable Long id, HttpServletRequest request) {
-        return ResponseEntity.ok().body(notificationService.getUserNotifications(id, request));
+    @GetMapping("/notifications")
+    public ResponseEntity<List<NotificationDTO>> getUserNotifications(HttpServletRequest request) {
+        return ResponseEntity.ok().body(notificationService.getUserNotifications(request));
     }
 
     @PutMapping("/notifications/{id}")

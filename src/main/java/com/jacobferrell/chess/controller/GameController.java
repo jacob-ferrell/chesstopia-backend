@@ -19,9 +19,9 @@ public class GameController {
     @Autowired
     private GameService gameService;
 
-    @GetMapping("/games/user/{id}")
-    public ResponseEntity<List<GameDTO>> getUserGames(@PathVariable Long id, HttpServletRequest request) {
-        List<GameDTO> userGames = gameService.getUserGames(id, request);
+    @GetMapping("/games")
+    public ResponseEntity<List<GameDTO>> getUserGames(HttpServletRequest request) {
+        List<GameDTO> userGames = gameService.getUserGames(request);
         return ResponseEntity.ok().body(userGames);
     }
 
@@ -34,8 +34,8 @@ public class GameController {
 
     @CrossOrigin(origins = "http://localhost:5173")
     @PostMapping("/games")
-    ResponseEntity<GameDTO> createGame(@RequestParam Long p1, @RequestParam Long p2, HttpServletRequest request) throws URISyntaxException {
-        GameDTO newGame = gameService.createGame(p1, p2, request);
+    ResponseEntity<GameDTO> createGame(@RequestParam Long p2, HttpServletRequest request) throws URISyntaxException {
+        GameDTO newGame = gameService.createGame(p2, request);
         return ResponseEntity.created(new URI("/api/game/" + newGame.getId()))
                 .body(newGame);
     }

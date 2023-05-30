@@ -35,11 +35,8 @@ public class NotificationService {
     @Autowired
     private JsonService jsonService;
 
-    public List<NotificationDTO> getUserNotifications(long id, HttpServletRequest request) {
+    public List<NotificationDTO> getUserNotifications(HttpServletRequest request) {
         UserDTO user = jwtService.getUserFromRequest(request);
-        if (user.getId() != id) {
-            throw new AccessDeniedException("Access Denied");
-        }
         return notificationRepository.findByRecipient(user);
     }
 
