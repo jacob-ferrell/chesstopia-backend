@@ -1,5 +1,6 @@
 package com.jacobferrell.chess.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.jacobferrell.chess.chessboard.ChessBoard;
 
 import lombok.AllArgsConstructor;
@@ -27,6 +28,7 @@ public class GameDTO {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonIgnore
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "game_players", joinColumns = @JoinColumn(name = "game_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<UserDTO> players;
