@@ -56,7 +56,7 @@ public class GameService {
     public GameDTO createGame(long p2, HttpServletRequest request) {
         UserDTO player1 = jwtService.getUserFromRequest(request);
         Optional<UserDTO> optionalPlayer2 = userRepository.findById(p2);
-        if (optionalPlayer2.isPresent()) {
+        if (!optionalPlayer2.isPresent()) {
             throw new NotFoundException("The provided user id do not exist");
         }
         //Randomly assign players to white/black
@@ -74,7 +74,7 @@ public class GameService {
             whitePlayer = player2;
             blackPlayer = player1;
         }
-        GameDTO newGame = GameDTO.builder().players(players).whitePlayer(whitePlayer).blackPlayer(blackPlayer)
+        GameDTO newGame = GameDTO.builder().players(players).whitePlayer(whitePlayer).blackPlayer(blackPlayer).currentTurn(whitePlayer)
                 .winner(null)
                 .build();
         gameRepository.save(newGame);
