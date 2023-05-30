@@ -41,7 +41,7 @@ public class UserService {
     public UserDTO getOtherPlayer(UserDTO currentUser, GameDTO game) {
         Set<UserDTO> players = game.getPlayers();
         return players.stream().filter(p -> p.getId() != currentUser.getId()).findFirst().orElse(null);
-    } 
+    }
 
     public Friendship addFriend(String email, HttpServletRequest request) {
         UserDTO user = getCurrentUser(request);
@@ -62,9 +62,14 @@ public class UserService {
         return friendship;
     }
 
-    public List<Friendship> getFriends(HttpServletRequest request) {
+    public Set<UserDTO> getFriends(HttpServletRequest request) {
         UserDTO user = getCurrentUser(request);
-        return friendshipRepository.findByUser(user);
+        List<Friendship> friendships = friendshipRepository.findByUser(user);
+        Set<UserDTO> friends = new HashSet<>();
+        for (Friendship f : friendships) {
+            friends.add(f.getUsers().stream().filter(fr -> !fr.equals(user)).findFirst().get());
+        }
+        return friends;
     }
 
 }
