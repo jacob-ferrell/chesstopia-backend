@@ -1,15 +1,18 @@
 package com.jacobferrell.chess.controller;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jacobferrell.chess.model.Friendship;
 import com.jacobferrell.chess.service.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,8 +31,10 @@ public class UserController {
     }
 
     @PostMapping("/add-friend")
-    ResponseEntity<?> addFriend(@RequestParam String email, HttpServletRequest request) {
-        return ResponseEntity.ok().body(userService.addFriend(email, request));
+    ResponseEntity<?> addFriend(@RequestParam String email, HttpServletRequest request) throws URISyntaxException {
+        Friendship friendship = userService.addFriend(email, request);
+        return ResponseEntity.created(new URI("/api/friendships/" + friendship.getId()))
+        .body(friendship);
     }
 
     @GetMapping("/friends")
