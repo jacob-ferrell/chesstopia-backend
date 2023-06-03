@@ -5,12 +5,9 @@ import com.jacobferrell.chess.chessboard.ChessBoard;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Builder;
 
-import java.util.Optional;
 
 
 import jakarta.persistence.*;
@@ -58,9 +55,5 @@ public class GameDTO {
     @ManyToOne
     @JoinColumn(name = "winner_id")
     private UserDTO winner;
-
-    /* public void setWinner(User user) {
-        winner = Optional.ofNullable(user);
-    } */
 
 }
