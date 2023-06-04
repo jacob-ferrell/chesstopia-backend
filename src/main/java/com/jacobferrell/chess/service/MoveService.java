@@ -48,11 +48,15 @@ public class MoveService {
     @Autowired
     private JsonService jsonService;
 
+    @Autowired
+    private GameService gameService;
+
     public Set<Position> getPossibleMoves(long gameId, int x, int y, HttpServletRequest request) {
         UserDTO user = jwtService.getUserFromRequest(request);
         GameDTO gameData = getGameById(gameId);
         Game game = createGameFromDTO(gameData);
         ChessPiece piece = getAndValidatePiece(x, y, game, user, getPlayerColor(gameData, user));
+        gameService.showPlayerIsConnectedToGame(gameId, request, true);
         return piece.removeMovesIntoCheck(piece.generatePossibleMoves());
     }
 
@@ -83,6 +87,7 @@ public class MoveService {
         //be marked as read
         NotificationDTO notification = notificationService.createNotification(user, gameData);
         messagingTemplate.convertAndSend("/topic/game/" + gameId, jsonService.toJSON(getMessageBody(gameData, notification)));
+        gameService.showPlayerIsConnectedToGame(gameId, request, true);
         Map<String, Object> moveData = new HashMap<>();
         moveData.put("gameData", gameData);
         moveData.put("moveData", move);
