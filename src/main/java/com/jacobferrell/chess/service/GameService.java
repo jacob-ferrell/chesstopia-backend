@@ -4,8 +4,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.Map;
+import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
@@ -32,6 +35,12 @@ public class GameService {
     @Autowired
     private NotificationService notificationService;
 
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
+
+    @Autowired
+    private JsonService jsonService;
+
     public List<GameDTO> getUserGames(HttpServletRequest request) {
         UserDTO user = jwtService.getUserFromRequest(request);
         return gameRepository.findByPlayer(user);
@@ -49,8 +58,16 @@ public class GameService {
         if (!players.contains(user)) {
             throw new AccessDeniedException("Access Denied");
         }
+        showPlayerIsConnectedToGame(foundGame.getId(), request, true);
         notificationService.markAsReadForGame(foundGame, user);
         return foundGame;
+    }
+
+    public void showPlayerIsConnectedToGame(long gameId, HttpServletRequest request, boolean isConnected) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("connected", isConnected);
+        map.put("player", jwtService.getUserFromRequest(request).getId());
+        messagingTemplate.convertAndSend("/topic/game/" + gameId, jsonService.toJSON(map));
     }
 
     public GameDTO createGame(long p2, HttpServletRequest request) {
