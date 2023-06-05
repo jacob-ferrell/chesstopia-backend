@@ -1,12 +1,14 @@
 package com.jacobferrell.chess.service;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.AccessDeniedException;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.webjars.NotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +31,15 @@ public class UserService {
 
     @Autowired
     private FriendshipRepository friendshipRepository;
+
+    @Autowired
+    private JsonService jsonService;
+
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
+
+    @Autowired
+    private GameCreationService gameCreationService;
 
     public UserDTO getCurrentUser(HttpServletRequest request) {
         UserDTO user = jwtService.getUserFromRequest(request);
@@ -72,4 +83,23 @@ public class UserService {
         return friends;
     }
 
+    public Object joinLobby(HttpServletRequest request) {
+        UserDTO user = getCurrentUser(request);
+        Set<UserDTO> lobby = userRepository.findByInLobby();
+        if (lobby.isEmpty()) {
+            user.setInLobby(true);
+            lobby.add(user);
+            return lobby;
+        }
+        UserDTO otherPlayer = lobby.stream().findFirst().orElse(null);
+        GameDTO newGame = gameCreationService.createGame(otherPlayer.getId(), request);
+        otherPlayer.setInLobby(false);
+        Map<String, Object> map = new HashMap<>();
+        Set<Long> players = new HashSet<>();
+        players.add(user.getId());
+        players.add(otherPlayer.getId());
+        map.put("matched", players);
+        messagingTemplate.convertAndSend("/topic/game/lobby", jsonService.toJSON(map));
+        return newGame;  
+    }
 }
