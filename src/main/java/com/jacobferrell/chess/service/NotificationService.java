@@ -12,7 +12,6 @@ import org.webjars.NotFoundException;
 import com.jacobferrell.chess.model.GameDTO;
 import com.jacobferrell.chess.model.NotificationDTO;
 import com.jacobferrell.chess.model.UserDTO;
-import com.jacobferrell.chess.repository.GameRepository;
 import com.jacobferrell.chess.repository.NotificationRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
