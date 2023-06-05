@@ -39,6 +39,10 @@ public class UserDTO implements UserDetails {
     private Role role;
 
     @JsonIgnore
+    @Builder.Default
+    private boolean inLobby = false;
+
+    @JsonIgnore
     @ManyToMany
     @JoinTable(
         name = "friends",
