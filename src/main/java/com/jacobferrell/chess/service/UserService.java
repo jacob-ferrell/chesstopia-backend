@@ -86,20 +86,19 @@ public class UserService {
     public Object joinLobby(HttpServletRequest request) {
         UserDTO user = getCurrentUser(request);
         Set<UserDTO> lobby = userRepository.findByInLobby();
-        if (lobby.isEmpty()) {
+        UserDTO otherPlayer = lobby.stream().filter(u -> !u.equals(user)).findFirst().orElse(null);
+        if (otherPlayer == null) {
             user.setInLobby(true);
+            userRepository.save(user);
             lobby.add(user);
             return lobby;
         }
-        UserDTO otherPlayer = lobby.stream().findFirst().orElse(null);
         GameDTO newGame = gameCreationService.createGame(otherPlayer.getId(), request);
         otherPlayer.setInLobby(false);
+        userRepository.save(otherPlayer);
         Map<String, Object> map = new HashMap<>();
-        Set<Long> players = new HashSet<>();
-        players.add(user.getId());
-        players.add(otherPlayer.getId());
-        map.put("matched", players);
-        messagingTemplate.convertAndSend("/topic/game/lobby", jsonService.toJSON(map));
+        map.put("game", newGame.getId());
+        messagingTemplate.convertAndSend("/topic/lobby", jsonService.toJSON(map));
         return newGame;  
     }
 }
