@@ -52,6 +52,8 @@ public class GameService {
 
     public GameDTO getGame(long id, HttpServletRequest request) {
         UserDTO user = jwtService.getUserFromRequest(request);
+        user.setInLobby(false);
+        userRepository.save(user);
         Optional<GameDTO> game = gameRepository.findById(id);
         if (!game.isPresent()) {
             throw new NotFoundException("Game with id: " + id + " could not be found");
