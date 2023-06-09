@@ -11,6 +11,8 @@ import lombok.Builder;
 
 
 import jakarta.persistence.*;
+
+import java.util.Date;
 import java.util.*;
 
 @Data
@@ -55,5 +57,9 @@ public class GameDTO {
     @ManyToOne
     @JoinColumn(name = "winner_id")
     private UserDTO winner;
+
+    @Builder.Default
+    @Column(nullable = false, updatable = false)
+    private Date createdAt = new Date();
 
 }

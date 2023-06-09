@@ -1,11 +1,12 @@
 package com.jacobferrell.chess.model;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+
+import java.util.Date;
+
 
 import jakarta.persistence.*;
 
@@ -35,5 +36,9 @@ public class MoveDTO {
 
     @Column(name = "to_y")
     private int toY;
+
+    @Builder.Default
+    @Column(nullable = false, updatable = false)
+    private Date createdAt = new Date();
 
 }
