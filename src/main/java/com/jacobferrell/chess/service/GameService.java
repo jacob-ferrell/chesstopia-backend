@@ -61,7 +61,7 @@ public class GameService {
         GameDTO foundGame = game.get();
         Set<UserDTO> players = foundGame.getPlayers();
         if (!players.contains(user)) {
-            throw new AccessDeniedException("Access Denied");
+            throw new AccessDeniedException("Current user does not have access to this game");
         }
         showPlayerIsConnectedToGame(foundGame.getId(), request, true);
         notificationService.markAsReadForGame(foundGame, user);

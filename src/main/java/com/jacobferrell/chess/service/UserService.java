@@ -9,8 +9,8 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.webjars.NotFoundException;
 import org.springframework.stereotype.Service;
+import org.webjars.NotFoundException;
 
 import com.jacobferrell.chess.model.Friendship;
 import com.jacobferrell.chess.model.GameDTO;
@@ -44,7 +44,7 @@ public class UserService {
     public UserDTO getCurrentUser(HttpServletRequest request) {
         UserDTO user = jwtService.getUserFromRequest(request);
         if (user == null) {
-            throw new NotFoundException("Current user could not be authenticated");
+            throw new NotFoundException("Current user could not be found");
         }
         return user;
     }
