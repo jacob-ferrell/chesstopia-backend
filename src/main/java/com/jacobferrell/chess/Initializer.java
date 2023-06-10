@@ -5,6 +5,7 @@ import com.jacobferrell.chess.repository.GameRepository;
 import com.jacobferrell.chess.repository.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,25 +24,32 @@ public class Initializer implements CommandLineRunner {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Value("${app.computer.password}")
+    private String COMPUTER_PASSWORD;
+
     public void run(String... strings) {
         GameDTO game = GameDTO.builder().winner(null)
-            .build();
+                .build();
         gameRepository.save(game);
 
         var player1 = UserDTO.builder()
-            .name("Jacob")
-            .email("boomkablamo@gmail.com")
-            .password(passwordEncoder.encode("asdf"))
-            .role(Role.USER)
-            .build();
+                .name("Jacob")
+                .email("boomkablamo@gmail.com")
+                .password(passwordEncoder.encode("asdf"))
+                .role(Role.USER)
+                .build();
         userRepository.save(player1);
         var player2 = UserDTO.builder()
-            .name("Cindy")
-            .email("cindy@gmail.com")
-            .password(passwordEncoder.encode("asdf"))
-            .role(Role.USER)
-            .build();
+                .name("Cindy")
+                .email("cindy@gmail.com")
+                .password(passwordEncoder.encode("asdf"))
+                .role(Role.USER)
+                .build();
         userRepository.save(player2);
+        System.out.println(COMPUTER_PASSWORD);
+        var computer = UserDTO.builder().name("Computer").email("computer@chesstopia")
+                .password(passwordEncoder.encode(COMPUTER_PASSWORD)).role(Role.AI).build();
+        userRepository.save(computer);
 
         Set<UserDTO> players = new HashSet<>();
         players.add(player1);
