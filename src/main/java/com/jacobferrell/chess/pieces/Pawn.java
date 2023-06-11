@@ -43,12 +43,13 @@ public class Pawn extends ChessPiece {
         int currentY = position.y;
         for (int x = currentX - 1; x < currentX + 2 && x < 8; x++) {
             int y = currentY + (1 * yMultiplier);
-            if (Math.min(x, y) < 0 || y > 8 || x == currentX || !board.isSpaceOccupied(x, y)) {
+            Position pos = new Position(x, y);
+            if (Math.min(x, y) < 0 || y > 8 || x == currentX || !board.isSpaceOccupied(pos)) {
                 continue;
             }
             ChessPiece otherPiece = board.getPieceAtPosition(x, y);
             if (isEnemyPiece(otherPiece)) {
-                possibleMoves.add(new Position(x, y));
+                possibleMoves.add(pos);
             }
 
             
@@ -65,10 +66,11 @@ public class Pawn extends ChessPiece {
         int spacesMoved = 0;
         for (int y = currentY + yMovement; y < 8 && y > -1 && spacesMoved < maxSpaces; y += yMovement) {
             spacesMoved++;
-            if (board.isSpaceOccupied(x, y)) {
+            Position pos = new Position(x, y);
+            if (board.isSpaceOccupied(pos)) {
                 break;
             }
-            possibleMoves.add(new Position(x, y));
+            possibleMoves.add(pos);
         }
         return possibleMoves;
     }
