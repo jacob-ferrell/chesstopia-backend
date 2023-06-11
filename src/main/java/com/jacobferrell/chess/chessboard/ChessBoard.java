@@ -17,7 +17,7 @@ public class ChessBoard {
     public ChessBoard getClone() {
         ChessBoard clonedBoard = new ChessBoard();
         clonedBoard.clearBoard();
-        for(ChessPiece piece : board) {
+        for (ChessPiece piece : board) {
             clonedBoard.board.add(piece.getClone(clonedBoard));
         }
         return clonedBoard;
@@ -58,8 +58,7 @@ public class ChessBoard {
         return board.stream().filter(p -> p.position.equals(pos)).findFirst().orElse(null);
     }
 
-    public boolean isSpaceOccupied(int x, int y) {
-        Position pos = new Position(x, y);
+    public boolean isSpaceOccupied(Position pos) {
         ChessPiece piece = board.stream().filter(p -> p.position.equals(pos)).findFirst().orElse(null);
         return piece != null;
     }
@@ -78,7 +77,7 @@ public class ChessBoard {
 
     public void setPieceAtPosition(int x, int y, ChessPiece piece) {
         ChessPiece takenPiece = getPieceAtPosition(x, y);
-        if (takenPiece != null && piece.isEnemyPiece(takenPiece)) {   
+        if (takenPiece != null && piece.isEnemyPiece(takenPiece)) {
             graveyard.add(takenPiece);
             board.remove(takenPiece);
         }
@@ -88,26 +87,15 @@ public class ChessBoard {
 
     public void removePieceAtPosition(int x, int y) {
         ChessPiece piece = getPieceAtPosition(x, y);
-        if (piece == null) return;
+        if (piece == null)
+            return;
         board.remove(piece);
     }
 
     public Set<King> getKings() {
-        Set<King> kings = new HashSet<>();
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                if (!isSpaceOccupied(i, j)) {
-                    continue;
-                }
-                ChessPiece piece = getPieceAtPosition(i, j);
-
-                if (!(piece instanceof King)) {
-                    continue;
-                }
-                kings.add((King) piece);
-            }
-        }
+        Set<King> kings = board.stream().filter(p -> p instanceof King).map(k -> (King) k).collect(Collectors.toSet());
         return kings;
+
     }
 
     public King getPlayerKing(PieceColor color) {
@@ -115,18 +103,27 @@ public class ChessBoard {
         return kings.stream().filter(king -> king.getColor() == color).findFirst().get();
     }
 
+    public King getOpponentKing(PieceColor color) {
+        Set<King> kings = getKings();
+        return kings.stream().filter(king -> king.getColor() != color).findFirst().get();
+    }
+
     public boolean hasBothKings() {
         Set<King> kings = getKings();
-        boolean hasWhiteKing = false;
-        boolean hasBlackKing = false;
-        for (King king : kings) {
-            if (king.getColor() == PieceColor.BLACK) {
-                hasBlackKing = true;
-                continue;
-            }
-            hasWhiteKing = true;
+        if (kings.size() != 2) {
+            return false;
         }
-        return kings.size() == 2 && hasWhiteKing && hasBlackKing;
+        boolean hasWhite = false;
+        boolean hasBlack = false;
+        for(King king : kings) {
+            if (king.getColor().equals(PieceColor.WHITE)) {
+                hasWhite = true;
+            }
+            if (king.getColor().equals(PieceColor.BLACK)) {
+                hasBlack = true;
+            }
+        }
+        return hasWhite && hasBlack;
     }
 
     public void clearBoard() {
@@ -137,16 +134,18 @@ public class ChessBoard {
     public Set<Rook> getCastleRooks(PieceColor color) {
         Set<Rook> castleRooks = new HashSet<>();
         King king = getPlayerKing(color);
-        //Return empty set if player's king has moved
+        // Return empty set if player's king has moved
         if (king.hasMoved) {
             return castleRooks;
         }
-        //Get all players rooks which have not been moved
+        // Get all players rooks which have not been moved
         Set<Rook> rooks = board.stream()
                 .filter(piece -> (piece instanceof Rook) && !piece.hasMoved && piece.getColor().equals(color))
                 .map(r -> (Rook) r).collect(Collectors.toSet());
 
-        //Test if all spaces between king and given rook are empty, and also are not in the path of any enemy pieces
+        //
+        // Test if all spaces between king and given rook are empty, and also are not in
+        // the path of any enemy pieces
         outerloop: for (Rook rook : rooks) {
             int kingX = king.position.x;
             int rookX = rook.position.x;
@@ -154,7 +153,7 @@ public class ChessBoard {
             int max = Math.max(kingX, rookX);
             int min = Math.min(kingX, rookX);
             for (int n = min + 1; n < max; n++) {
-                if (isSpaceOccupied(n, y)) {
+                if (isSpaceOccupied(new Position(n, y))) {
                     continue outerloop;
                 }
                 Move move = new Move(king, new Position(n, y));
@@ -206,19 +205,18 @@ public class ChessBoard {
     }
 
     public Set<PieceDTO> getPieceData() {
-        Set<PieceDTO> pieces = new HashSet<>();
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                if (!isSpaceOccupied(i, j)) {
-                    continue;
-                }
-                ChessPiece piece = getPieceAtPosition(i, j);
-                String color = piece.getColor() == PieceColor.WHITE ? "WHITE" : "BLACK";
-                boolean hasMoved = piece.getHasMoved();
-                pieces.add(PieceDTO.builder().type(piece.getName()).color(color).x(i).y(j).hasMoved(hasMoved).build());
-            }
-        }
-        return pieces;
+        return board.stream().map(p -> convertPieceToDTO(p)).collect(Collectors.toSet());
+    }
+
+    private PieceDTO convertPieceToDTO(ChessPiece piece) {
+        String color = piece.getColor() == PieceColor.WHITE ? "WHITE" : "BLACK";
+        Position pos = piece.position;
+        boolean hasMoved = piece.getHasMoved();
+        return PieceDTO.builder().type(piece.getName()).color(color).x(pos.x).y(pos.y).hasMoved(hasMoved).build();
+    }
+
+    public Set<ChessPiece> getPiecesByColor(PieceColor color) {
+        return board.stream().filter(p -> p.getColor().equals(color)).collect(Collectors.toSet());
     }
 
     public Set<ChessPiece> getGraveyard() {
