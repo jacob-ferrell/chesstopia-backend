@@ -15,4 +15,8 @@ public interface UserRepository extends JpaRepository<UserDTO, Long> {
 
     @Query("SELECT u FROM UserDTO u WHERE u.inLobby = true")
     Set<UserDTO> findByInLobby();
+
+    @Query("SELECT u FROM UserDTO u WHERE u.role = com.jacobferrell.chess.model.Role.AI ORDER BY u.id ASC")
+    Optional<UserDTO> findAIUser();
+
 }
