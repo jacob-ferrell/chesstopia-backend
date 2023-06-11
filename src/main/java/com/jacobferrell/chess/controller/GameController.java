@@ -40,6 +40,14 @@ public class GameController {
                 .body(newGame);
     }
 
+    @CrossOrigin(origins = "http://localhost:5173")
+    @PostMapping("/games/computer")
+    ResponseEntity<GameDTO> createComputerGame(HttpServletRequest request) throws URISyntaxException {
+        GameDTO newGame = gameService.createGame(-1, request);
+        return ResponseEntity.created(new URI("/api/game/" + newGame.getId()))
+                .body(newGame);
+    }
+
     /* @CrossOrigin(origins = "http://localhost:5173")
     @PutMapping("/game/{id}")
     ResponseEntity<GameDTO> updateGame(@Valid @RequestBody GameDTO game) {
