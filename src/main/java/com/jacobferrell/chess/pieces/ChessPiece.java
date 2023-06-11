@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.stream.Collectors;
 
 public abstract class ChessPiece {
-    protected PieceColor color;
+    public PieceColor color;
     protected int counter;
     public boolean hasMoved;
     public Position position;
@@ -23,7 +23,7 @@ public abstract class ChessPiece {
         if (Math.min(x, y) < 0 || Math.max(x, y) > 7) {
             return false;
         }
-        if (!board.isSpaceOccupied(x, y)) {
+        if (!board.isSpaceOccupied(new Position(x, y))) {
             return true;
         }
         ChessPiece otherPiece = board.getPieceAtPosition(x, y);
@@ -54,15 +54,17 @@ public abstract class ChessPiece {
         Set<Position> possibleMoves = new HashSet<>();
         int y = position.y;
         for (int x = position.x + 1; isValidMove(x, y); x++) {
-            possibleMoves.add(new Position(x, y));
-            if (board.isSpaceOccupied(x, y)) {
+            Position pos = new Position(x, y);
+            possibleMoves.add(pos);
+            if (board.isSpaceOccupied(pos)) {
                 break;
             }
         }
 
         for (int x = position.x - 1; isValidMove(x, y); x--) {
-            possibleMoves.add(new Position(x, y));
-            if (board.isSpaceOccupied(x, y)) {
+            Position pos = new Position(x, y);
+            possibleMoves.add(pos);
+            if (board.isSpaceOccupied(pos)) {
                 break;
             }
         }
@@ -75,15 +77,17 @@ public abstract class ChessPiece {
         Set<Position> possibleMoves = new HashSet<>();
         int x = position.x;
         for (int y = position.y + 1; isValidMove(x, y); y++) {
-            possibleMoves.add(new Position(x, y));
-            if (board.isSpaceOccupied(x, y)) {
+            Position pos = new Position(x, y);
+            possibleMoves.add(pos);
+            if (board.isSpaceOccupied(pos)) {
                 break;
             }
         }
 
         for (int y = position.y - 1; isValidMove(x, y); y--) {
-            possibleMoves.add(new Position(x, y));
-            if (board.isSpaceOccupied(x, y)) {
+            Position pos = new Position(x, y);
+            possibleMoves.add(pos);
+            if (board.isSpaceOccupied(pos)) {
                 break;
             }
         }
@@ -95,29 +99,33 @@ public abstract class ChessPiece {
     public Set<Position> getDiagonalMoves() {
         Set<Position> possibleMoves = new HashSet<>();
         for (int x = position.x + 1, y = position.y + 1; isValidMove(x, y); x++, y++) {
-            possibleMoves.add(new Position(x, y));
-            if (board.isSpaceOccupied(x, y)) {
+            Position pos = new Position(x, y);
+            possibleMoves.add(pos);
+            if (board.isSpaceOccupied(pos)) {
                 break;
             }
         }
 
         for (int x = position.x + 1, y = position.y - 1; isValidMove(x, y); x++, y--) {
-            possibleMoves.add(new Position(x, y));
-            if (board.isSpaceOccupied(x, y)) {
+            Position pos = new Position(x, y);
+            possibleMoves.add(pos);
+            if (board.isSpaceOccupied(pos)) {
                 break;
             }
         }
 
         for (int x = position.x - 1, y = position.y + 1; isValidMove(x, y); x--, y++) {
-            possibleMoves.add(new Position(x, y));
-            if (board.isSpaceOccupied(x, y)) {
+            Position pos = new Position(x, y);
+            possibleMoves.add(pos);
+            if (board.isSpaceOccupied(pos)) {
                 break;
             }
         }
 
         for (int x = position.x - 1, y = position.y - 1; isValidMove(x, y); x--, y--) {
-            possibleMoves.add(new Position(x, y));
-            if (board.isSpaceOccupied(x, y)) {
+            Position pos = new Position(x, y);
+            possibleMoves.add(pos);
+            if (board.isSpaceOccupied(pos)) {
                 break;
             }
         }
@@ -125,7 +133,7 @@ public abstract class ChessPiece {
     }
 
     public void makeMove(int x, int y) {
-        if (!board.isSpaceOccupied(x, y) || isEnemyPiece(board.getPieceAtPosition(x, y))) {
+        if (!board.isSpaceOccupied(new Position(x, y)) || isEnemyPiece(board.getPieceAtPosition(x, y))) {
             board.setPieceAtPosition(x, y, this);
             return;
         }
@@ -178,8 +186,8 @@ public abstract class ChessPiece {
     }
 
     @Override
-    public String toString() { 
-        return getName() + ", " + getColor() +  " [" + position.y + ", " + position.x + "]";
+    public String toString() {
+        return getName() + ", " + getColor() + " [" + position.y + ", " + position.x + "]";
     }
 
     public ChessBoard getBoard() {
