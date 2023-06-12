@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -57,7 +58,8 @@ public class MoveService {
         Game game = createGameFromDTO(gameData);
         ChessPiece piece = getAndValidatePiece(x, y, game, user, getPlayerColor(gameData, user));
         gameService.showPlayerIsConnectedToGame(gameId, request, true);
-        return piece.removeMovesIntoCheck(piece.generatePossibleMoves());
+        return piece.removeMovesIntoCheck(piece.generatePossibleMoves()).stream().map(m -> m.position)
+                .collect(Collectors.toSet());
     }
 
     public void sendMessageAndNotification(UserDTO user, GameDTO gameData, HttpServletRequest request) {
@@ -159,8 +161,8 @@ public class MoveService {
     }
 
     public void validateAndMakeMove(ChessPiece piece, int x1, int y1, ChessBoard board) {
-        Set<Position> possibleMoves = piece.generatePossibleMoves();
-        if (!possibleMoves.stream().anyMatch(pos -> pos.equals(new Position(x1, y1)))) {
+        Set<Move> possibleMoves = piece.generatePossibleMoves();
+        if (!possibleMoves.stream().anyMatch(move -> move.position.equals(new Position(x1, y1)))) {
             throw new IllegalArgumentException(
                     "Moving " + piece.getName() + " at " + "coordinates: x: " + piece.position.x + ", y: "
                             + piece.position.y + " to coordinates: x: " + x1 + ", y: " + y1 + " is not a valid move");
