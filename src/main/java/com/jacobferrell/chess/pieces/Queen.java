@@ -29,8 +29,8 @@ public class Queen extends ChessPiece {
         return SYMBOL;
     }
     @Override
-    public Set<Position> generatePossibleMoves() {
-        Set<Position> possibleMoves = new HashSet<>();
+    public Set<Move> generatePossibleMoves() {
+        Set<Move> possibleMoves = new HashSet<>();
         possibleMoves.addAll(getHorizontalMoves());
         possibleMoves.addAll(getVerticalMoves());
         possibleMoves.addAll(getDiagonalMoves());

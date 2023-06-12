@@ -60,8 +60,7 @@ public class ComputerMoveService {
         }
         PieceColor computerColor = moveService.getPlayerColor(gameData, computer);
         Game game = moveService.createGameFromDTO(gameData);
-        Set<ChessPiece> computerPieces = game.board.getPiecesByColor(computerColor);
-        Set<Move> allPossibleComputerMoves = filterPossibleMoves(game, game.board.getAllPossibleMoves(), computerColor);
+        Set<Move> allPossibleComputerMoves = game.board.getAllPossibleMoves(computerColor);
         Map<String, Map<ChessPiece, Set<Move>>> moveMap = getMoveMap(allPossibleComputerMoves);
         System.out.println(moveMap);
         var checkMateMoves = moveMap.get("checkMate");
@@ -86,11 +85,6 @@ public class ComputerMoveService {
         }
         return outMap;
 
-    }
-
-    private Set<Move> filterPossibleMoves(Game game, Set<Move> allPossibleMoves, PieceColor color) {
-        return game.board.getAllPossibleMoves().stream()
-                .filter(m -> m.getPiece().getColor().equals(color)).collect(Collectors.toSet());
     }
 
     private void setAndSave(GameDTO gameData, Game game, ChessPiece piece, Move move, Map<String, Object> outMap) {

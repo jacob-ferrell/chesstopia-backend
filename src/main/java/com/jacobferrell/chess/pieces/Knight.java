@@ -30,10 +30,10 @@ public class Knight extends ChessPiece {
     }
 
     @Override
-    public Set<Position> generatePossibleMoves() {
+    public Set<Move> generatePossibleMoves() {
         int[] longValues = { 2, -2 };
         int[] shortValues = { 1, -1 };
-        Set<Position> possibleMoves = new HashSet<>();
+        Set<Move> possibleMoves = new HashSet<>();
 
         possibleMoves.addAll(getKnightMoves(longValues, shortValues));
         possibleMoves.addAll(getKnightMoves(shortValues, longValues));
@@ -41,15 +41,15 @@ public class Knight extends ChessPiece {
         return possibleMoves;
     }
 
-    private Set<Position> getKnightMoves(int[] vertical, int[] horizontal) {
-        Set<Position> possibleMoves = new HashSet<>();
+    private Set<Move> getKnightMoves(int[] vertical, int[] horizontal) {
+        Set<Move> possibleMoves = new HashSet<>();
         int x, y;
         for (int i = 0; i < 2; i++) {
             x = position.x + horizontal[i];
             for (int j = 0; j < 2; j++) {
                 y = position.y + vertical[j];
                 if (isValidMove(x, y)) {
-                    possibleMoves.add(new Position(x, y));
+                    possibleMoves.add(new Move(this, new Position(x, y)));
                 }
             }
         }

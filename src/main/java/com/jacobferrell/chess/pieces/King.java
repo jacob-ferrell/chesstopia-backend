@@ -31,40 +31,36 @@ public class King extends ChessPiece {
     }
 
     @Override
-    public Set<Position> generatePossibleMoves() {
-        Set<Position> possibleMoves = new HashSet<>();
+    public Set<Move> generatePossibleMoves() {
+        Set<Move> possibleMoves = new HashSet<>();
         possibleMoves.addAll(getHorizontalMoves());
         possibleMoves.addAll(getVerticalMoves());
         possibleMoves.addAll(getDiagonalMoves());
         possibleMoves = possibleMoves.stream()
-                .filter(move -> Math.max(Math.abs(position.x - move.x), Math.abs(position.y - move.y)) < 2)
+                .filter(move -> Math.max(Math.abs(position.x - move.position.x),
+                        Math.abs(position.y - move.position.y)) < 2)
                 .collect(Collectors.toSet());
-/*         possibleMoves.addAll(board.getCastleRooks(color).stream()
-                .map(r -> new Position(r.position.x, r.position.y)).collect(Collectors.toSet())); */
+        /*
+         * possibleMoves.addAll(board.getCastleRooks(color).stream()
+         * .map(r -> new Position(r.position.x,
+         * r.position.y)).collect(Collectors.toSet()));
+         */
         return possibleMoves;
     }
 
     public boolean isInCheck() {
         Position currentPosition = position;
-        Set<Move> allPossibleMoves = board.getAllPossibleMoves();
+        Set<Move> allPossibleMoves = board.getAllPossibleMoves(getEnemyColor());
         return !allPossibleMoves
                 .stream()
-                .filter(move -> move.piece.color != color && move.position.equals(currentPosition))
+                .filter(move -> move.position.equals(currentPosition))
                 .collect(Collectors.toSet())
                 .isEmpty();
     }
 
     public boolean isInCheckMate() {
-        Set<Move> possiblePlayerMoves = board.getAllPossibleMoves()
-                .stream()
-                .filter(move -> move.piece.color == this.color)
-                .collect(Collectors.toSet());
-        for (Move move : possiblePlayerMoves) {
-            ChessBoard simulatedBoard = move.simulateMove(board);
-            if (move.isLegal(simulatedBoard)) {
-                return false;
-            }
-        }
-        return true;
+        return board.getAllPossibleMoves(color).stream().filter(move -> {
+            return move.isLegal(move.simulateMove(board));
+        }).collect(Collectors.toSet()).isEmpty();
     }
 }

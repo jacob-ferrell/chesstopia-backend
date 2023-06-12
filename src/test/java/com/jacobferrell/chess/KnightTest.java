@@ -11,9 +11,9 @@ public class KnightTest {
         ChessBoard board = new ChessBoard();
         ChessPiece piece = board.getPieceAtPosition(1, 7);
         Knight knight = (Knight) piece;
-        Set<Position> possibleMoves = knight.generatePossibleMoves();
-        for (Position i : possibleMoves) {
-            System.out.println(i.getY() + "," + i.getX());
+        Set<Move> possibleMoves = knight.generatePossibleMoves();
+        for (Move move : possibleMoves) {
+            System.out.println(move.position.y + "," + move.position.x);
         }
     }
 }

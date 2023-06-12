@@ -11,9 +11,9 @@ public class PawnTest {
         ChessPiece piece = board.getPieceAtPosition(3, 6);
         Pawn pawn = (Pawn) piece;
         board.setPieceAtPosition(3, 4, pawn);
-        Set<Position> possibleMoves = pawn.generatePossibleMoves();
-        for (Position i : possibleMoves) {
-            System.out.println(i);
+        Set<Move> possibleMoves = pawn.generatePossibleMoves();
+        for (Move move : possibleMoves) {
+            System.out.println(move.position.y + "," + move.position.x);
         }
     }
 

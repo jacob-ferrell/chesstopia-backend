@@ -16,10 +16,10 @@ public class KingTest {
         King king = new King(PieceColor.WHITE, new Position(3, 3), board);
         board.clearBoard();
         board.setPieceAtPosition(3, 3, king);
-        Set<Position> possibleMoves = king.generatePossibleMoves();
+        Set<Move> possibleMoves = king.generatePossibleMoves();
         System.out.println(board);
-        for (Position pos : possibleMoves) {
-            System.out.println(pos.getY() + "," + pos.getX());
+        for (Move move : possibleMoves) {
+            System.out.println(move.position.y + "," + move.position.x);
         }
     }
 

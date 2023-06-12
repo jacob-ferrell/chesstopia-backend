@@ -16,11 +16,11 @@ public class RookTest {
         board.setPieceAtPosition(5, 3, new Pawn(PieceColor.BLACK, new Position(5, 3), board));
         board.setPieceAtPosition(3, 1, new Pawn(PieceColor.BLACK, new Position(3, 1), board));
         board.setPieceAtPosition(3, 5, new Pawn(PieceColor.BLACK, new Position(3, 5), board));
-        Set<Position> possibleMoves = rook.generatePossibleMoves();
+        Set<Move> possibleMoves = rook.generatePossibleMoves();
         System.out.println(board);
-        for (Position pos : possibleMoves) {
-            System.out.println(pos.getY() + "," + pos.getX());
-        } 
+        for (Move move : possibleMoves) {
+            System.out.println(move.position.y + "," + move.position.x);
+        }
     }
 
     @Test

@@ -30,15 +30,15 @@ public class Pawn extends ChessPiece {
     }
 
     @Override
-    public Set<Position> generatePossibleMoves() {
-        Set<Position> possibleMoves = new HashSet<>();
+    public Set<Move> generatePossibleMoves() {
+        Set<Move> possibleMoves = new HashSet<>();
         int yMultiplier = getColor() == PieceColor.WHITE ? -1 : 1;
         possibleMoves = getPawnDiagonalMoves(possibleMoves, yMultiplier);
         possibleMoves = getPawnVerticalMoves(possibleMoves, yMultiplier);
         return possibleMoves;
     }
 
-    private Set<Position> getPawnDiagonalMoves(Set<Position> possibleMoves, int yMultiplier) {
+    private Set<Move> getPawnDiagonalMoves(Set<Move> possibleMoves, int yMultiplier) {
         int currentX = position.x;
         int currentY = position.y;
         for (int x = currentX - 1; x < currentX + 2 && x < 8; x++) {
@@ -49,7 +49,7 @@ public class Pawn extends ChessPiece {
             }
             ChessPiece otherPiece = board.getPieceAtPosition(x, y);
             if (isEnemyPiece(otherPiece)) {
-                possibleMoves.add(pos);
+                possibleMoves.add(new Move(this, pos));
             }
 
             
@@ -57,7 +57,7 @@ public class Pawn extends ChessPiece {
         return possibleMoves;
     }
 
-    private Set<Position> getPawnVerticalMoves(Set<Position> possibleMoves, int yMultiplier) {
+    private Set<Move> getPawnVerticalMoves(Set<Move> possibleMoves, int yMultiplier) {
         int currentX = position.x;
         int currentY = position.y;
         int maxSpaces = hasMoved ? 1 : 2;
@@ -70,7 +70,7 @@ public class Pawn extends ChessPiece {
             if (board.isSpaceOccupied(pos)) {
                 break;
             }
-            possibleMoves.add(pos);
+            possibleMoves.add(new Move(this, pos));
         }
         return possibleMoves;
     }

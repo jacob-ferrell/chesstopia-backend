@@ -26,8 +26,8 @@ public class Rook extends ChessPiece {
     }
 
     @Override
-    public Set<Position> generatePossibleMoves() {
-        Set<Position> possibleMoves = new HashSet<>();
+    public Set<Move> generatePossibleMoves() {
+        Set<Move> possibleMoves = new HashSet<>();
         possibleMoves.addAll(getHorizontalMoves());
         possibleMoves.addAll(getVerticalMoves());
         /* if (canCastle()) {

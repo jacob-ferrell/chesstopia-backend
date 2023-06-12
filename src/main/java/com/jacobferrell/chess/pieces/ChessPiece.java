@@ -37,7 +37,7 @@ public abstract class ChessPiece {
 
     public abstract char getSymbol();
 
-    public abstract Set<Position> generatePossibleMoves();
+    public abstract Set<Move> generatePossibleMoves();
 
     public abstract String getName();
 
@@ -50,12 +50,12 @@ public abstract class ChessPiece {
     }
 
     // Add all possible horizontal moves
-    public Set<Position> getHorizontalMoves() {
-        Set<Position> possibleMoves = new HashSet<>();
+    public Set<Move> getHorizontalMoves() {
+        Set<Move> possibleMoves = new HashSet<>();
         int y = position.y;
         for (int x = position.x + 1; isValidMove(x, y); x++) {
             Position pos = new Position(x, y);
-            possibleMoves.add(pos);
+            possibleMoves.add(new Move(this, pos));
             if (board.isSpaceOccupied(pos)) {
                 break;
             }
@@ -63,7 +63,7 @@ public abstract class ChessPiece {
 
         for (int x = position.x - 1; isValidMove(x, y); x--) {
             Position pos = new Position(x, y);
-            possibleMoves.add(pos);
+            possibleMoves.add(new Move(this, pos));
             if (board.isSpaceOccupied(pos)) {
                 break;
             }
@@ -73,12 +73,12 @@ public abstract class ChessPiece {
     }
 
     // Add all possible vertical moves
-    public Set<Position> getVerticalMoves() {
-        Set<Position> possibleMoves = new HashSet<>();
+    public Set<Move> getVerticalMoves() {
+        Set<Move> possibleMoves = new HashSet<>();
         int x = position.x;
         for (int y = position.y + 1; isValidMove(x, y); y++) {
             Position pos = new Position(x, y);
-            possibleMoves.add(pos);
+            possibleMoves.add(new Move(this, pos));
             if (board.isSpaceOccupied(pos)) {
                 break;
             }
@@ -86,7 +86,7 @@ public abstract class ChessPiece {
 
         for (int y = position.y - 1; isValidMove(x, y); y--) {
             Position pos = new Position(x, y);
-            possibleMoves.add(pos);
+            possibleMoves.add(new Move(this, pos));
             if (board.isSpaceOccupied(pos)) {
                 break;
             }
@@ -96,11 +96,11 @@ public abstract class ChessPiece {
     }
 
     // Add all possible diagonal moves
-    public Set<Position> getDiagonalMoves() {
-        Set<Position> possibleMoves = new HashSet<>();
+    public Set<Move> getDiagonalMoves() {
+        Set<Move> possibleMoves = new HashSet<>();
         for (int x = position.x + 1, y = position.y + 1; isValidMove(x, y); x++, y++) {
             Position pos = new Position(x, y);
-            possibleMoves.add(pos);
+            possibleMoves.add(new Move(this, pos));
             if (board.isSpaceOccupied(pos)) {
                 break;
             }
@@ -108,7 +108,7 @@ public abstract class ChessPiece {
 
         for (int x = position.x + 1, y = position.y - 1; isValidMove(x, y); x++, y--) {
             Position pos = new Position(x, y);
-            possibleMoves.add(pos);
+            possibleMoves.add(new Move(this, pos));
             if (board.isSpaceOccupied(pos)) {
                 break;
             }
@@ -116,7 +116,7 @@ public abstract class ChessPiece {
 
         for (int x = position.x - 1, y = position.y + 1; isValidMove(x, y); x--, y++) {
             Position pos = new Position(x, y);
-            possibleMoves.add(pos);
+            possibleMoves.add(new Move(this, pos));
             if (board.isSpaceOccupied(pos)) {
                 break;
             }
@@ -124,7 +124,7 @@ public abstract class ChessPiece {
 
         for (int x = position.x - 1, y = position.y - 1; isValidMove(x, y); x--, y--) {
             Position pos = new Position(x, y);
-            possibleMoves.add(pos);
+            possibleMoves.add(new Move(this, pos));
             if (board.isSpaceOccupied(pos)) {
                 break;
             }
@@ -153,16 +153,21 @@ public abstract class ChessPiece {
 
     }
 
-    public Set<Position> removeMovesIntoCheck(Set<Position> moves) {
-        return moves.stream().filter(pos -> {
-            Move move = new Move(this, pos);
-            ChessBoard simulatedBoard = move.simulateMove(board);
-            return move.isLegal(simulatedBoard);
+    public Set<Move> removeMovesIntoCheck(Set<Move> moves) {
+        return moves.stream().filter(move -> {
+            return move.isLegal(move.simulateMove(board));
         }).collect(Collectors.toSet());
     }
 
     public PieceColor getColor() {
         return this.color;
+    }
+
+    public PieceColor getEnemyColor() {
+        if (color.equals(PieceColor.WHITE)) {
+            return PieceColor.BLACK;
+        }
+        return PieceColor.WHITE;
     }
 
     public boolean isEnemyPiece(ChessPiece otherPiece) {

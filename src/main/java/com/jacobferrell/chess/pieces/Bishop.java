@@ -30,7 +30,7 @@ public class Bishop extends ChessPiece {
     }
 
     @Override
-    public Set<Position> generatePossibleMoves() {
+    public Set<Move> generatePossibleMoves() {
         return getDiagonalMoves();
     }
 
