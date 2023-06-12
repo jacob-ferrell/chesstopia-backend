@@ -63,16 +63,15 @@ public class ChessBoard {
         return piece != null;
     }
 
-    public Set<Move> getAllPossibleMoves() {
+    public Set<Move> getAllPossibleMoves(PieceColor color) {
         Set<Move> allPossibleMoves = new HashSet<>();
         for (ChessPiece piece : board) {
-            Set<Position> possiblePositions = piece.generatePossibleMoves();
-            for (Position pos : possiblePositions) {
-                allPossibleMoves.add(new Move(piece, pos));
+            if (!piece.getColor().equals(color)) {
+                continue;
             }
+            allPossibleMoves.addAll(piece.generatePossibleMoves());         
         }
         return allPossibleMoves;
-
     }
 
     public void setPieceAtPosition(int x, int y, ChessPiece piece) {
