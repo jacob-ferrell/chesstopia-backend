@@ -137,7 +137,7 @@ public class MoveService {
     }
 
     public ChessPiece getAndValidatePiece(int x0, int y0, Game game, UserDTO user, PieceColor playerColor) {
-        ChessPiece piece = game.board.getPieceAtPosition(x0, y0);
+        ChessPiece piece = game.board.getPieceAtPosition(new Position(x0, y0));
         if (piece == null) {
             throw new IllegalArgumentException("There exists no piece coordinates: x: " + x0 + ", y: " + y0);
         }
@@ -161,19 +161,16 @@ public class MoveService {
     }
 
     public void validateAndMakeMove(ChessPiece piece, int x1, int y1, ChessBoard board) {
-        Set<Move> possibleMoves = piece.generatePossibleMoves();
-        if (!possibleMoves.stream().anyMatch(move -> move.position.equals(new Position(x1, y1)))) {
+        Set<Move> possibleMoves = Move.removeMovesIntoCheck(piece.generatePossibleMoves());
+        Position movePosition = new Position(x1, y1);
+        Move chessMove = possibleMoves.stream().filter(move -> move.position.equals(movePosition)).findFirst()
+                .orElse(null);
+        if (chessMove == null) {
             throw new IllegalArgumentException(
                     "Moving " + piece.getName() + " at " + "coordinates: x: " + piece.position.x + ", y: "
                             + piece.position.y + " to coordinates: x: " + x1 + ", y: " + y1 + " is not a valid move");
-
         }
-        Move chessMove = new Move(piece, new Position(x1, y1));
-        ChessBoard simulatedBoard = chessMove.simulateMove(board);
-        if (!chessMove.isLegal(simulatedBoard)) {
-            throw new IllegalArgumentException("The attempted move is not legal");
-        }
-        piece.makeMove(x1, y1);
+        piece.makeMove(movePosition);
     }
 
     public MoveDTO createMoveDTO(ChessPiece piece, PieceColor playerColor, int x0, int y0, int x1, int y1) {
