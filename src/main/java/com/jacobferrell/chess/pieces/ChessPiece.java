@@ -11,6 +11,7 @@ public abstract class ChessPiece {
     public boolean hasMoved;
     public Position position;
     protected ChessBoard board;
+    public int rank;
 
     public ChessPiece(PieceColor color, Position pos, ChessBoard board) {
         this.color = color;
@@ -23,10 +24,11 @@ public abstract class ChessPiece {
         if (Math.min(x, y) < 0 || Math.max(x, y) > 7) {
             return false;
         }
-        if (!board.isSpaceOccupied(new Position(x, y))) {
+        Position pos = new Position(x, y);
+        if (!board.isSpaceOccupied(pos)) {
             return true;
         }
-        ChessPiece otherPiece = board.getPieceAtPosition(x, y);
+        ChessPiece otherPiece = board.getPieceAtPosition(pos);
         if (isEnemyPiece(otherPiece)) {
             return true;
         }
@@ -132,30 +134,30 @@ public abstract class ChessPiece {
         return possibleMoves;
     }
 
-    public void makeMove(int x, int y) {
-        if (!board.isSpaceOccupied(new Position(x, y)) || isEnemyPiece(board.getPieceAtPosition(x, y))) {
-            board.setPieceAtPosition(x, y, this);
+    public void makeMove(Position pos) {
+        if (!board.isSpaceOccupied(pos) || isEnemyPiece(board.getPieceAtPosition(pos))) {
+            board.setPieceAtPosition(pos, this);
             return;
         }
-        ChessPiece rook = board.getPieceAtPosition(x, y);
+        ChessPiece rook = board.getPieceAtPosition(pos);
         if (!(rook instanceof Rook)) {
             return;
         }
         King king = board.getPlayerKing(color);
-        board.setPieceAtPosition(king.position.x, king.position.y, rook);
-        board.setPieceAtPosition(x, y, king);
+        board.setPieceAtPosition(pos, rook);
+        board.setPieceAtPosition(pos, king);
     }
 
-    public void movePiece(int x, int y) {
-        board.setPieceAtPosition(x, y, this);
-        position = new Position(x, y);
+    public void movePiece(Position pos) {
+        board.setPieceAtPosition(pos, this);
+        position = pos;
         setHasMoved();
 
     }
 
     public Set<Move> removeMovesIntoCheck(Set<Move> moves) {
         return moves.stream().filter(move -> {
-            return move.isLegal(move.simulateMove(board));
+            return move.isLegal(move.simulateMove());
         }).collect(Collectors.toSet());
     }
 
@@ -202,5 +204,17 @@ public abstract class ChessPiece {
     public void setPosition(int x, int y) {
         this.position = new Position(x, y);
     }
+
+    /* @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof ChessPiece)) {
+            return false;
+        }
+        ChessPiece p = (ChessPiece) o;
+        return color.equals(p.color) && getName().equals(p.getName()) && position.equals(p.position);
+    } */
 
 }
