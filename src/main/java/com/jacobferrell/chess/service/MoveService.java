@@ -58,7 +58,13 @@ public class MoveService {
         Game game = createGameFromDTO(gameData);
         ChessPiece piece = getAndValidatePiece(x, y, game, user, getPlayerColor(gameData, user));
         gameService.showPlayerIsConnectedToGame(gameId, request, true);
-        return piece.removeMovesIntoCheck(piece.generatePossibleMoves()).stream().map(m -> m.position)
+        return getAllPossibleMovesForPiece(piece).stream().map(m -> m.position)
+                .collect(Collectors.toSet());
+    }
+
+    private Set<Move> getAllPossibleMovesForPiece(ChessPiece piece) {
+        return Move.removeMovesIntoCheck(piece.getBoard().getAllPossibleMoves().get(piece.color)).stream()
+                .filter(move -> move.piece.equals(piece))
                 .collect(Collectors.toSet());
     }
 
@@ -161,7 +167,7 @@ public class MoveService {
     }
 
     public void validateAndMakeMove(ChessPiece piece, int x1, int y1, ChessBoard board) {
-        Set<Move> possibleMoves = Move.removeMovesIntoCheck(piece.generatePossibleMoves());
+        Set<Move> possibleMoves = getAllPossibleMovesForPiece(piece);
         Position movePosition = new Position(x1, y1);
         Move chessMove = possibleMoves.stream().filter(move -> move.position.equals(movePosition)).findFirst()
                 .orElse(null);
