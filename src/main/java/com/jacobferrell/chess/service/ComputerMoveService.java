@@ -55,7 +55,7 @@ public class ComputerMoveService {
         moveService.validateIsPlayersTurn(gameData, computer);
         PieceColor computerColor = moveService.getPlayerColor(gameData, computer);
         Game game = moveService.createGameFromDTO(gameData);
-        Set<Move> allPossibleComputerMoves = Move.removeMovesIntoCheck(game.board.getAllPossibleMoves(computerColor));
+        Set<Move> allPossibleComputerMoves = Move.removeMovesIntoCheck(game.board.getAllPossibleMoves().get(computerColor));
         Map<String, Set<Move>> moveMap = getMoveMap(allPossibleComputerMoves);
         King computerKing = game.board.getPlayerKing(computerColor);
         boolean computerKingIsInCheck = computerKing.isInCheck();
@@ -92,7 +92,7 @@ public class ComputerMoveService {
     }
 
     private void setAndSave(GameDTO gameData, Game game, Move move, Map<String, Object> outMap) {
-        ChessPiece piece = move.getPiece();
+        ChessPiece piece = move.piece;
         int fromX = piece.position.x;
         int fromY = piece.position.y;
         int toX = move.position.x;
@@ -141,7 +141,7 @@ public class ComputerMoveService {
     }
 
     private ChessPiece getRandomPiece(Set<Move> moves) {
-        Set<ChessPiece> pieceSet = moves.stream().map(m -> m.getPiece()).collect(Collectors.toSet());
+        Set<ChessPiece> pieceSet = moves.stream().map(m -> m.piece).collect(Collectors.toSet());
         List<ChessPiece> pieceList = new ArrayList<>(pieceSet);
         int randomIndex = random.nextInt(pieceList.size());
         ChessPiece randomPiece = pieceList.get(randomIndex);
@@ -150,7 +150,7 @@ public class ComputerMoveService {
 
     private Move getRandomMove(Set<Move> moves) {
         ChessPiece piece = getRandomPiece(moves);
-        Set<Move> movesFilteredByPiece = moves.stream().filter(m -> m.getPiece().equals(piece))
+        Set<Move> movesFilteredByPiece = moves.stream().filter(m -> m.piece.equals(piece))
                 .collect(Collectors.toSet());
         Move[] movesArray = movesFilteredByPiece.toArray(new Move[0]);
         int randomIndex = random.nextInt(movesArray.length);
@@ -198,7 +198,7 @@ public class ComputerMoveService {
 
     private void addMovesToMap(Set<Move> moves, Map<String, Set<Move>> map) {
         for (Move move : moves) {
-            ChessPiece piece = move.getPiece();
+            ChessPiece piece = move.piece;
             Position pos = move.position;
             ChessBoard simulatedBoard = move.simulateMove();
             King playerKing = simulatedBoard.getOpponentKing(piece.getColor());
