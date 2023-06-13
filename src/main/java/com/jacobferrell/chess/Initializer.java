@@ -1,5 +1,6 @@
 package com.jacobferrell.chess;
 
+import com.jacobferrell.chess.chessboard.ChessBoard;
 import com.jacobferrell.chess.model.*;
 import com.jacobferrell.chess.repository.GameRepository;
 import com.jacobferrell.chess.repository.UserRepository;
@@ -50,6 +51,22 @@ public class Initializer implements CommandLineRunner {
         var computer = UserDTO.builder().name("Computer").email("computer@chesstopia")
                 .password(passwordEncoder.encode(COMPUTER_PASSWORD)).role(Role.AI).build();
         userRepository.save(computer);
+
+        GameDTO checkMateTest = GameDTO.builder().winner(null)
+                .build();
+        gameRepository.save(checkMateTest);
+        Set<UserDTO> testPlayers = new HashSet<>();
+        testPlayers.add(player1);
+        testPlayers.add(computer);
+        checkMateTest.setPlayers(testPlayers);
+        checkMateTest.setWhitePlayer(computer);
+        checkMateTest.setBlackPlayer(player1);
+        checkMateTest.setCurrentTurn(player1);
+        ChessBoard board = new ChessBoard();
+        board.setBoardOneMoveFromCheckmate();
+        System.out.println(board);
+        checkMateTest.setPieces(board.getPieceData());
+        gameRepository.save(checkMateTest);
 
         Set<UserDTO> players = new HashSet<>();
         players.add(player1);
