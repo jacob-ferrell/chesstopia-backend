@@ -5,8 +5,8 @@ import java.util.Set;
 import java.util.HashSet;
 
 public class Rook extends ChessPiece {
-    private char SYMBOL;
     public String name = "ROOK";
+    public boolean canCastle;
 
     public Rook(PieceColor color, Position pos, ChessBoard board) {
         super(color, pos, board);
@@ -26,35 +26,28 @@ public class Rook extends ChessPiece {
         return clone;
     }
 
+    public Set<Position> getCastleTravelPositions(King king) {
+        Set<Position> travelPositions = new HashSet<>();
+        if (position.x == 0) {
+            for (int x = 0; x <= king.position.x; x++) {
+                travelPositions.add(new Position(x, position.y));
+            }
+            return travelPositions;
+        }
+        for (int x = 7; x >= king.position.x; x--) {
+            travelPositions.add(new Position(x, position.y));
+        }
+        return travelPositions;
+    }
+
+
     @Override
     public Set<Move> generatePossibleMoves() {
         Set<Move> possibleMoves = new HashSet<>();
         possibleMoves.addAll(getHorizontalMoves());
         possibleMoves.addAll(getVerticalMoves());
-        /* if (canCastle()) {
-            King king = board.getPlayerKing(color);
-            Position kingPosition = new Position(king.position.x, king.position.y);
-            possibleMoves.add(kingPosition);
-        } */
         return possibleMoves;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        }
-        if (!(o instanceof Rook)) {
-            return false;
-        }
-        Rook otherRook = (Rook) o;
-        return position.x == otherRook.position.x && position.y == otherRook.position.y
-                && color == otherRook.getColor() && hasMoved == otherRook.hasMoved;
-    }
-
-    @Override
-    public char getSymbol() {
-        return SYMBOL;
-    }
 
 }
