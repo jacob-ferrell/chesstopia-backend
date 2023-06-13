@@ -11,6 +11,7 @@ public abstract class ChessPiece {
     public Position position;
     protected ChessBoard board;
     public int rank;
+    public char SYMBOL;
 
     public ChessPiece(PieceColor color, Position pos, ChessBoard board) {
         this.color = color;
@@ -35,8 +36,6 @@ public abstract class ChessPiece {
     }
 
     public abstract ChessPiece getClone(ChessBoard clonedBoard);
-
-    public abstract char getSymbol();
 
     public abstract Set<Move> generatePossibleMoves();
 
@@ -138,13 +137,11 @@ public abstract class ChessPiece {
             board.setPieceAtPosition(pos, this);
             return;
         }
-        ChessPiece rook = board.getPieceAtPosition(pos);
-        if (!(rook instanceof Rook)) {
-            return;
-        }
-        King king = board.getPlayerKing(color);
-        board.setPieceAtPosition(pos, rook);
-        board.setPieceAtPosition(pos, king);
+        //handle castle
+        board.setPieceAtPosition(position, board.getPieceAtPosition(pos));
+        board.setPieceAtPosition(pos, this);
+        
+        
     }
 
     public void movePiece(Position pos) {
