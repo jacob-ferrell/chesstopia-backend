@@ -3,7 +3,6 @@ package com.jacobferrell.chess.pieces;
 import com.jacobferrell.chess.chessboard.*;
 import java.util.Set;
 import java.util.HashSet;
-import java.util.stream.Collectors;
 
 public abstract class ChessPiece {
     public PieceColor color;
@@ -155,12 +154,6 @@ public abstract class ChessPiece {
 
     }
 
-    public Set<Move> removeMovesIntoCheck(Set<Move> moves) {
-        return moves.stream().filter(move -> {
-            return move.isLegal(move.simulateMove());
-        }).collect(Collectors.toSet());
-    }
-
     public PieceColor getColor() {
         return this.color;
     }
@@ -177,19 +170,6 @@ public abstract class ChessPiece {
             return false;
         }
         return true;
-    }
-
-    public boolean canCastle() {
-        if (!(this instanceof Rook)) {
-            return false;
-        }
-        Set<Rook> castleRooks = board.getCastleRooks(color);
-        for (Rook rook : castleRooks) {
-            if (this.equals(rook)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override
