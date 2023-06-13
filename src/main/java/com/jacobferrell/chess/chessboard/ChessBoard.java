@@ -2,7 +2,10 @@ package com.jacobferrell.chess.chessboard;
 
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+
 import com.jacobferrell.chess.pieces.*;
 import com.jacobferrell.chess.model.PieceDTO;
 
@@ -68,15 +71,38 @@ public class ChessBoard {
         return piece != null;
     }
 
-    public Set<Move> getAllPossibleMoves(PieceColor color) {
-        Set<Move> allPossibleMoves = new HashSet<>();
+    public Map<PieceColor, Set<Move>> getAllPossibleMoves() {
+        Map<PieceColor, Set<Move>> moveMap = new HashMap<>();
+        Set<King> kings = getKings();
         for (ChessPiece piece : board) {
-            if (!piece.getColor().equals(color)) {
-                continue;
-            }
-            allPossibleMoves.addAll(piece.generatePossibleMoves());         
+            addToSet(moveMap, piece.color, piece.generatePossibleMoves());
         }
-        return allPossibleMoves;
+        for (King king : kings) {
+            Set<Rook> castleRooks = getCastleRooks(king, moveMap.get(getEnemyColor(king.color)));
+            for (Rook rook : castleRooks) {
+                Set<Move> castleMoves = new HashSet<>();
+                castleMoves.add(new Move(king, rook.position));
+                castleMoves.add(new Move(rook, king.position));
+                addToSet(moveMap, king.color, castleMoves);
+            }
+        }
+        return moveMap;
+    }
+
+    private void addToSet(Map<PieceColor, Set<Move>> map, PieceColor color, Set<Move> moves) {
+        Set<Move> set = map.get(color);
+        if (set == null) {
+            set = new HashSet<>();
+        }
+        set.addAll(moves);
+        map.put(color, set);
+    }
+
+    public PieceColor getEnemyColor(PieceColor color) {
+        if (color.equals(PieceColor.WHITE)) {
+            return PieceColor.BLACK;
+        }
+        return PieceColor.WHITE;
     }
 
     public void setPieceAtPosition(Position pos, ChessPiece piece) {
@@ -104,7 +130,7 @@ public class ChessBoard {
 
     public King getPlayerKing(PieceColor color) {
         Set<King> kings = getKings();
-        return kings.stream().filter(king -> king.getColor() == color).findFirst().get();
+        return kings.stream().filter(king -> king.getColor() == color).findFirst().orElseThrow();
     }
 
     public King getOpponentKing(PieceColor color) {
@@ -119,7 +145,7 @@ public class ChessBoard {
         }
         boolean hasWhite = false;
         boolean hasBlack = false;
-        for(King king : kings) {
+        for (King king : kings) {
             if (king.getColor().equals(PieceColor.WHITE)) {
                 hasWhite = true;
             }
@@ -134,41 +160,32 @@ public class ChessBoard {
         this.board = new HashSet<>();
     }
 
-    // Return a Set of Rooks which are capable of being castled for a given player
-    public Set<Rook> getCastleRooks(PieceColor color) {
+    private Set<Rook> getCastleRooks(King king, Set<Move> enemyMoves) {
         Set<Rook> castleRooks = new HashSet<>();
-        King king = getPlayerKing(color);
-        // Return empty set if player's king has moved
         if (king.hasMoved) {
             return castleRooks;
         }
-        // Get all players rooks which have not been moved
-        Set<Rook> rooks = board.stream()
-                .filter(piece -> (piece instanceof Rook) && !piece.hasMoved && piece.getColor().equals(color))
-                .map(r -> (Rook) r).collect(Collectors.toSet());
-
-        //
-        // Test if all spaces between king and given rook are empty, and also are not in
-        // the path of any enemy pieces
-        outerloop: for (Rook rook : rooks) {
-            int kingX = king.position.x;
-            int rookX = rook.position.x;
-            int y = king.position.y;
-            int max = Math.max(kingX, rookX);
-            int min = Math.min(kingX, rookX);
-            for (int n = min + 1; n < max; n++) {
-                if (isSpaceOccupied(new Position(n, y))) {
-                    continue outerloop;
-                }
-                Move move = new Move(king, new Position(n, y));
-                ChessBoard clonedBoard = move.simulateMove();
-                if (clonedBoard.getPlayerKing(color).isInCheck()) {
-                    continue outerloop;
-                }
-                castleRooks.add((Rook) rook);
+        Set<Rook> playerRooks = board.stream().filter(p -> p instanceof Rook && p.color.equals(king.color) && !p.hasMoved)
+                .map(p -> (Rook) p).collect(Collectors.toSet());
+        if (playerRooks.isEmpty()) {
+            return castleRooks;
+        }
+        System.out.println("playerRooks: " + playerRooks);
+        outerloop:
+        for (Rook rook : playerRooks) {
+            Set<Position> travelPositions = rook.getCastleTravelPositions(king);
+            if (travelPositions.stream().anyMatch(pos -> !pos.equals(king.position) && !pos.equals(rook.position) && isSpaceOccupied(pos))) {
+                continue;
             }
+            for (Move move : enemyMoves) {
+                if (travelPositions.stream().anyMatch(pos -> pos.equals(move.position))) {
+                    continue outerloop;
+                }
+            }
+            castleRooks.add(rook);
         }
         return castleRooks;
+
     }
 
     public void setBoardFromData(Set<PieceDTO> pieces) {
@@ -236,7 +253,7 @@ public class ChessBoard {
                 if (piece == null) {
                     sb.append("-");
                 } else {
-                    sb.append(piece.getSymbol());
+                    sb.append(piece.SYMBOL);
                 }
                 sb.append(" ");
             }
