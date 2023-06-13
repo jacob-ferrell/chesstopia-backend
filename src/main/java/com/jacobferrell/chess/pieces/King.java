@@ -6,17 +6,12 @@ import java.util.stream.Collectors;
 import java.util.HashSet;
 
 public class King extends ChessPiece {
-    protected char SYMBOL;
     public String name = "KING";
 
     public King(PieceColor color, Position pos, ChessBoard board) {
         super(color, pos, board);
         this.SYMBOL = color == PieceColor.WHITE ? '♔' : '♚';
         this.rank = 1;
-    }
-
-    public char getSymbol() {
-        return SYMBOL;
     }
 
     @Override
@@ -45,15 +40,13 @@ public class King extends ChessPiece {
     }
 
     public boolean isInCheck() {
-        Set<Move> allPossibleMoves = board.getAllPossibleMoves(getEnemyColor());
-        return !allPossibleMoves
+        Set<Move> allPossibleMoves = board.getAllPossibleMoves().get(getEnemyColor());
+        return allPossibleMoves
                 .stream()
-                .filter(move -> move.position.equals(position))
-                .collect(Collectors.toSet())
-                .isEmpty();
+                .anyMatch(move -> move.position.equals(position));
     }
 
     public boolean isInCheckMate() {
-        return Move.removeMovesIntoCheck(board.getAllPossibleMoves(color)).isEmpty();
+        return Move.removeMovesIntoCheck(board.getAllPossibleMoves().get(color)).isEmpty();
     }
 }
