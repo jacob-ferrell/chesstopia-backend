@@ -5,16 +5,12 @@ import java.util.stream.Collectors;
 import com.jacobferrell.chess.chessboard.*;
 
 public class Move {
-    protected ChessPiece piece;
+    public ChessPiece piece;
     public Position position;
 
     public Move(ChessPiece piece, Position to) {
         this.piece = piece;
         this.position = to;
-    }
-
-    public ChessPiece getPiece() {
-        return piece;
     }
 
     public ChessBoard simulateMove() {
@@ -24,8 +20,9 @@ public class Move {
         return clonedBoard;
     }
 
-    public boolean isLegal(ChessBoard board) {
-        return board.hasBothKings() && !board.getPlayerKing(piece.color).isInCheck(); 
+    public boolean isLegal() {
+        ChessBoard simulatedBoard = simulateMove();
+        return simulatedBoard.hasBothKings() && !simulatedBoard.getPlayerKing(piece.color).isInCheck(); 
     }
 
     @Override
@@ -37,7 +34,7 @@ public class Move {
 
     public static Set<Move> removeMovesIntoCheck(Set<Move> moves) {
         return moves.stream().filter(move -> {
-            return move.isLegal(move.simulateMove());
+            return move.isLegal();
         }).collect(Collectors.toSet());
     }
 
