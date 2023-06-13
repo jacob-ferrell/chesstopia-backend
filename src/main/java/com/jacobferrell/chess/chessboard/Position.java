@@ -45,6 +45,6 @@ public class Position {
 
     @Override
     public String toString() {
-        return getY() + ", " + getX();
+        return "[ Y: "  + getY() + ", X: " + getX() + " ]";
     }
 }
