@@ -7,11 +7,11 @@ import com.jacobferrell.chess.pieces.*;
 import com.jacobferrell.chess.model.PieceDTO;
 
 public class ChessBoard {
-    public Set<ChessPiece> board;
+    public Set<ChessPiece> board = new HashSet<>();
     private Set<ChessPiece> graveyard = new HashSet<>();
 
     public ChessBoard() {
-        this.board = setBoard();
+        setBoard();
     }
 
     public ChessBoard getClone() {
@@ -23,8 +23,7 @@ public class ChessBoard {
         return clonedBoard;
     }
 
-    private Set<ChessPiece> setBoard() {
-        Set<ChessPiece> board = new HashSet<>();
+    private void setBoard() {
         // Initialize black pieces
         board.add(new Rook(PieceColor.BLACK, new Position(0, 0), this));
         board.add(new Knight(PieceColor.BLACK, new Position(1, 0), this));
@@ -50,11 +49,17 @@ public class ChessBoard {
         for (int i = 0; i < 8; i++) {
             board.add(new Pawn(PieceColor.WHITE, new Position(i, 6), this));
         }
-        return board;
     }
 
-    public ChessPiece getPieceAtPosition(int x, int y) {
-        Position pos = new Position(x, y);
+    public void setBoardOneMoveFromCheckmate() {
+        clearBoard();
+        board.add(new Rook(PieceColor.WHITE, new Position(1, 1), this));
+        board.add(new Rook(PieceColor.WHITE, new Position(0, 1), this));
+        board.add(new King(PieceColor.BLACK, new Position(7, 0), this));
+        board.add(new King(PieceColor.WHITE, new Position(7, 7), this));
+    }
+
+    public ChessPiece getPieceAtPosition(Position pos) {
         return board.stream().filter(p -> p.position.equals(pos)).findFirst().orElse(null);
     }
 
@@ -74,18 +79,18 @@ public class ChessBoard {
         return allPossibleMoves;
     }
 
-    public void setPieceAtPosition(int x, int y, ChessPiece piece) {
-        ChessPiece takenPiece = getPieceAtPosition(x, y);
+    public void setPieceAtPosition(Position pos, ChessPiece piece) {
+        ChessPiece takenPiece = getPieceAtPosition(pos);
         if (takenPiece != null && piece.isEnemyPiece(takenPiece)) {
             graveyard.add(takenPiece);
             board.remove(takenPiece);
         }
-        piece.position = new Position(x, y);
+        piece.position = pos;
         piece.setHasMoved();
     }
 
-    public void removePieceAtPosition(int x, int y) {
-        ChessPiece piece = getPieceAtPosition(x, y);
+    public void removePieceAtPosition(Position pos) {
+        ChessPiece piece = getPieceAtPosition(pos);
         if (piece == null)
             return;
         board.remove(piece);
@@ -156,7 +161,7 @@ public class ChessBoard {
                     continue outerloop;
                 }
                 Move move = new Move(king, new Position(n, y));
-                ChessBoard clonedBoard = move.simulateMove(this);
+                ChessBoard clonedBoard = move.simulateMove();
                 if (clonedBoard.getPlayerKing(color).isInCheck()) {
                     continue outerloop;
                 }
@@ -198,7 +203,7 @@ public class ChessBoard {
                     break;
             }
             if (hasMoved) {
-                getPieceAtPosition(x, y).setHasMoved();
+                getPieceAtPosition(new Position(x, y)).setHasMoved();
             }
         }
     }
@@ -227,7 +232,7 @@ public class ChessBoard {
         StringBuilder sb = new StringBuilder();
         for (int y = 0; y < 8; y++) {
             for (int x = 0; x < 8; x++) {
-                ChessPiece piece = getPieceAtPosition(x, y);
+                ChessPiece piece = getPieceAtPosition(new Position(x, y));
                 if (piece == null) {
                     sb.append("-");
                 } else {
