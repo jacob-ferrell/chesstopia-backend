@@ -4,7 +4,6 @@ import java.util.Set;
 
 
 public class Bishop extends ChessPiece {
-    private char SYMBOL;
     public String name = "BISHOP";
 
     public Bishop(PieceColor color, Position pos, ChessBoard board) {
@@ -23,11 +22,6 @@ public class Bishop extends ChessPiece {
         Bishop clone = new Bishop(color, new Position(position.x, position.y), board);
         clone.hasMoved = hasMoved;
         return clone;
-    }
-
-    @Override
-    public char getSymbol() {
-        return SYMBOL;
     }
 
     @Override

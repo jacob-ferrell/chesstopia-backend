@@ -4,7 +4,6 @@ import java.util.Set;
 import java.util.HashSet;
 
 public class Queen extends ChessPiece {
-    private char SYMBOL;
     public String name = "QUEEN";
 
     public Queen(PieceColor color, Position pos, ChessBoard board) {
@@ -25,10 +24,6 @@ public class Queen extends ChessPiece {
         return clone;
     }
 
-    @Override
-    public char getSymbol() {
-        return SYMBOL;
-    }
     @Override
     public Set<Move> generatePossibleMoves() {
         Set<Move> possibleMoves = new HashSet<>();

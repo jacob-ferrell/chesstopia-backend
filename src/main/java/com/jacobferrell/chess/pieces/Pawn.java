@@ -4,18 +4,12 @@ import java.util.Set;
 import java.util.HashSet;
 
 public class Pawn extends ChessPiece {
-    private char SYMBOL = '♙';
     public String name = "PAWN";
 
     public Pawn(PieceColor color, Position pos, ChessBoard board) {
         super(color, pos, board);
         this.SYMBOL = color == PieceColor.WHITE ? '♙' : '♟';
         this.rank = 6;
-    }
-
-    @Override
-    public char getSymbol() {
-        return SYMBOL;
     }
 
     @Override
