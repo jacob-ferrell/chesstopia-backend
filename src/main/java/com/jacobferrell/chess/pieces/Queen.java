@@ -10,6 +10,7 @@ public class Queen extends ChessPiece {
     public Queen(PieceColor color, Position pos, ChessBoard board) {
         super(color, pos, board);
         this.SYMBOL = color == PieceColor.WHITE ? '♕' : '♛';
+        this.rank = 2;
     }
 
     @Override

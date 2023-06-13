@@ -11,6 +11,7 @@ public class Rook extends ChessPiece {
     public Rook(PieceColor color, Position pos, ChessBoard board) {
         super(color, pos, board);
         this.SYMBOL = color == PieceColor.WHITE ? '♖' : '♜';
+        this.rank = 3;
     }
 
     @Override

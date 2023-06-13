@@ -10,6 +10,7 @@ public class Knight extends ChessPiece {
     public Knight(PieceColor color, Position pos, ChessBoard board) {
         super(color, pos, board);
         this.SYMBOL = color == PieceColor.WHITE ? '♘' : '♞';
+        this.rank = 5;
     }
 
     @Override

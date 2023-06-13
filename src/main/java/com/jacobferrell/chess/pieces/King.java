@@ -12,6 +12,7 @@ public class King extends ChessPiece {
     public King(PieceColor color, Position pos, ChessBoard board) {
         super(color, pos, board);
         this.SYMBOL = color == PieceColor.WHITE ? '♔' : '♚';
+        this.rank = 1;
     }
 
     public char getSymbol() {
@@ -40,27 +41,19 @@ public class King extends ChessPiece {
                 .filter(move -> Math.max(Math.abs(position.x - move.position.x),
                         Math.abs(position.y - move.position.y)) < 2)
                 .collect(Collectors.toSet());
-        /*
-         * possibleMoves.addAll(board.getCastleRooks(color).stream()
-         * .map(r -> new Position(r.position.x,
-         * r.position.y)).collect(Collectors.toSet()));
-         */
         return possibleMoves;
     }
 
     public boolean isInCheck() {
-        Position currentPosition = position;
         Set<Move> allPossibleMoves = board.getAllPossibleMoves(getEnemyColor());
         return !allPossibleMoves
                 .stream()
-                .filter(move -> move.position.equals(currentPosition))
+                .filter(move -> move.position.equals(position))
                 .collect(Collectors.toSet())
                 .isEmpty();
     }
 
     public boolean isInCheckMate() {
-        return board.getAllPossibleMoves(color).stream().filter(move -> {
-            return move.isLegal(move.simulateMove(board));
-        }).collect(Collectors.toSet()).isEmpty();
+        return Move.removeMovesIntoCheck(board.getAllPossibleMoves(color)).isEmpty();
     }
 }

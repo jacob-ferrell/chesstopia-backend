@@ -10,6 +10,7 @@ public class Bishop extends ChessPiece {
     public Bishop(PieceColor color, Position pos, ChessBoard board) {
         super(color, pos, board);
         this.SYMBOL = color == PieceColor.WHITE ? '♗' : '♝';
+        this.rank = 4;
     }
 
     @Override

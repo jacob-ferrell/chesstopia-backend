@@ -10,6 +10,7 @@ public class Pawn extends ChessPiece {
     public Pawn(PieceColor color, Position pos, ChessBoard board) {
         super(color, pos, board);
         this.SYMBOL = color == PieceColor.WHITE ? '♙' : '♟';
+        this.rank = 6;
     }
 
     @Override
@@ -47,7 +48,7 @@ public class Pawn extends ChessPiece {
             if (Math.min(x, y) < 0 || y > 8 || x == currentX || !board.isSpaceOccupied(pos)) {
                 continue;
             }
-            ChessPiece otherPiece = board.getPieceAtPosition(x, y);
+            ChessPiece otherPiece = board.getPieceAtPosition(pos);
             if (isEnemyPiece(otherPiece)) {
                 possibleMoves.add(new Move(this, pos));
             }
