@@ -39,9 +39,9 @@ public class MoveController {
     @CrossOrigin(origins = "http://localhost:5173")
     @PostMapping("/game/{gameId}/move")
     ResponseEntity<GameDTO> makeMove(@PathVariable Long gameId, @RequestParam int x0, @RequestParam int y0,
-            @RequestParam int x1, @RequestParam int y1, HttpServletRequest request)
+            @RequestParam int x1, @RequestParam int y1, @RequestParam String promotion, HttpServletRequest request)
             throws URISyntaxException {
-        Map<String, Object> moveData = moveCreationService.makeMove(gameId, x0, y0, x1, y1, request);
+        Map<String, Object> moveData = moveCreationService.makeMove(gameId, x0, y0, x1, y1, request, promotion);
         GameDTO gameData = (GameDTO) moveData.get("gameData");
         MoveDTO move = (MoveDTO) moveData.get("moveData");
         return ResponseEntity.created(new URI("/api/game/" + gameData.getId() + "/move/" + move.getId()))
