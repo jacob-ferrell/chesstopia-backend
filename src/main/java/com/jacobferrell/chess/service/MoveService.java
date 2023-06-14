@@ -24,6 +24,7 @@ import com.jacobferrell.chess.model.UserDTO;
 import com.jacobferrell.chess.pieces.ChessPiece;
 import com.jacobferrell.chess.pieces.King;
 import com.jacobferrell.chess.pieces.Move;
+import com.jacobferrell.chess.pieces.Pawn;
 import com.jacobferrell.chess.pieces.PieceColor;
 import com.jacobferrell.chess.repository.GameRepository;
 
@@ -77,7 +78,7 @@ public class MoveService {
 
     }
 
-    public Game createGameFromDTO(GameDTO data) {
+    public static Game createGameFromDTO(GameDTO data) {
         Player player1 = getPlayerFromUser(data.getWhitePlayer(), PieceColor.WHITE);
         Player player2 = getPlayerFromUser(data.getBlackPlayer(), PieceColor.BLACK);
         Game game = new Game(player1, player2);
@@ -86,7 +87,7 @@ public class MoveService {
         return game;
     }
 
-    public Player getPlayerFromUser(UserDTO user, PieceColor color) {
+    public static Player getPlayerFromUser(UserDTO user, PieceColor color) {
         Player player = new Player(user.getName(), color);
         return player;
     }
@@ -142,7 +143,7 @@ public class MoveService {
         }
     }
 
-    public ChessPiece getAndValidatePiece(int x0, int y0, Game game, UserDTO user, PieceColor playerColor) {
+    public static ChessPiece getAndValidatePiece(int x0, int y0, Game game, UserDTO user, PieceColor playerColor) {
         ChessPiece piece = game.board.getPieceAtPosition(new Position(x0, y0));
         if (piece == null) {
             throw new IllegalArgumentException("There exists no piece coordinates: x: " + x0 + ", y: " + y0);
@@ -162,11 +163,11 @@ public class MoveService {
         return optionalGame.get();
     }
 
-    public PieceColor getPlayerColor(GameDTO game, UserDTO user) {
+    public static PieceColor getPlayerColor(GameDTO game, UserDTO user) {
         return game.getWhitePlayer().equals(user) ? PieceColor.WHITE : PieceColor.BLACK;
     }
 
-    public void validateAndMakeMove(ChessPiece piece, int x1, int y1, ChessBoard board) {
+    public void validateAndMakeMove(ChessPiece piece, int x1, int y1, String upgradeType) {
         Set<Move> possibleMoves = getAllPossibleMovesForPiece(piece);
         Position movePosition = new Position(x1, y1);
         Move chessMove = possibleMoves.stream().filter(move -> move.position.equals(movePosition)).findFirst()
@@ -176,7 +177,16 @@ public class MoveService {
                     "Moving " + piece.getName() + " at " + "coordinates: x: " + piece.position.x + ", y: "
                             + piece.position.y + " to coordinates: x: " + x1 + ", y: " + y1 + " is not a valid move");
         }
+        if (isPromotion(piece, y1)) {
+            Position from = piece.position;
+            piece = (ChessPiece) piece.getBoard().createNewPiece(upgradeType, new Position(x1, y1), piece.getColor());
+            handlePromotion(piece, from);
+        }
         piece.makeMove(movePosition);
+    }
+
+    private boolean isPromotion(ChessPiece piece, int y) {
+        return piece instanceof Pawn && ((piece.color.equals(PieceColor.WHITE) && y == 0) || (piece.color.equals(PieceColor.BLACK) && y == 7));
     }
 
     public MoveDTO createMoveDTO(ChessPiece piece, PieceColor playerColor, int x0, int y0, int x1, int y1) {
@@ -184,6 +194,12 @@ public class MoveService {
                 .fromX(x0).fromY(y0)
                 .toX(x1).toY(y1).build();
         return move;
+    }
+
+    public static void handlePromotion(ChessPiece piece, Position from) {
+        ChessBoard board = piece.getBoard();
+        board.removePieceAtPosition(from);
+        board.setPieceAtPosition(piece.position, piece);
     }
 
 }
