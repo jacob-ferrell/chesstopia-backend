@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import com.jacobferrell.chess.game.Game;
 import com.jacobferrell.chess.model.GameDTO;
 import com.jacobferrell.chess.model.MoveDTO;
-import com.jacobferrell.chess.model.Role;
 import com.jacobferrell.chess.model.UserDTO;
 import com.jacobferrell.chess.pieces.ChessPiece;
 import com.jacobferrell.chess.pieces.PieceColor;
@@ -30,22 +29,22 @@ public class MoveCreationService {
     @Autowired
     private MoveService moveService;
 
-    public Map<String, Object> makeMove(long gameId, int x0, int y0, int x1, int y1, HttpServletRequest request) {
+    public Map<String, Object> makeMove(long gameId, int x0, int y0, int x1, int y1, HttpServletRequest request, String upgradeType) {
         GameDTO gameData = moveService.getGameById(gameId);
         UserDTO user = jwtService.getUserFromRequest(request);
         moveService.validateGameIncludesPlayer(gameData, user);
         moveService.validateGameIsNotOver(gameData);
         moveService.validateIsPlayersTurn(gameData, user);
-        PieceColor playerColor = moveService.getPlayerColor(gameData, user);
+        PieceColor playerColor = MoveService.getPlayerColor(gameData, user);
         // Convert game object from frontend into backend game object
-        Game game = moveService.createGameFromDTO(gameData);
+        Game game = MoveService.createGameFromDTO(gameData);
         // Test that a piece has been selected and belongs to the current user
-        ChessPiece selectedPiece = moveService.getAndValidatePiece(x0, y0, game, user, playerColor);
+        ChessPiece selectedPiece = MoveService.getAndValidatePiece(x0, y0, game, user, playerColor);
         // Create move object and simulate the move to see if it is legal
-        moveService.validateAndMakeMove(selectedPiece, x1, y1, game.board);
+        moveService.validateAndMakeMove(selectedPiece, x1, y1, upgradeType);
         // Set and save the board, moves, turn, and playerInCheck
         MoveDTO move = moveService.createMoveDTO(selectedPiece, playerColor, x0, y0, x1, y1);
-        gameData.setPieces(game.board.getPieceData());
+        gameData.setPieces(selectedPiece.getBoard().getPieceData());
 
         Set<MoveDTO> moves = gameData.getMoves();
         moves.add(move);
