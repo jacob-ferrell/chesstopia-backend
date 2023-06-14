@@ -112,6 +112,7 @@ public class ChessBoard {
             board.remove(takenPiece);
         }
         piece.position = pos;
+        board.add(piece);
         piece.setHasMoved();
     }
 
@@ -165,16 +166,16 @@ public class ChessBoard {
         if (king.hasMoved) {
             return castleRooks;
         }
-        Set<Rook> playerRooks = board.stream().filter(p -> p instanceof Rook && p.color.equals(king.color) && !p.hasMoved)
+        Set<Rook> playerRooks = board.stream()
+                .filter(p -> p instanceof Rook && p.color.equals(king.color) && !p.hasMoved)
                 .map(p -> (Rook) p).collect(Collectors.toSet());
         if (playerRooks.isEmpty()) {
             return castleRooks;
         }
-        System.out.println("playerRooks: " + playerRooks);
-        outerloop:
-        for (Rook rook : playerRooks) {
+        outerloop: for (Rook rook : playerRooks) {
             Set<Position> travelPositions = rook.getCastleTravelPositions(king);
-            if (travelPositions.stream().anyMatch(pos -> !pos.equals(king.position) && !pos.equals(rook.position) && isSpaceOccupied(pos))) {
+            if (travelPositions.stream().anyMatch(
+                    pos -> !pos.equals(king.position) && !pos.equals(rook.position) && isSpaceOccupied(pos))) {
                 continue;
             }
             for (Move move : enemyMoves) {
@@ -195,34 +196,29 @@ public class ChessBoard {
             int x = piece.getX();
             int y = piece.getY();
             boolean hasMoved = piece.hasMoved;
-            switch (piece.getType()) {
-                case "ROOK":
-                    board.add(new Rook(color, new Position(x, y), this));
-                    break;
-                case "BISHOP":
-                    board.add(new Bishop(color, new Position(x, y), this));
-                    break;
-
-                case "KING":
-                    board.add(new King(color, new Position(x, y), this));
-                    break;
-
-                case "PAWN":
-                    board.add(new Pawn(color, new Position(x, y), this));
-                    break;
-
-                case "QUEEN":
-                    board.add(new Queen(color, new Position(x, y), this));
-                    break;
-
-                case "KNIGHT":
-                    board.add(new Knight(color, new Position(x, y), this));
-                    break;
-            }
+            board.add((ChessPiece) createNewPiece(piece.getType(), new Position(x, y), color));
             if (hasMoved) {
                 getPieceAtPosition(new Position(x, y)).setHasMoved();
             }
         }
+    }
+
+    public Object createNewPiece(String type, Position position, PieceColor color) {
+        switch (type) {
+            case "ROOK":
+                return new Rook(color, position, this);
+            case "BISHOP":
+                return new Bishop(color, position, this);
+            case "KING":
+                return new King(color, position, this);
+            case "PAWN":
+                return new Pawn(color, position, this);
+            case "QUEEN":
+                return new Queen(color, position, this);
+            case "KNIGHT":
+                return new Knight(color, position, this);
+        }
+        return null;
     }
 
     public Set<PieceDTO> getPieceData() {
