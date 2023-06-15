@@ -63,7 +63,7 @@ public class Initializer implements CommandLineRunner {
         checkMateTest.setBlackPlayer(player1);
         checkMateTest.setCurrentTurn(player1);
         ChessBoard board = new ChessBoard();
-        board.setBoardOneMoveFromCheckmate();
+        board.setBoardOneMoveFromComputerPromotion();
         System.out.println(board);
         checkMateTest.setPieces(board.getPieceData());
         gameRepository.save(checkMateTest);

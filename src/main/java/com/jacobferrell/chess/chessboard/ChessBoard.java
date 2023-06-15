@@ -62,6 +62,13 @@ public class ChessBoard {
         board.add(new King(PieceColor.WHITE, new Position(7, 7), this));
     }
 
+    public void setBoardOneMoveFromComputerPromotion() {
+        clearBoard();
+        board.add(new Pawn(PieceColor.WHITE, new Position(0, 1), this));
+        board.add(new King(PieceColor.BLACK, new Position(7, 0), this));
+        board.add(new King(PieceColor.WHITE, new Position(7, 7), this));
+    }
+
     public ChessPiece getPieceAtPosition(Position pos) {
         return board.stream().filter(p -> p.position.equals(pos)).findFirst().orElse(null);
     }

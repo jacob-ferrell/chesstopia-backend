@@ -185,7 +185,7 @@ public class MoveService {
         piece.makeMove(movePosition);
     }
 
-    private boolean isPromotion(ChessPiece piece, int y) {
+    public static boolean isPromotion(ChessPiece piece, int y) {
         return piece instanceof Pawn && ((piece.color.equals(PieceColor.WHITE) && y == 0) || (piece.color.equals(PieceColor.BLACK) && y == 7));
     }
 

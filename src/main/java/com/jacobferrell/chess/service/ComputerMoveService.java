@@ -53,8 +53,8 @@ public class ComputerMoveService {
         Map<String, Object> outMap = new HashMap<>();
         moveService.validateGameIsNotOver(gameData);
         moveService.validateIsPlayersTurn(gameData, computer);
-        PieceColor computerColor = moveService.getPlayerColor(gameData, computer);
-        Game game = moveService.createGameFromDTO(gameData);
+        PieceColor computerColor = MoveService.getPlayerColor(gameData, computer);
+        Game game = MoveService.createGameFromDTO(gameData);
         Set<Move> allPossibleComputerMoves = Move.removeMovesIntoCheck(game.board.getAllPossibleMoves().get(computerColor));
         Map<String, Set<Move>> moveMap = getMoveMap(allPossibleComputerMoves);
         King computerKing = game.board.getPlayerKing(computerColor);
@@ -97,6 +97,10 @@ public class ComputerMoveService {
         int fromY = piece.position.y;
         int toX = move.position.x;
         int toY = move.position.y;
+        if (MoveService.isPromotion(piece, toY)) {
+            piece = (ChessPiece) piece.getBoard().createNewPiece("QUEEN", move.position, piece.getColor());
+            MoveService.handlePromotion(piece, new Position(fromX, fromY));
+        }
         piece.makeMove(new Position(toX, toY));
         MoveDTO moveData = moveService.createMoveDTO(piece, piece.getColor(), fromX, fromY, toX, toY);
         gameData.setPieces(piece.getBoard().getPieceData());
