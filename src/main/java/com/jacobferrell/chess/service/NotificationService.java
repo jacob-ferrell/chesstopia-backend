@@ -65,7 +65,6 @@ public class NotificationService {
     public List<NotificationDTO> markAsReadForGame(GameDTO game, UserDTO user) {
         List<NotificationDTO> unreadNotifications = notificationRepository.findUnreadByGame(game, user);
         for (NotificationDTO n : unreadNotifications) {
-            System.out.println(n);
             n.setRead(true);
             notificationRepository.save(n);
         }
