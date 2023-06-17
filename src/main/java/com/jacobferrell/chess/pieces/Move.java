@@ -28,7 +28,7 @@ public class Move {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(piece.getColor() + " " + piece.getName() + ": " + convertToChessCoordinates(position));
+        sb.append(piece.color + " " + piece.getName() + ": " + convertToChessCoordinates(position));
         return sb.toString();
     }
 
