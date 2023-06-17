@@ -27,7 +27,7 @@ public class Pawn extends ChessPiece {
     @Override
     public Set<Move> generatePossibleMoves() {
         Set<Move> possibleMoves = new HashSet<>();
-        int yMultiplier = getColor() == PieceColor.WHITE ? -1 : 1;
+        int yMultiplier = color.equals(PieceColor.WHITE) ? -1 : 1;
         possibleMoves = getPawnDiagonalMoves(possibleMoves, yMultiplier);
         possibleMoves = getPawnVerticalMoves(possibleMoves, yMultiplier);
         return possibleMoves;
