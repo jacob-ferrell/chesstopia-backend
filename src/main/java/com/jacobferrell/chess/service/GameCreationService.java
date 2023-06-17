@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
 import com.jacobferrell.chess.model.GameDTO;
-import com.jacobferrell.chess.model.Role;
 import com.jacobferrell.chess.model.UserDTO;
 import com.jacobferrell.chess.repository.GameRepository;
 import com.jacobferrell.chess.repository.UserRepository;
@@ -61,10 +60,6 @@ public class GameCreationService {
                 .winner(null)
                 .build();
         gameRepository.save(newGame);
-       /*  if (whitePlayer.getRole().equals(Role.AI)) {
-            computerMoveService.makeComputerMove(newGame.getId());
-        } */
-        System.out.println(newGame);
         return newGame;
     }
 }
