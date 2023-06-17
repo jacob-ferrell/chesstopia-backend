@@ -23,6 +23,7 @@ public class King extends ChessPiece {
     public ChessPiece getClone(ChessBoard board) {
         King clone = new King(color, new Position(position.x, position.y), board);
         clone.hasMoved = hasMoved;
+        clone.counter = counter;
         return clone;
     }
 

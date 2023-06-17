@@ -114,6 +114,7 @@ public class MoveService {
             return;
         }
         gameData.setWinner(player);
+        gameData.setGameOver(true);
     }
 
     public Map<String, Object> getMessageBody(GameDTO game, NotificationDTO notification) {
@@ -137,7 +138,7 @@ public class MoveService {
     }
 
     public void validateGameIsNotOver(GameDTO game) {
-        if (game.getWinner() != null) {
+        if (game.getGameOver()) {
             throw new IllegalArgumentException(
                     "Game with id: " + game.getId() + " is over and additional moves cannot be made");
         }
@@ -148,7 +149,7 @@ public class MoveService {
         if (piece == null) {
             throw new IllegalArgumentException("There exists no piece coordinates: x: " + x0 + ", y: " + y0);
         }
-        if (!piece.getColor().equals(playerColor)) {
+        if (!piece.color.equals(playerColor)) {
             throw new IllegalArgumentException("The piece at coordinates: x: " + x0 + ", y: " + y0
                     + " does not belong to user " + user.getEmail());
         }
@@ -179,14 +180,15 @@ public class MoveService {
         }
         if (isPromotion(piece, y1)) {
             Position from = piece.position;
-            piece = (ChessPiece) piece.getBoard().createNewPiece(upgradeType, new Position(x1, y1), piece.getColor());
+            piece = (ChessPiece) piece.getBoard().createNewPiece(upgradeType, new Position(x1, y1), piece.color);
             handlePromotion(piece, from);
         }
         piece.makeMove(movePosition);
     }
 
     public static boolean isPromotion(ChessPiece piece, int y) {
-        return piece instanceof Pawn && ((piece.color.equals(PieceColor.WHITE) && y == 0) || (piece.color.equals(PieceColor.BLACK) && y == 7));
+        return piece instanceof Pawn && ((piece.color.equals(PieceColor.WHITE) && y == 0)
+                || (piece.color.equals(PieceColor.BLACK) && y == 7));
     }
 
     public MoveDTO createMoveDTO(ChessPiece piece, PieceColor playerColor, int x0, int y0, int x1, int y1) {
@@ -200,6 +202,13 @@ public class MoveService {
         ChessBoard board = piece.getBoard();
         board.removePieceAtPosition(from);
         board.setPieceAtPosition(piece.position, piece);
+    }
+
+    public void handleDraw(GameDTO gameData, Map<String, Object> outMap) {
+        gameData.setGameOver(true);
+        gameRepository.save(gameData);
+        outMap.put("gameData", gameData);
+        outMap.put("moveData", null);
     }
 
 }

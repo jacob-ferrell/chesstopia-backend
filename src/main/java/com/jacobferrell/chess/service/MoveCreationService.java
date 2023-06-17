@@ -40,6 +40,7 @@ public class MoveCreationService {
         Game game = MoveService.createGameFromDTO(gameData);
         // Test that a piece has been selected and belongs to the current user
         ChessPiece selectedPiece = MoveService.getAndValidatePiece(x0, y0, game, user, playerColor);
+
         // Create move object and simulate the move to see if it is legal
         moveService.validateAndMakeMove(selectedPiece, x1, y1, upgradeType);
         // Set and save the board, moves, turn, and playerInCheck
@@ -52,6 +53,13 @@ public class MoveCreationService {
         moveService.switchTurns(gameData);
 
         moveService.setPlayerInCheck(game, gameData, user);
+        // End game as draw if king is lone piece and has moved >= 50 times
+
+        if (game.board.isDraw()) {
+            Map<String, Object> outMap = new HashMap<>();
+            moveService.handleDraw(gameData, outMap);
+            return outMap;
+        }
         gameRepository.save(gameData);
 
         // Send message to websocket with updated game state and notification

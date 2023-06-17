@@ -59,7 +59,19 @@ public class GameDTO {
     private UserDTO winner;
 
     @Builder.Default
+    @JoinTable(name = "game_over")
+    private boolean gameOver = false;
+
+    @Builder.Default
     @Column(nullable = false, updatable = false)
     private Date createdAt = new Date();
+
+    public boolean getGameOver() {
+        return gameOver;
+    }
+
+    public void setGameOver(boolean newGameOver) {
+        gameOver = newGameOver;
+    }
 
 }

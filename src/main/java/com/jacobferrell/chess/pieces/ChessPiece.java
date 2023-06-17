@@ -6,7 +6,7 @@ import java.util.HashSet;
 
 public abstract class ChessPiece {
     public PieceColor color;
-    protected int counter;
+    public int counter;
     public boolean hasMoved;
     public Position position;
     protected ChessBoard board;
@@ -18,6 +18,7 @@ public abstract class ChessPiece {
         this.position = pos;
         this.board = board;
         this.hasMoved = false;
+        this.counter = 0;
     }
 
     public boolean isValidMove(int x, int y) {
@@ -133,26 +134,17 @@ public abstract class ChessPiece {
     }
 
     public void makeMove(Position pos) {
+        if (isLastPlayerPiece()) {
+            counter++;
+        }
         if (!board.isSpaceOccupied(pos) || isEnemyPiece(board.getPieceAtPosition(pos))) {
             board.setPieceAtPosition(pos, this);
             return;
         }
-        //handle castle
+        // handle castle
         board.setPieceAtPosition(position, board.getPieceAtPosition(pos));
         board.setPieceAtPosition(pos, this);
-        
-        
-    }
 
-    public void movePiece(Position pos) {
-        board.setPieceAtPosition(pos, this);
-        position = pos;
-        setHasMoved();
-
-    }
-
-    public PieceColor getColor() {
-        return this.color;
     }
 
     public PieceColor getEnemyColor() {
@@ -163,7 +155,7 @@ public abstract class ChessPiece {
     }
 
     public boolean isEnemyPiece(ChessPiece otherPiece) {
-        if (otherPiece.getColor() == getColor()) {
+        if (otherPiece.color == color) {
             return false;
         }
         return true;
@@ -171,27 +163,30 @@ public abstract class ChessPiece {
 
     @Override
     public String toString() {
-        return getName() + ", " + getColor() + " [" + position.y + ", " + position.x + "]";
+        return getName() + ", " + color + " [" + position.y + ", " + position.x + "]";
     }
 
     public ChessBoard getBoard() {
         return this.board;
     }
 
-    public void setPosition(int x, int y) {
-        this.position = new Position(x, y);
+    public boolean isLastPlayerPiece() {
+        return board.getPiecesByColor(color).size() == 1;
     }
 
-    /* @Override
-    public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        }
-        if (!(o instanceof ChessPiece)) {
-            return false;
-        }
-        ChessPiece p = (ChessPiece) o;
-        return color.equals(p.color) && getName().equals(p.getName()) && position.equals(p.position);
-    } */
+    /*
+     * @Override
+     * public boolean equals(Object o) {
+     * if (o == this) {
+     * return true;
+     * }
+     * if (!(o instanceof ChessPiece)) {
+     * return false;
+     * }
+     * ChessPiece p = (ChessPiece) o;
+     * return color.equals(p.color) && getName().equals(p.getName()) &&
+     * position.equals(p.position);
+     * }
+     */
 
 }

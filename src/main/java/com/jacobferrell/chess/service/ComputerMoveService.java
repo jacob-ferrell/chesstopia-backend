@@ -51,7 +51,10 @@ public class ComputerMoveService {
         GameDTO gameData = moveService.getGameById(gameId);
         var computer = getComputerPlayer(gameData);
         Map<String, Object> outMap = new HashMap<>();
-        moveService.validateGameIsNotOver(gameData);
+        if (gameData.getGameOver()) {
+            outMap.put("gameData", gameData);
+            return outMap;
+        }
         moveService.validateIsPlayersTurn(gameData, computer);
         PieceColor computerColor = MoveService.getPlayerColor(gameData, computer);
         Game game = MoveService.createGameFromDTO(gameData);
@@ -88,7 +91,6 @@ public class ComputerMoveService {
             return outMap;
         }
         return outMap;
-
     }
 
     private void setAndSave(GameDTO gameData, Game game, Move move, Map<String, Object> outMap) {
@@ -98,16 +100,19 @@ public class ComputerMoveService {
         int toX = move.position.x;
         int toY = move.position.y;
         if (MoveService.isPromotion(piece, toY)) {
-            piece = (ChessPiece) piece.getBoard().createNewPiece("QUEEN", move.position, piece.getColor());
+            piece = (ChessPiece) piece.getBoard().createNewPiece("QUEEN", move.position, piece.color);
             MoveService.handlePromotion(piece, new Position(fromX, fromY));
         }
         piece.makeMove(new Position(toX, toY));
-        MoveDTO moveData = moveService.createMoveDTO(piece, piece.getColor(), fromX, fromY, toX, toY);
+        MoveDTO moveData = moveService.createMoveDTO(piece, piece.color, fromX, fromY, toX, toY);
         gameData.setPieces(piece.getBoard().getPieceData());
         Set<MoveDTO> moves = gameData.getMoves();
         moves.add(moveData);
         moveService.switchTurns(gameData);
         moveService.setPlayerInCheck(game, gameData, getComputerPlayer(gameData));
+        if (game.board.isDraw()) {
+            moveService.handleDraw(gameData, outMap);
+        }
         gameRepository.save(gameData);
         sendMessageAndNotification(gameData);
         outMap.put("gameData", gameData);
@@ -205,7 +210,7 @@ public class ComputerMoveService {
             ChessPiece piece = move.piece;
             Position pos = move.position;
             ChessBoard simulatedBoard = move.simulateMove();
-            King playerKing = simulatedBoard.getOpponentKing(piece.getColor());
+            King playerKing = simulatedBoard.getOpponentKing(piece.color);
             boolean inCheck = playerKing.isInCheck();
             if (inCheck && playerKing.isInCheckMate()) {
                 addMoveToSet(map, move, "checkMate");

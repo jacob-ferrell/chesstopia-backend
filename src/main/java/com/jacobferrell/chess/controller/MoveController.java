@@ -31,7 +31,8 @@ public class MoveController {
 
     @CrossOrigin(origins = "http://localhost:5173")
     @GetMapping("/game/{gameId}/possible-moves")
-    ResponseEntity<?> getPossibleMoves(@PathVariable Long gameId, @RequestParam int x, @RequestParam int y, HttpServletRequest request) {
+    ResponseEntity<?> getPossibleMoves(@PathVariable Long gameId, @RequestParam int x, @RequestParam int y,
+            HttpServletRequest request) {
         Set<Position> possibleMoves = moveService.getPossibleMoves(gameId, x, y, request);
         return ResponseEntity.ok().body(possibleMoves);
     }
@@ -44,21 +45,24 @@ public class MoveController {
         Map<String, Object> moveData = moveCreationService.makeMove(gameId, x0, y0, x1, y1, request, promotion);
         GameDTO gameData = (GameDTO) moveData.get("gameData");
         MoveDTO move = (MoveDTO) moveData.get("moveData");
-        return ResponseEntity.created(new URI("/api/game/" + gameData.getId() + "/move/" + move.getId()))
-                .body(gameData); 
+        if (move != null) {
+            return ResponseEntity.created(new URI("/api/game/" + gameData.getId() + "/move/" + move.getId()))
+                    .body(gameData);
+        }
+        return ResponseEntity.ok().body(gameData);
     }
 
     @PostMapping("/game/{gameId}/computer-move")
-    ResponseEntity<?> makeMove(@PathVariable Long gameId, HttpServletRequest request)
+    ResponseEntity<?> makeComputerMove(@PathVariable Long gameId, HttpServletRequest request)
             throws URISyntaxException {
         Map<String, Object> moveData = computerMoveService.makeComputerMove(gameId);
         if (moveData.get("gameData") == null || moveData.get("moveData") == null) {
-            return ResponseEntity.ok().body(moveData);
+            return ResponseEntity.ok().body(moveData.get("gameData"));
         }
         GameDTO gameData = (GameDTO) moveData.get("gameData");
         MoveDTO move = (MoveDTO) moveData.get("moveData");
         return ResponseEntity.created(new URI("/api/game/" + gameData.getId() + "/move/" + move.getId()))
-                .body(gameData); 
+                .body(gameData);
     }
 
 }

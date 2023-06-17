@@ -69,6 +69,11 @@ public class ChessBoard {
         board.add(new King(PieceColor.WHITE, new Position(7, 7), this));
     }
 
+    public void setBoardOnlyKings() {
+        board.add(new King(PieceColor.BLACK, new Position(7, 0), this));
+        board.add(new King(PieceColor.WHITE, new Position(7, 7), this));
+    }
+
     public ChessPiece getPieceAtPosition(Position pos) {
         return board.stream().filter(p -> p.position.equals(pos)).findFirst().orElse(null);
     }
@@ -138,30 +143,23 @@ public class ChessBoard {
 
     public King getPlayerKing(PieceColor color) {
         Set<King> kings = getKings();
-        return kings.stream().filter(king -> king.getColor() == color).findFirst().orElseThrow();
+        return kings.stream().filter(king -> king.color.equals(color)).findFirst().orElseThrow();
     }
 
     public King getOpponentKing(PieceColor color) {
         Set<King> kings = getKings();
-        return kings.stream().filter(king -> king.getColor() != color).findFirst().get();
+        return kings.stream().filter(king -> !king.color.equals(color)).findFirst().get();
     }
 
     public boolean hasBothKings() {
-        Set<King> kings = getKings();
-        if (kings.size() != 2) {
+        try {
+            getPlayerKing(PieceColor.WHITE);
+            getPlayerKing(PieceColor.BLACK);
+            return true;
+        } catch(Throwable error) {
             return false;
         }
-        boolean hasWhite = false;
-        boolean hasBlack = false;
-        for (King king : kings) {
-            if (king.getColor().equals(PieceColor.WHITE)) {
-                hasWhite = true;
-            }
-            if (king.getColor().equals(PieceColor.BLACK)) {
-                hasBlack = true;
-            }
-        }
-        return hasWhite && hasBlack;
+        
     }
 
     public void clearBoard() {
@@ -202,30 +200,31 @@ public class ChessBoard {
             PieceColor color = piece.getColor() == "WHITE" ? PieceColor.WHITE : PieceColor.BLACK;
             int x = piece.getX();
             int y = piece.getY();
-            boolean hasMoved = piece.hasMoved;
-            board.add((ChessPiece) createNewPiece(piece.getType(), new Position(x, y), color));
-            if (hasMoved) {
-                getPieceAtPosition(new Position(x, y)).setHasMoved();
-            }
+            Position position = new Position(x, y);
+            ChessPiece newPiece = createNewPiece(piece.getType(), position, color);
+            newPiece.counter = piece.getMoveCount();
+            newPiece.hasMoved = piece.getHasMoved();
+            board.add(newPiece);
         }
     }
 
-    public Object createNewPiece(String type, Position position, PieceColor color) {
+    public ChessPiece createNewPiece(String type, Position position, PieceColor color) {
         switch (type) {
             case "ROOK":
                 return new Rook(color, position, this);
             case "BISHOP":
                 return new Bishop(color, position, this);
             case "KING":
-                return new King(color, position, this);
+                King king = new King(color, position, this);
+                return king;
             case "PAWN":
                 return new Pawn(color, position, this);
             case "QUEEN":
                 return new Queen(color, position, this);
             case "KNIGHT":
                 return new Knight(color, position, this);
+            default: return null;
         }
-        return null;
     }
 
     public Set<PieceDTO> getPieceData() {
@@ -233,18 +232,25 @@ public class ChessBoard {
     }
 
     private PieceDTO convertPieceToDTO(ChessPiece piece) {
-        String color = piece.getColor() == PieceColor.WHITE ? "WHITE" : "BLACK";
+        String color = piece.color.toString();
         Position pos = piece.position;
-        boolean hasMoved = piece.getHasMoved();
-        return PieceDTO.builder().type(piece.getName()).color(color).x(pos.x).y(pos.y).hasMoved(hasMoved).build();
+        boolean hasMoved = piece.hasMoved;
+        int moveCount = piece.counter;
+        return PieceDTO.builder().type(piece.getName()).color(color).x(pos.x).y(pos.y).hasMoved(hasMoved).moveCount(moveCount).build();
     }
 
     public Set<ChessPiece> getPiecesByColor(PieceColor color) {
-        return board.stream().filter(p -> p.getColor().equals(color)).collect(Collectors.toSet());
+        return board.stream().filter(p -> p.color.equals(color)).collect(Collectors.toSet());
     }
 
     public Set<ChessPiece> getGraveyard() {
         return graveyard;
+    }
+
+    public boolean isDraw() {
+        boolean over50Count = board.stream().filter(p -> p.counter >= 50).findFirst().orElse(null) != null;
+        boolean onlyKingsLeft = board.size() == 2;
+        return over50Count || onlyKingsLeft;
     }
 
     @Override
