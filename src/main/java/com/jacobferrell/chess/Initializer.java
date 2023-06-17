@@ -47,7 +47,6 @@ public class Initializer implements CommandLineRunner {
                 .role(Role.USER)
                 .build();
         userRepository.save(player2);
-        System.out.println(COMPUTER_PASSWORD);
         var computer = UserDTO.builder().name("Computer").email("computer@chesstopia")
                 .password(passwordEncoder.encode(COMPUTER_PASSWORD)).role(Role.AI).build();
         userRepository.save(computer);
@@ -64,8 +63,22 @@ public class Initializer implements CommandLineRunner {
         checkMateTest.setCurrentTurn(player1);
         ChessBoard board = new ChessBoard();
         board.setBoardOneMoveFromComputerPromotion();
-        System.out.println(board);
         checkMateTest.setPieces(board.getPieceData());
+        gameRepository.save(checkMateTest);
+
+        GameDTO kingCounterTest = GameDTO.builder().winner(null)
+                .build();
+        gameRepository.save(kingCounterTest);
+        Set<UserDTO> counterTestPlayers = new HashSet<>();
+        counterTestPlayers.add(player1);
+        counterTestPlayers.add(computer);
+        kingCounterTest.setPlayers(testPlayers);
+        kingCounterTest.setWhitePlayer(computer);
+        kingCounterTest.setBlackPlayer(player1);
+        kingCounterTest.setCurrentTurn(player1);
+        ChessBoard counterTestBoard = new ChessBoard();
+        counterTestBoard.setBoardOnlyKings();
+        kingCounterTest.setPieces(counterTestBoard.getPieceData());
         gameRepository.save(checkMateTest);
 
         Set<UserDTO> players = new HashSet<>();
