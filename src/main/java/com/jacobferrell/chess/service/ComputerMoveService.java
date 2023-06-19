@@ -26,6 +26,7 @@ import com.jacobferrell.chess.pieces.King;
 import com.jacobferrell.chess.pieces.Move;
 import com.jacobferrell.chess.pieces.PieceColor;
 import com.jacobferrell.chess.repository.GameRepository;
+import com.jacobferrell.chess.repository.NotificationRepository;
 
 @Service
 public class ComputerMoveService {
@@ -44,6 +45,9 @@ public class ComputerMoveService {
 
     @Autowired
     private JsonService jsonService;
+
+    @Autowired
+    private NotificationRepository notificationRepository;
 
     private static final Random random = new Random();
 
@@ -174,7 +178,10 @@ public class ComputerMoveService {
 
     private void sendMessageAndNotification(GameDTO gameData) {
         UserDTO computer = getComputerPlayer(gameData);
-        NotificationDTO notification = notificationService.createNotification(computer, gameData);
+        String message = "Computer made move in game " + gameData.getId();
+        NotificationDTO notification = notificationService.createNotification(computer, UserService.getOtherPlayer(computer, gameData), message);
+        notification.setGame(gameData);
+        notificationRepository.save(notification);
         messagingTemplate.convertAndSend("/topic/game/" + gameData.getId(),
                 jsonService.toJSON(moveService.getMessageBody(gameData, notification)));
 
