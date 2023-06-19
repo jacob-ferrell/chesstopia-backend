@@ -35,5 +35,11 @@ public class NotificationController {
         return ResponseEntity.ok().body(notificationService.updateNotification(id, request));
     }
 
+    @PutMapping("/notifications/mark-all-as-read")
+    public ResponseEntity<?> markAllAsReadForUser(HttpServletRequest request) {
+        notificationService.markAllAsRead(request);
+        return ResponseEntity.ok().body(null);
+    }
+
 
 }
