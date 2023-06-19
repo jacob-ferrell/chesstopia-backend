@@ -2,6 +2,7 @@ package com.jacobferrell.chess.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -19,17 +20,14 @@ import jakarta.servlet.http.HttpServletRequest;
 @Service
 public class NotificationService {
 
-    @Autowired 
+    @Autowired
     private NotificationRepository notificationRepository;
 
-    @Autowired 
+    @Autowired
     private SimpMessagingTemplate messagingTemplate;
 
     @Autowired
     private JwtService jwtService;
-
-    @Autowired
-    private UserService userService;
 
     @Autowired
     private JsonService jsonService;
@@ -39,9 +37,13 @@ public class NotificationService {
         return notificationRepository.findByRecipient(user);
     }
 
-    public NotificationDTO createNotification(UserDTO sender, GameDTO game) {
-        UserDTO recipient = userService.getOtherPlayer(sender, game);
-        NotificationDTO notification = NotificationDTO.builder().game(game).to(recipient).build();
+    public List<NotificationDTO> getUnreadNotifications(HttpServletRequest request) {
+        UserDTO user = jwtService.getUserFromRequest(request);
+        return notificationRepository.findUnreadByUser(user);
+    }
+
+    public NotificationDTO createNotification(UserDTO sender, UserDTO recipient, String message) {
+        NotificationDTO notification = NotificationDTO.builder().to(recipient).message(message).build();
         notificationRepository.save(notification);
         messagingTemplate.convertAndSend("/topic/user/" + recipient.getId(), jsonService.toJSON(notification));
         return notification;
@@ -62,12 +64,21 @@ public class NotificationService {
         return foundNotification;
     }
 
-    public List<NotificationDTO> markAsReadForGame(GameDTO game, UserDTO user) {
-        List<NotificationDTO> unreadNotifications = notificationRepository.findUnreadByGame(game, user);
-        for (NotificationDTO n : unreadNotifications) {
+    public void markAllAsRead(HttpServletRequest request) {
+        List<NotificationDTO> unreadNotifications = getUnreadNotifications(request);
+        markAsRead(unreadNotifications);
+    }
+
+    public void markAsRead(List<NotificationDTO> notifications) {
+        for (NotificationDTO n : notifications) {
             n.setRead(true);
             notificationRepository.save(n);
         }
+    }
+
+    public List<NotificationDTO> markAsReadForGame(GameDTO game, UserDTO user) {
+        List<NotificationDTO> unreadNotifications = notificationRepository.findUnreadByGame(game, user);
+        markAsRead(unreadNotifications);
         return unreadNotifications;
     }
 }
