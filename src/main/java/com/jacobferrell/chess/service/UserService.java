@@ -41,6 +41,9 @@ public class UserService {
     @Autowired
     private GameCreationService gameCreationService;
 
+    @Autowired
+    private NotificationService notificationService;
+
     public UserDTO getCurrentUser(HttpServletRequest request) {
         UserDTO user = jwtService.getUserFromRequest(request);
         if (user == null) {
@@ -49,7 +52,7 @@ public class UserService {
         return user;
     }
 
-    public UserDTO getOtherPlayer(UserDTO currentUser, GameDTO game) {
+    public static UserDTO getOtherPlayer(UserDTO currentUser, GameDTO game) {
         Set<UserDTO> players = game.getPlayers();
         return players.stream().filter(p -> p.getId() != currentUser.getId()).findFirst().orElse(null);
     }
@@ -70,6 +73,8 @@ public class UserService {
         users.add(foundFriend);
         Friendship friendship = Friendship.builder().users(users).build();
         friendshipRepository.save(friendship);
+        String message = user.getName() + "(" + user.getEmail() + ")" + " added you to their friends list";
+        notificationService.createNotification(user, foundFriend, message);  
         return friendship;
     }
 
