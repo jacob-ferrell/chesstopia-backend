@@ -27,6 +27,7 @@ import com.jacobferrell.chess.pieces.Move;
 import com.jacobferrell.chess.pieces.Pawn;
 import com.jacobferrell.chess.pieces.PieceColor;
 import com.jacobferrell.chess.repository.GameRepository;
+import com.jacobferrell.chess.repository.NotificationRepository;
 
 import org.springframework.security.access.AccessDeniedException;
 
@@ -53,6 +54,9 @@ public class MoveService {
     @Autowired
     private GameService gameService;
 
+    @Autowired 
+    private NotificationRepository notificationRepository;
+
     public Set<Position> getPossibleMoves(long gameId, int x, int y, HttpServletRequest request) {
         UserDTO user = jwtService.getUserFromRequest(request);
         GameDTO gameData = getGameById(gameId);
@@ -71,7 +75,10 @@ public class MoveService {
 
     public void sendMessageAndNotification(UserDTO user, GameDTO gameData, HttpServletRequest request) {
         long gameId = gameData.getId();
-        NotificationDTO notification = notificationService.createNotification(user, gameData);
+        String message = user.getName() + " made a move in game " + gameData.getId();
+        NotificationDTO notification = notificationService.createNotification(user, UserService.getOtherPlayer(user, gameData), message);
+        notification.setGame(gameData);
+        notificationRepository.save(notification);
         messagingTemplate.convertAndSend("/topic/game/" + gameId,
                 jsonService.toJSON(getMessageBody(gameData, notification)));
         gameService.showPlayerIsConnectedToGame(gameId, request, true);
