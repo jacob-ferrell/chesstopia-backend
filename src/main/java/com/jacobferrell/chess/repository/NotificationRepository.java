@@ -18,4 +18,8 @@ public interface NotificationRepository extends JpaRepository<NotificationDTO, L
 
     @Query("SELECT n FROM NotificationDTO n WHERE n.game = :game AND n.to = :user AND n.read = false")
     List<NotificationDTO> findUnreadByGame(GameDTO game, UserDTO user);
+
+    @Query("SELECT n FROM NotificationDTO n WHERE n.to = :user AND n.read = false")
+    List<NotificationDTO> findUnreadByUser(UserDTO user);
+
 }
