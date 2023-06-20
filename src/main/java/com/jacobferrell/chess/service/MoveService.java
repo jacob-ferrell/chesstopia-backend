@@ -1,7 +1,6 @@
 package com.jacobferrell.chess.service;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -75,7 +74,7 @@ public class MoveService {
 
     public void sendMessageAndNotification(UserDTO user, GameDTO gameData, HttpServletRequest request) {
         long gameId = gameData.getId();
-        String message = user.getName() + " made a move in game " + gameData.getId();
+        String message = user.getFirstName() + " made a move in game " + gameData.getId();
         NotificationDTO notification = notificationService.createNotification(user, UserService.getOtherPlayer(user, gameData), message);
         notification.setGame(gameData);
         notificationRepository.save(notification);
@@ -95,7 +94,7 @@ public class MoveService {
     }
 
     public static Player getPlayerFromUser(UserDTO user, PieceColor color) {
-        Player player = new Player(user.getName(), color);
+        Player player = new Player(user.getFirstName(), color);
         return player;
     }
 

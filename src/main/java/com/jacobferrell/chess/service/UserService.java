@@ -73,7 +73,7 @@ public class UserService {
         users.add(foundFriend);
         Friendship friendship = Friendship.builder().users(users).build();
         friendshipRepository.save(friendship);
-        String message = user.getName() + "(" + user.getEmail() + ")" + " added you to their friends list";
+        String message = user.getFirstName() + "(" + user.getEmail() + ")" + " added you to their friends list";
         notificationService.createNotification(user, foundFriend, message);  
         return friendship;
     }

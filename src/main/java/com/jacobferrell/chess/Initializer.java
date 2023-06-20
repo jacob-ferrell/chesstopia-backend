@@ -34,20 +34,20 @@ public class Initializer implements CommandLineRunner {
         gameRepository.save(game);
 
         var player1 = UserDTO.builder()
-                .name("Jacob")
+                .firstName("Jacob")
                 .email("boomkablamo@gmail.com")
                 .password(passwordEncoder.encode("asdf"))
                 .role(Role.USER)
                 .build();
         userRepository.save(player1);
         var player2 = UserDTO.builder()
-                .name("Cindy")
+                .firstName("Cindy")
                 .email("cindy@gmail.com")
                 .password(passwordEncoder.encode("asdf"))
                 .role(Role.USER)
                 .build();
         userRepository.save(player2);
-        var computer = UserDTO.builder().name("Computer").email("computer@chesstopia")
+        var computer = UserDTO.builder().firstName("Computer").email("computer@chesstopia")
                 .password(passwordEncoder.encode(COMPUTER_PASSWORD)).role(Role.AI).build();
         userRepository.save(computer);
 

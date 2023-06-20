@@ -31,7 +31,8 @@ public class AuthenticationService {
     
     public AuthenticationResponse register(RegisterRequest request) {
         var user = UserDTO.builder()
-            .name(request.getName())
+            .firstName(request.getFirstName())
+            .lastName(request.getLastName())
             .email(request.getEmail())
             .password(passwordEncoder.encode(request.getPassword()))
             .role(Role.USER)
