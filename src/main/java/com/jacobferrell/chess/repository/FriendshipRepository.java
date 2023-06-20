@@ -5,10 +5,12 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import com.jacobferrell.chess.model.Friendship;
 import com.jacobferrell.chess.model.UserDTO;
 
+@Repository
 public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
     Optional<Friendship> findById(long id);
     

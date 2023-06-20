@@ -5,11 +5,13 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import com.jacobferrell.chess.model.GameDTO;
 import com.jacobferrell.chess.model.NotificationDTO;
 import com.jacobferrell.chess.model.UserDTO;
 
+@Repository
 public interface NotificationRepository extends JpaRepository<NotificationDTO, Long> {
     Optional<NotificationDTO> findById(long id);
 
