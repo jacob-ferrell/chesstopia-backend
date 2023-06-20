@@ -18,9 +18,9 @@ public class ChessBoardTest {
 	public void testCloneBoard() {
 		ChessBoard chessBoard = new ChessBoard();
 		ChessBoard clonedBoard = chessBoard.getClone();
-		ChessPiece rook = clonedBoard.getPieceAtPosition(0, 0);
+		ChessPiece rook = clonedBoard.getPieceAtPosition(new Position(0, 0));
 		ChessPiece rookClone = rook.getClone(clonedBoard);
-		clonedBoard.setPieceAtPosition(0, 2, rookClone);
+		clonedBoard.setPieceAtPosition(new Position(0, 2), rookClone);
 		System.out.println(chessBoard);
 		System.out.println(clonedBoard);
 	}
@@ -30,12 +30,12 @@ public class ChessBoardTest {
 		ChessBoard board = new ChessBoard();
 		assertTrue(board.hasBothKings());
 		board.clearBoard();
-		board.setPieceAtPosition(0, 4, new King(PieceColor.WHITE, new Position(0, 4), board));
-		board.setPieceAtPosition(7, 4, new King(PieceColor.BLACK, new Position(7, 4), board));
+		board.setPieceAtPosition(new Position(0, 4), new King(PieceColor.WHITE, new Position(0, 4), board));
+		board.setPieceAtPosition(new Position(7, 4), new King(PieceColor.BLACK, new Position(7, 4), board));
 		assertTrue(board.hasBothKings());
-		board.setPieceAtPosition(7, 4, new King(PieceColor.WHITE, new Position(0, 4), board));
+		board.setPieceAtPosition(new Position(7, 4), new King(PieceColor.WHITE, new Position(0, 4), board));
 		assertFalse(board.hasBothKings());
-		board.removePieceAtPosition(7, 4);
+		board.removePieceAtPosition(new Position(7, 4));
 		assertFalse(board.hasBothKings());
 	}
 }

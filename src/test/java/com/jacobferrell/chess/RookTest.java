@@ -11,11 +11,11 @@ public class RookTest {
         ChessBoard board = new ChessBoard();
         Rook rook = new Rook(PieceColor.WHITE, new Position(3, 3), board);
         board.clearBoard();
-        board.setPieceAtPosition(3, 3, rook);
-        board.setPieceAtPosition(1, 3, new Pawn(PieceColor.BLACK, new Position(1, 3), board));
-        board.setPieceAtPosition(5, 3, new Pawn(PieceColor.BLACK, new Position(5, 3), board));
-        board.setPieceAtPosition(3, 1, new Pawn(PieceColor.BLACK, new Position(3, 1), board));
-        board.setPieceAtPosition(3, 5, new Pawn(PieceColor.BLACK, new Position(3, 5), board));
+        board.setPieceAtPosition(new Position(3, 3), rook);
+        board.setPieceAtPosition(new Position(1, 3), new Pawn(PieceColor.BLACK, new Position(1, 3), board));
+        board.setPieceAtPosition(new Position(5, 3), new Pawn(PieceColor.BLACK, new Position(5, 3), board));
+        board.setPieceAtPosition(new Position(3, 1), new Pawn(PieceColor.BLACK, new Position(3, 1), board));
+        board.setPieceAtPosition(new Position(3, 5), new Pawn(PieceColor.BLACK, new Position(3, 5), board));
         Set<Move> possibleMoves = rook.generatePossibleMoves();
         System.out.println(board);
         for (Move move : possibleMoves) {
@@ -26,9 +26,9 @@ public class RookTest {
     @Test
         public void testCloneRook() {
             ChessBoard board = new ChessBoard();
-            ChessPiece rook = board.getPieceAtPosition(0, 0);
+            ChessPiece rook = board.getPieceAtPosition(new Position(0, 0));
             ChessPiece rookClone = rook.getClone(board);
-            board.setPieceAtPosition(0, 2, rookClone);
+            board.setPieceAtPosition(new Position(0, 2), rookClone);
             System.out.println(board);
         }
 }

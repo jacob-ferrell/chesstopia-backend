@@ -18,7 +18,9 @@ public class CastleTest {
         board.removePieceAtPosition(new Position(6, 0));
         board.removePieceAtPosition(new Position(5, 7));
         board.removePieceAtPosition(new Position(6, 7));
-        System.out.println(board);
+        var rook = board.getPieceAtPosition(new Position(7, 0));
+
+        /* System.out.println(board);
         Set<Rook> white = board.getCastleRooks(PieceColor.WHITE);
         Set<Rook> black = board.getCastleRooks(PieceColor.BLACK);
         for (Rook i : white) {
@@ -26,6 +28,6 @@ public class CastleTest {
         }
         for (Rook i : black) {
             System.out.println(i);
-        }
+        } */
     }
 }

@@ -9,7 +9,7 @@ public class KnightTest {
     @Test
     public void testKnight() {
         ChessBoard board = new ChessBoard();
-        ChessPiece piece = board.getPieceAtPosition(1, 7);
+        ChessPiece piece = board.getPieceAtPosition(new Position(1, 7));
         Knight knight = (Knight) piece;
         Set<Move> possibleMoves = knight.generatePossibleMoves();
         for (Move move : possibleMoves) {

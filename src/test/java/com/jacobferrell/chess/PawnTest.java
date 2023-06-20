@@ -8,9 +8,9 @@ public class PawnTest {
     @Test
     public void testPawn() {
         ChessBoard board = new ChessBoard();
-        ChessPiece piece = board.getPieceAtPosition(3, 6);
+        ChessPiece piece = board.getPieceAtPosition(new Position(3, 6));
         Pawn pawn = (Pawn) piece;
-        board.setPieceAtPosition(3, 4, pawn);
+        board.setPieceAtPosition(new Position(3, 4), pawn);
         Set<Move> possibleMoves = pawn.generatePossibleMoves();
         for (Move move : possibleMoves) {
             System.out.println(move.position.y + "," + move.position.x);

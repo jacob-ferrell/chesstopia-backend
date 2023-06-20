@@ -15,7 +15,7 @@ public class KingTest {
     public void testKing() {
         King king = new King(PieceColor.WHITE, new Position(3, 3), board);
         board.clearBoard();
-        board.setPieceAtPosition(3, 3, king);
+        board.setPieceAtPosition(new Position(3, 3), king);
         Set<Move> possibleMoves = king.generatePossibleMoves();
         System.out.println(board);
         for (Move move : possibleMoves) {
@@ -28,16 +28,16 @@ public class KingTest {
         board.clearBoard();
         King king = new King(PieceColor.WHITE, new Position(3, 3), board);
         Rook rook = new Rook(PieceColor.BLACK, new Position(3, 5), board);
-        board.setPieceAtPosition(3, 3, king);
-        board.setPieceAtPosition(3, 5, rook);
+        board.setPieceAtPosition(new Position(3, 3), king);
+        board.setPieceAtPosition(new Position(3, 5), rook);
         assertTrue(king.isInCheck());
     }
 
     @Test
     public void testKingsNotInCheckAtStart() {
         ChessBoard board = new ChessBoard();
-        King blackKing = (King) board.getPieceAtPosition(4, 0);
-        King whiteKing = (King) board.getPieceAtPosition(4, 7);
+        King blackKing = (King) board.getPieceAtPosition(new Position(4, 0));
+        King whiteKing = (King) board.getPieceAtPosition(new Position(4, 7));
         assertFalse(
                 blackKing.isInCheck() && whiteKing.isInCheck());
     }
@@ -48,10 +48,10 @@ public class KingTest {
         board.clearBoard();
         King blackKing = new King(PieceColor.BLACK, new Position(0, 0), board);
         King whiteKing = new King(PieceColor.WHITE, new Position(7, 7), board);
-        board.setPieceAtPosition(7, 7, whiteKing);
-        board.setPieceAtPosition(0, 2, new Rook(PieceColor.WHITE, new Position(1, 4), board));
-        board.setPieceAtPosition(0, 1, new Queen(PieceColor.WHITE, new Position(5, 7), board));
-        board.setPieceAtPosition(0, 0, blackKing);
+        board.setPieceAtPosition(new Position(7, 7), whiteKing);
+        board.setPieceAtPosition(new Position(0, 2), new Rook(PieceColor.WHITE, new Position(1, 4), board));
+        board.setPieceAtPosition(new Position(0, 1), new Queen(PieceColor.WHITE, new Position(5, 7), board));
+        board.setPieceAtPosition(new Position(0, 0), blackKing);
         System.out.println(board);
         assertTrue(blackKing.isInCheckMate());
         assertFalse(whiteKing.isInCheckMate());
@@ -67,10 +67,10 @@ public class KingTest {
         board.clearBoard();
         King whiteKing = new King(PieceColor.WHITE, new Position(0, 0), board);
         King blackKing = new King(PieceColor.BLACK, new Position(7, 7), board);
-        board.setPieceAtPosition(7, 7, blackKing);
-        board.setPieceAtPosition(0, 2, new Rook(PieceColor.BLACK, new Position(1, 4), board));
-        board.setPieceAtPosition(0, 1, new Queen(PieceColor.BLACK, new Position(5, 7), board));
-        board.setPieceAtPosition(0, 0, whiteKing);
+        board.setPieceAtPosition(new Position(7, 7), blackKing);
+        board.setPieceAtPosition(new Position(0, 2), new Rook(PieceColor.BLACK, new Position(1, 4), board));
+        board.setPieceAtPosition(new Position(0, 1), new Queen(PieceColor.BLACK, new Position(5, 7), board));
+        board.setPieceAtPosition(new Position(0, 0), whiteKing);
         System.out.println(board);
         assertTrue(whiteKing.isInCheckMate());
         assertFalse(blackKing.isInCheckMate());
