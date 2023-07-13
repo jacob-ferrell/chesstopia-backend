@@ -197,7 +197,7 @@ public class ChessBoard {
     public void setBoardFromData(Set<PieceDTO> pieces) {
         clearBoard();
         for (PieceDTO piece : pieces) {
-            PieceColor color = piece.getColor() == "WHITE" ? PieceColor.WHITE : PieceColor.BLACK;
+            PieceColor color = piece.getColor().equals("WHITE") ? PieceColor.WHITE : PieceColor.BLACK;
             int x = piece.getX();
             int y = piece.getY();
             Position position = new Position(x, y);
