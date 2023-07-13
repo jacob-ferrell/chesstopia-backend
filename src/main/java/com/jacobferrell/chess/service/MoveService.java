@@ -155,6 +155,7 @@ public class MoveService {
         if (piece == null) {
             throw new IllegalArgumentException("There exists no piece coordinates: x: " + x0 + ", y: " + y0);
         }
+        System.out.println(playerColor + " " + piece.color);
         if (!piece.color.equals(playerColor)) {
             throw new IllegalArgumentException("The piece at coordinates: x: " + x0 + ", y: " + y0
                     + " does not belong to user " + user.getEmail());
