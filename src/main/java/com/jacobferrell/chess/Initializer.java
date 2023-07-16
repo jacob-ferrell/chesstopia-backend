@@ -29,7 +29,10 @@ public class Initializer implements CommandLineRunner {
     private String COMPUTER_PASSWORD;
 
     public void run(String... strings) {
-        /* GameDTO game = GameDTO.builder().winner(null)
+        if (gameRepository.findAll().size() > 0) {
+                return;
+        }
+        GameDTO game = GameDTO.builder().winner(null)
                 .build();
         gameRepository.save(game);
 
@@ -89,7 +92,7 @@ public class Initializer implements CommandLineRunner {
         game.setWhitePlayer(player1);
         game.setBlackPlayer(player2);
         game.setCurrentTurn(player1);
-        gameRepository.save(game); */
+        gameRepository.save(game);
 
     }
 
