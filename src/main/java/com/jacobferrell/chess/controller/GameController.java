@@ -25,14 +25,14 @@ public class GameController {
         return ResponseEntity.ok().body(userGames);
     }
 
-    @CrossOrigin(origins = "http://localhost:5173")
+    @CrossOrigin(origins = "https://www.jacob-ferrell.com")
     @GetMapping("/game/{id}")
     ResponseEntity<GameDTO> getGame(@PathVariable Long id, HttpServletRequest request) {
         GameDTO game = gameService.getGame(id, request);
         return ResponseEntity.ok().body(game);
     }
 
-    @CrossOrigin(origins = "http://localhost:5173")
+    @CrossOrigin(origins = "https://www.jacob-ferrell.com")
     @PostMapping("/games/{p2}")
     ResponseEntity<GameDTO> createGame(@PathVariable Long p2, HttpServletRequest request) throws URISyntaxException {
         GameDTO newGame = gameService.createGame(p2, request);
@@ -40,7 +40,7 @@ public class GameController {
                 .body(newGame);
     }
 
-    @CrossOrigin(origins = "http://localhost:5173")
+    @CrossOrigin(origins = "https://www.jacob-ferrell.com")
     @PostMapping("/games/computer")
     ResponseEntity<GameDTO> createComputerGame(HttpServletRequest request) throws URISyntaxException {
         GameDTO newGame = gameService.createGame(-1, request);
@@ -48,7 +48,7 @@ public class GameController {
                 .body(newGame);
     }
 
-    /* @CrossOrigin(origins = "http://localhost:5173")
+    /* @CrossOrigin(origins = "https://www.jacob-ferrell.com")
     @PutMapping("/game/{id}")
     ResponseEntity<GameDTO> updateGame(@Valid @RequestBody GameDTO game) {
         log.info("Request to update game: {}", game);
@@ -56,7 +56,7 @@ public class GameController {
         return ResponseEntity.ok().body(result);
     }
 
-    @CrossOrigin(origins = "http://localhost:5173")
+    @CrossOrigin(origins = "https://www.jacob-ferrell.com")
     @DeleteMapping("/game/{id}")
     ResponseEntity<GameDTO> deleteGame(@PathVariable Long id) {
         log.info("Request to delete game: {}", id);
