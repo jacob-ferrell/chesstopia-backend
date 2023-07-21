@@ -27,33 +27,59 @@ public class AuthenticationService {
     private JwtService jwtService;
 
     @Autowired
+    private GameCreationService gameCreationService;
+
+    @Autowired
     private AuthenticationManager authenticationManager;
-    
+
+    @Autowired
+    private UserService userService;
+
     public AuthenticationResponse register(RegisterRequest request) {
-        var user = UserDTO.builder()
-            .firstName(request.getFirstName())
-            .lastName(request.getLastName())
-            .email(request.getEmail())
-            .password(passwordEncoder.encode(request.getPassword()))
-            .role(Role.USER)
-            .build();
-        repository.save(user);
+        UserDTO user;
+        if (request.isDemoUser()) {
+            user = buildDemoUser();
+            gameCreationService.createDemoGames(user);
+            userService.buildFriendship(repository.findByEmail("boomkablamo@gmail.com").orElseThrow(), user);
+        } else {
+            user = UserDTO.builder()
+                    .firstName(request.getFirstName())
+                    .lastName(request.getLastName())
+                    .email(request.getEmail())
+                    .password(passwordEncoder.encode(request.getPassword()))
+                    .role(Role.USER)
+                    .build();
+            repository.save(user);
+        }
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
-            .token(jwtToken)
-            .build();
+                .token(jwtToken)
+                .build();
+    }
+
+    private UserDTO buildDemoUser() {
+        var demoUser = UserDTO.builder()
+                .firstName("Demo")
+                .lastName("User")
+                .email("Demo" + (repository.findHighestUserId() + 1) + "@jacob-ferrell.com")
+                .password("demo-password")
+                .role(Role.DEMO)
+                .build();
+        repository.save(demoUser);
+        return demoUser;
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+        authenticationManager
+                .authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
         var user = repository.findByEmail(request.getEmail())
-            .orElseThrow();
+                .orElseThrow();
         if (user.getRole().equals(Role.AI)) {
             throw new AccessDeniedException("Access Denied.  AI users are not accessible");
         }
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
-            .token(jwtToken)
-            .build();
+                .token(jwtToken)
+                .build();
     }
 }
