@@ -59,22 +59,23 @@ public class UserService {
 
     public Friendship addFriend(String email, HttpServletRequest request) {
         UserDTO user = getCurrentUser(request);
-        Optional<UserDTO> friend = userRepository.findByEmail(email);
-        if (!friend.isPresent()) {
-            throw new NotFoundException("User with email: " + email + " not found");
-        }
-        UserDTO foundFriend = friend.get();
-        Optional<Friendship> existingFriendship = friendshipRepository.findByUsers(user, foundFriend);
+        var friend = userRepository.findByEmail(email).orElseThrow();
+        Friendship friendship = buildFriendship(user, friend);
+        String message = user.getFirstName() + "(" + user.getEmail() + ")" + " added you to their friends list";
+        notificationService.createNotification(user, friend, message);  
+        return friendship;
+    }
+
+    public Friendship buildFriendship(UserDTO user, UserDTO friend) {
+        Optional<Friendship> existingFriendship = friendshipRepository.findByUsers(user, friend);
         if (existingFriendship.isPresent()) {
             return existingFriendship.get();
         }
         Set<UserDTO> users = new HashSet<>();
         users.add(user);
-        users.add(foundFriend);
+        users.add(friend);
         Friendship friendship = Friendship.builder().users(users).build();
         friendshipRepository.save(friendship);
-        String message = user.getFirstName() + "(" + user.getEmail() + ")" + " added you to their friends list";
-        notificationService.createNotification(user, foundFriend, message);  
         return friendship;
     }
 
