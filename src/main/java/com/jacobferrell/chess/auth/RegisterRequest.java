@@ -18,4 +18,7 @@ public class RegisterRequest {
     private String firstName;
 
     private String lastName;
+
+    @Builder.Default
+    private boolean isDemoUser = false;
 }
