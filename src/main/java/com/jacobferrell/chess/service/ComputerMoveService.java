@@ -143,13 +143,11 @@ public class ComputerMoveService {
             ChessPiece pieceToTake = game.board.getPieceAtPosition(move.position);
             maxRank = Math.max(pieceToTake.rank, maxRank);
         }
-        System.out.println("Max rank: " + maxRank);
         final int finalMaxRank = maxRank;
         Set<Move> filtered = moves.stream().filter(m -> {
             ChessPiece pieceToTake = game.board.getPieceAtPosition(m.position);
             return pieceToTake.rank == finalMaxRank;
         }).collect(Collectors.toSet());
-        System.out.println(filtered);
         return filtered;
     }
 
