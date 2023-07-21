@@ -19,4 +19,10 @@ public interface UserRepository extends JpaRepository<UserDTO, Long> {
     @Query("SELECT u FROM UserDTO u WHERE u.role = com.jacobferrell.chess.model.Role.AI ORDER BY u.id ASC")
     Optional<UserDTO> findAIUser();
 
+    @Query("SELECT u FROM UserDTO u WHERE u.role = com.jacobferrell.chess.model.Role.DEMO")
+    Set<UserDTO> findDemoUsers();
+
+    @Query("SELECT MAX(u.id) FROM UserDTO u")
+    Long findHighestUserId();
+
 }
