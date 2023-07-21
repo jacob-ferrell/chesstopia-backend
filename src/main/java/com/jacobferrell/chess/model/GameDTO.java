@@ -12,7 +12,6 @@ import lombok.Builder;
 
 import jakarta.persistence.*;
 
-import java.util.Date;
 import java.util.*;
 
 @Data
@@ -40,11 +39,11 @@ public class GameDTO {
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<PieceDTO> pieces = new ChessBoard().getPieceData();
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinTable(name = "game_white_player", joinColumns = @JoinColumn(name = "game_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
     private UserDTO whitePlayer;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinTable(name = "game_black_player", joinColumns = @JoinColumn(name = "game_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
     private UserDTO blackPlayer;
 
