@@ -1,6 +1,9 @@
 package com.jacobferrell.chess.service;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.Random;
@@ -27,36 +30,46 @@ public class GameCreationService {
     @Autowired
     private JwtService jwtService;
 
-    /* @Autowired
-    private ComputerMoveService computerMoveService; */
-
     public GameDTO createGame(long p2, HttpServletRequest request) {
-        UserDTO player1 = jwtService.getUserFromRequest(request);
-        Optional<UserDTO> optionalPlayer2;
-        if(p2 == -1) {
-            optionalPlayer2 = userRepository.findAIUser();
-        } else {
-            optionalPlayer2 = userRepository.findById(p2);
-        }
-        if (!optionalPlayer2.isPresent()) {
-            throw new NotFoundException("The provided user id do not exist");
-        }
-        //Randomly assign players to white/black
-        Set<UserDTO> players = new HashSet<>();
-        UserDTO player2 = optionalPlayer2.get();
-        players.add(player1);
-        players.add(player2);
+        UserDTO player1;
+        UserDTO player2;
+
+        player1 = jwtService.getUserFromRequest(request);
+
+        player2 = p2 == -1
+                ? userRepository.findAIUser().orElseThrow()
+                : userRepository.findById(p2).orElseThrow();
+
+        UserDTO[] playersArray = { player1, player2 };
+
+        return buildGame(playersArray);
+
+    }
+
+    public void createDemoGames(UserDTO demoUser) {
+        UserDTO[] playerArrayForGameWithComputer = { demoUser, userRepository.findAIUser().orElseThrow() };
+        UserDTO[] playerArrayForGameWithPlayer = { demoUser,
+                userRepository.findByEmail("boomkablamo@gmail.com").orElseThrow() };
+        buildGame(playerArrayForGameWithComputer);
+        buildGame(playerArrayForGameWithPlayer);
+    }
+
+    public UserDTO[] randomlyAssignPlayers(UserDTO[] playersArray) {
         int randomNumber = new Random().nextInt(2);
-        UserDTO whitePlayer;
-        UserDTO blackPlayer;
-        if (randomNumber == 0) {
-            whitePlayer = player1;
-            blackPlayer = player2;
-        } else {
-            whitePlayer = player2;
-            blackPlayer = player1;
-        }
-        GameDTO newGame = GameDTO.builder().players(players).whitePlayer(whitePlayer).blackPlayer(blackPlayer).currentTurn(whitePlayer)
+        UserDTO whitePlayer = playersArray[randomNumber];
+        UserDTO blackPlayer = playersArray[Math.abs(randomNumber - 1)];
+        UserDTO[] assignedPlayersArray = { whitePlayer, blackPlayer };
+        return assignedPlayersArray;
+    }
+
+    public GameDTO buildGame(UserDTO[] players) {
+        UserDTO[] assignedPlayers = randomlyAssignPlayers(players);
+        GameDTO newGame = GameDTO
+                .builder()
+                .players(new HashSet<>(Arrays.asList(assignedPlayers)))
+                .whitePlayer(assignedPlayers[0])
+                .blackPlayer(assignedPlayers[1])
+                .currentTurn(assignedPlayers[0])
                 .winner(null)
                 .build();
         gameRepository.save(newGame);
