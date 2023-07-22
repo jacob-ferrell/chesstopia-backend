@@ -22,27 +22,27 @@ public class AuthenticationController {
 
     private final AuthenticationService service;
 
-    @CrossOrigin(origins = "https://www.jacob-ferrell.com")
+    @CrossOrigin(origins = { "https://www.jacob-ferrell.com", "http://localhost:5175" })
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody RegisterRequest request) {
-        
+
         return ResponseEntity.ok(service.register(request));
     }
 
-    @CrossOrigin(origins = "https://www.jacob-ferrell.com")
+    @CrossOrigin(origins = { "https://www.jacob-ferrell.com", "http://localhost:5175" })
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
         return ResponseEntity.ok(service.authenticate(request));
     }
 
-
-
-    /* @PostMapping("/refresh-token")
-    public void refreshToken(
-        HttpServletRequest request,
-        HttpServletResponse response
-    ) throws IOException {
-      service.refreshToken(request, response);
-    } */
+    /*
+     * @PostMapping("/refresh-token")
+     * public void refreshToken(
+     * HttpServletRequest request,
+     * HttpServletResponse response
+     * ) throws IOException {
+     * service.refreshToken(request, response);
+     * }
+     */
 
 }

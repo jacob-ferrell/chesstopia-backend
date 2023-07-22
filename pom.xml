@@ -49,7 +49,7 @@
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-config</artifactId>
-			<version>6.1.2</version>
+			<version>6.0.3</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
@@ -133,6 +133,15 @@
 	</dependencies>
 
 	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>application.properties</include>
+					<include>application-packaged.properties</include>
+				</includes>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
