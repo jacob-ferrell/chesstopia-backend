@@ -1,5 +1,7 @@
 package com.jacobferrell.chess.auth;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,6 +21,6 @@ public class RegisterRequest {
 
     private String lastName;
 
-    @Builder.Default
-    private boolean isDemoUser = false;
+    @JsonProperty
+    private boolean isDemoUser;
 }

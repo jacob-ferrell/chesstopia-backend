@@ -42,7 +42,7 @@ public class GameCreationService {
 
         UserDTO[] playersArray = { player1, player2 };
 
-        return buildGame(playersArray);
+        return buildGame(playersArray, false);
 
     }
 
@@ -50,8 +50,8 @@ public class GameCreationService {
         UserDTO[] playerArrayForGameWithComputer = { demoUser, userRepository.findAIUser().orElseThrow() };
         UserDTO[] playerArrayForGameWithPlayer = { demoUser,
                 userRepository.findByEmail("boomkablamo@gmail.com").orElseThrow() };
-        buildGame(playerArrayForGameWithComputer);
-        buildGame(playerArrayForGameWithPlayer);
+        buildGame(playerArrayForGameWithComputer, true);
+        buildGame(playerArrayForGameWithPlayer, false);
     }
 
     public UserDTO[] randomlyAssignPlayers(UserDTO[] playersArray) {
@@ -62,8 +62,13 @@ public class GameCreationService {
         return assignedPlayersArray;
     }
 
-    public GameDTO buildGame(UserDTO[] players) {
-        UserDTO[] assignedPlayers = randomlyAssignPlayers(players);
+    public GameDTO buildGame(UserDTO[] players, boolean isDemoComputerGame) {
+        UserDTO[] assignedPlayers;
+        if (isDemoComputerGame) {
+            assignedPlayers = players;
+        } else {
+            assignedPlayers = randomlyAssignPlayers(players);
+        }
         GameDTO newGame = GameDTO
                 .builder()
                 .players(new HashSet<>(Arrays.asList(assignedPlayers)))
@@ -75,4 +80,5 @@ public class GameCreationService {
         gameRepository.save(newGame);
         return newGame;
     }
+
 }
