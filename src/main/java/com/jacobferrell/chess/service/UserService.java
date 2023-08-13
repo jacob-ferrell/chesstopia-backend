@@ -101,6 +101,7 @@ public class UserService {
         }
         GameDTO newGame = gameCreationService.createGame(otherPlayer.getId(), request);
         otherPlayer.setInLobby(false);
+        user.setInLobby(false);
         userRepository.save(otherPlayer);
         Map<String, Object> map = new HashMap<>();
         map.put("game", newGame.getId());
