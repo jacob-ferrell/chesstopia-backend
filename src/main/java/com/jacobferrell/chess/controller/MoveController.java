@@ -29,7 +29,7 @@ public class MoveController {
     @Autowired
     private ComputerMoveService computerMoveService;
 
-    @CrossOrigin(origins = { "https://www.jacob-ferrell.com", "http://localhost:5175" })
+    @CrossOrigin(origins = { "https://www.jacobferrell.net", "https://jacob-ferrell.github.io","http://localhost:5175" })
     @GetMapping("/game/{gameId}/possible-moves")
     ResponseEntity<?> getPossibleMoves(@PathVariable Long gameId, @RequestParam int x, @RequestParam int y,
             HttpServletRequest request) {
@@ -37,7 +37,7 @@ public class MoveController {
         return ResponseEntity.ok().body(possibleMoves);
     }
 
-    @CrossOrigin(origins = { "https://www.jacob-ferrell.com", "http://localhost:5175" })
+    @CrossOrigin(origins = { "https://www.jacobferrell.net", "https://jacob-ferrell.github.io", "http://localhost:5175" })
     @PostMapping("/game/{gameId}/move")
     ResponseEntity<GameDTO> makeMove(@PathVariable Long gameId, @RequestParam int x0, @RequestParam int y0,
             @RequestParam int x1, @RequestParam int y1, @RequestParam String promotion, HttpServletRequest request)
