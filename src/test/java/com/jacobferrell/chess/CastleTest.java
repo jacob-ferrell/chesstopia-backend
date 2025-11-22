@@ -1,23 +1,19 @@
 package com.jacobferrell.chess;
 
-import java.util.Set;
-
 import org.junit.jupiter.api.Test;
 
-import com.jacobferrell.chess.chessboard.ChessBoard;
-import com.jacobferrell.chess.chessboard.Position;
-import com.jacobferrell.chess.pieces.PieceColor;
-import com.jacobferrell.chess.pieces.Rook;
+import com.jacobferrell.chess.game.chessboard.ChessBoard;
+import com.jacobferrell.chess.game.chessboard.Position;
 
 public class CastleTest {
     // Test getCastleRooks for king side
     @Test
     public void testKingSide() {
         ChessBoard board = new ChessBoard();
-        board.removePieceAtPosition(new Position(5, 0));
-        board.removePieceAtPosition(new Position(6, 0));
-        board.removePieceAtPosition(new Position(5, 7));
-        board.removePieceAtPosition(new Position(6, 7));
+        board.removePiece(new Position(5, 0));
+        board.removePiece(new Position(6, 0));
+        board.removePiece(new Position(5, 7));
+        board.removePiece(new Position(6, 7));
         var rook = board.getPieceAtPosition(new Position(7, 0));
 
         /* System.out.println(board);

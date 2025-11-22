@@ -5,6 +5,8 @@ src/main/resources/application-production.properties
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+.env
+
 ### STS ###
 .apt_generated
 .classpath
