@@ -1,19 +1,23 @@
 package com.jacobferrell.chess;
 
+import com.jacobferrell.chess.game.chessboard.ChessBoard;
+import com.jacobferrell.chess.game.chessboard.Position;
+import com.jacobferrell.chess.game.pieces.ChessPiece;
+import com.jacobferrell.chess.game.pieces.Knight;
+import com.jacobferrell.chess.game.pieces.Move;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
-import com.jacobferrell.chess.chessboard.*;
-import com.jacobferrell.chess.pieces.*;
+
 import java.util.Set;
 
+@Slf4j
 public class KnightTest {
     @Test
-    public void testKnight() {
+    public void testKnightMoves() {
         ChessBoard board = new ChessBoard();
-        ChessPiece piece = board.getPieceAtPosition(new Position(1, 7));
-        Knight knight = (Knight) piece;
+        Knight knight = (Knight) board.getPieceAtPosition(new Position(1, 0)).get();
         Set<Move> possibleMoves = knight.generatePossibleMoves();
-        for (Move move : possibleMoves) {
-            System.out.println(move.position.y + "," + move.position.x);
-        }
+
+        return;
     }
 }

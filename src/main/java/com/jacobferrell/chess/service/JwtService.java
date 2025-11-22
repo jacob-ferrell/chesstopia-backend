@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
-import com.jacobferrell.chess.model.UserDTO;
+import com.jacobferrell.chess.model.User;
 import com.jacobferrell.chess.repository.UserRepository;
 
 import io.jsonwebtoken.Claims;
@@ -33,13 +34,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 @Service
+@RequiredArgsConstructor
 public class JwtService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    UserDetailsService userDetailsService;
+    private final UserDetailsService userDetailsService;
 
     @Value("${app.jwt.secret}")
     private String SECRET_KEY;
@@ -59,13 +59,10 @@ public class JwtService {
         return null;
     }
 
-    public UserDTO getUserFromRequest(HttpServletRequest request) {
+    public User getUserFromRequest(HttpServletRequest request) {
         String email = getEmailFromToken(request);
-        Optional<UserDTO> optionalUser = userRepository.findByEmail(email);
-        if (!optionalUser.isPresent()) {
-            throw new NotFoundException("User with email: " + email + "could not be found");
-        }
-        return optionalUser.get();
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException("User with email: " + email + "could not be found"));
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {

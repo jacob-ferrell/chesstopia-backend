@@ -1,11 +1,6 @@
 package com.jacobferrell.chess;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import org.junit.jupiter.api.Test;
-import com.jacobferrell.chess.chessboard.*;
-import com.jacobferrell.chess.pieces.*;
-
-import java.util.*;
 
 public class BishopTest {
   /*   @Test

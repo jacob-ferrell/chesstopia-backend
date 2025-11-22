@@ -4,25 +4,25 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import com.jacobferrell.chess.model.UserDTO;
+import com.jacobferrell.chess.model.User;
 
 import java.util.Optional;
 import java.util.Set;
 
 @Repository
-public interface UserRepository extends JpaRepository<UserDTO, Long> {
-    Optional<UserDTO> findByEmail(String email);
+public interface UserRepository extends JpaRepository<User, Long> {
+    Optional<User> findByEmail(String email);
 
-    @Query("SELECT u FROM UserDTO u WHERE u.inLobby = true")
-    Set<UserDTO> findByInLobby();
+    @Query("SELECT u FROM User u WHERE u.inLobby = true")
+    Set<User> findByInLobby();
 
-    @Query("SELECT u FROM UserDTO u WHERE u.role = com.jacobferrell.chess.model.Role.AI ORDER BY u.id ASC")
-    Optional<UserDTO> findAIUser();
+    @Query("SELECT u FROM User u WHERE u.role = com.jacobferrell.chess.model.Role.AI ORDER BY u.id ASC")
+    Optional<User> findAIUser();
 
-    @Query("SELECT u FROM UserDTO u WHERE u.role = com.jacobferrell.chess.model.Role.DEMO")
-    Set<UserDTO> findDemoUsers();
+    @Query("SELECT u FROM User u WHERE u.role = com.jacobferrell.chess.model.Role.DEMO")
+    Set<User> findDemoUsers();
 
-    @Query("SELECT MAX(u.id) FROM UserDTO u")
-    Long findHighestUserId();
+    @Query("SELECT MAX(u.id) FROM User u")
+    Optional<Long> findHighestUserId();
 
 }
