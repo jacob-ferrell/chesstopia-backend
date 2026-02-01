@@ -2,7 +2,6 @@ package com.jacobferrell.chess.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.jacobferrell.chess.game.chessboard.Position;
-import com.jacobferrell.chess.game.pieces.PieceType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,6 +15,7 @@ import java.util.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString(onlyExplicitlyIncluded = true)
 public class PositionEntity {
 
     public PositionEntity(@NonNull Integer x, @NonNull Integer y) {
@@ -29,12 +29,15 @@ public class PositionEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonIgnore
+    @ToString.Include
     private Long id;
 
     @Column(nullable = false, name = "x", updatable = false)
+    @ToString.Include
     private Integer x;
 
     @Column(nullable = false, name = "y", updatable = false)
+    @ToString.Include
     private Integer y;
 
     @OneToMany(mappedBy = "from")

@@ -1,33 +1,17 @@
 package com.jacobferrell.chess.service.game.move;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
-import com.jacobferrell.chess.auth.SecurityUtils;
 import com.jacobferrell.chess.dto.MoveParams;
 import com.jacobferrell.chess.dto.MoveResult;
-import com.jacobferrell.chess.game.Game;
-import com.jacobferrell.chess.game.pieces.*;
-import com.jacobferrell.chess.model.*;
-import com.jacobferrell.chess.service.JsonService;
-import com.jacobferrell.chess.service.game.GameService;
-import com.jacobferrell.chess.service.game.notification.NotificationService;
-import com.jacobferrell.chess.service.game.user.UserService;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.webjars.NotFoundException;
-
 import com.jacobferrell.chess.game.chessboard.ChessBoard;
 import com.jacobferrell.chess.game.chessboard.Position;
+import com.jacobferrell.chess.game.pieces.*;
+import com.jacobferrell.chess.model.*;
 import com.jacobferrell.chess.repository.GameEntityRepository;
-import com.jacobferrell.chess.repository.NotificationRepository;
-
-import static com.jacobferrell.chess.game.Game.createGameFromEntity;
+import com.jacobferrell.chess.service.game.GameService;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -72,15 +56,14 @@ public class MoveService {
             @NonNull Move move
     ) {
         var piece = move.getPiece();
-        var position = move.getTo();
         GamePiecePosition pieceMapping = gameEntity.getGamePieceMapping(piece);
 
         move.execute();
 
         if (!move.isLegal()) {
             throw new IllegalArgumentException(
-                    "Moving " + piece.getType() + " at " + "coordinates: x: " + piece.getPosition().x() + ", y: "
-                            + piece.getPosition().y() + " to coordinates: x: " + position.x() + ", y: " + position.y() + " is not a valid move");
+                    "Moving %s not a valid move".formatted(move)
+            );
         }
 
         pieceMapping.setPosition(PositionEntity.of(piece.getPosition()));

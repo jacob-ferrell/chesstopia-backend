@@ -1,18 +1,16 @@
 package com.jacobferrell.chess.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.jacobferrell.chess.auth.SecurityUtils;
 import com.jacobferrell.chess.game.chessboard.ChessBoard;
-
 import com.jacobferrell.chess.game.pieces.ChessPiece;
 import com.jacobferrell.chess.game.pieces.PieceColor;
-import lombok.*;
-
-
 import jakarta.persistence.*;
+import lombok.*;
 import org.springframework.security.access.AccessDeniedException;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -20,6 +18,7 @@ import java.util.*;
 @Entity
 @Builder
 @Table(name = "game")
+@ToString
 public class GameEntity {
 
     @Id
