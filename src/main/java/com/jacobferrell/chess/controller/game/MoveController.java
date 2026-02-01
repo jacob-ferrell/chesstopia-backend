@@ -7,19 +7,18 @@ import com.jacobferrell.chess.model.MoveEntity;
 import com.jacobferrell.chess.service.game.computer.ComputerService;
 import com.jacobferrell.chess.service.game.move.MoveService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
+@Slf4j
 public class MoveController {
 
     private final MoveService moveService;
@@ -54,10 +53,12 @@ public class MoveController {
     @PostMapping("/game/{gameId}/computer-move")
     ResponseEntity<?> makeComputerMove(@PathVariable Long gameId) throws URISyntaxException {
 
-        MoveResult result = computerService.makeMove(gameId);
+        MoveResult result = computerService.makeMoveWithRetry(gameId);
 
         GameEntity gameEntityData = result.gameData();
+
         MoveEntity moveEntity = result.moveData();
+
         return ResponseEntity
                 .created(new URI("/api/game/" + gameEntityData.getId() + "/move/" + moveEntity.getId()))
                 .body(gameEntityData);

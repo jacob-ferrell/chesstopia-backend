@@ -1,24 +1,28 @@
 package com.jacobferrell.chess.service.game.computer;
 
-import java.util.*;
-
 import com.jacobferrell.chess.dto.MoveResult;
 import com.jacobferrell.chess.game.Game;
-import com.jacobferrell.chess.game.pieces.*;
-import com.jacobferrell.chess.model.*;
+import com.jacobferrell.chess.game.pieces.Move;
+import com.jacobferrell.chess.game.pieces.PieceColor;
+import com.jacobferrell.chess.model.GameEntity;
+import com.jacobferrell.chess.model.Role;
+import com.jacobferrell.chess.model.User;
+import com.jacobferrell.chess.repository.GameEntityRepository;
 import com.jacobferrell.chess.service.game.GameService;
 import com.jacobferrell.chess.service.game.move.MoveService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import com.jacobferrell.chess.repository.GameEntityRepository;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class ComputerService {
+
+    private static final int MAX_RETRIES = 5;
 
     private final MoveService moveService;
 
@@ -53,6 +57,33 @@ public class ComputerService {
         Move move = selectMove(allPossibleComputerMoves);
         log.info(move.toString());
         return moveService.makeMove(gameEntity, move, computer);
+
+    }
+
+    @Transactional
+    public MoveResult makeMoveWithRetry(long gameId) {
+
+        int retries = 0;
+
+        MoveResult result = null;
+
+        while (result == null) {
+            try {
+                result = makeMove(gameId);
+            } catch (Exception e) {
+
+                retries++;
+
+                log.error("Exception thrown while making computer move, attempt {}", retries, e);
+
+                if (retries >= MAX_RETRIES) {
+                    throw new RuntimeException(e);
+                }
+
+            }
+        }
+
+        return result;
 
     }
 
