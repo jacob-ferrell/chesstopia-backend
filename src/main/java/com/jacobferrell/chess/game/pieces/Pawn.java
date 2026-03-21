@@ -48,7 +48,7 @@ public class Pawn extends ChessPiece {
     }
 
     public static List<Integer[]> getAttackMoveset(ChessPiece piece) {
-        int yDirection = piece.getEnemyColor().equals(PieceColor.WHITE) ? -1 : 1;
+        int yDirection = piece.getEnemyColor().equals(PieceColor.WHITE) ? 1 : -1;
         return List.of(new Integer[]{yDirection, 1}, new Integer[]{yDirection, -1});
     }
 

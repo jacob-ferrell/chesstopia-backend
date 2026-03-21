@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
@@ -85,10 +87,15 @@ public class GameEntity {
         return game;
     }
 
-    public void overwritePieces(Collection<GamePiecePosition> pieces) {
+    public void overwritePieces(Collection<GamePiecePosition> livePieces) {
         if (this.pieces == null) this.pieces = new ArrayList<>();
-        this.pieces.clear();
-        this.pieces.addAll(pieces);
+        // Collect the IDs of live pieces (positions already updated in-place by copyToGamePieceMapping)
+        Set<Long> liveIds = livePieces.stream()
+                .map(GamePiecePosition::getId)
+                .collect(Collectors.toSet());
+        // Only remove captured pieces — never clear() the whole list, as that
+        // triggers Hibernate orphanRemoval on re-added entities (known Hibernate bug).
+        this.pieces.removeIf(p -> p.getId() != null && !liveIds.contains(p.getId()));
     }
 
     public void switchTurns() {

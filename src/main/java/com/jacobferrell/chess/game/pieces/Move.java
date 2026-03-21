@@ -8,10 +8,12 @@ import com.jacobferrell.chess.model.GameEntity;
 import com.jacobferrell.chess.model.User;
 import com.jacobferrell.chess.service.game.computer.MoveType;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 import static com.jacobferrell.chess.game.Game.createGameFromEntity;
 
 @Data
+@Slf4j
 public class Move {
     
     private final ChessPiece piece;
@@ -66,7 +68,19 @@ public class Move {
     }
 
     private boolean setIsLegal() {
-        return board.hasBothKings() && !board.getPlayerKing(piece.color).isInCheck();
+        boolean bothKings = board.hasBothKings();
+        if (!bothKings) {
+            King wk = board.getPlayerKing(PieceColor.WHITE);
+            King bk = board.getPlayerKing(PieceColor.BLACK);
+            log.warn("setIsLegal: hasBothKings=false for move {} | whiteKing={} blackKing={} board:\n{}",
+                    this, wk, bk, board);
+            return false;
+        }
+        boolean inCheck = board.getPlayerKing(piece.color).isInCheck();
+        if (inCheck) {
+            log.warn("setIsLegal: {} king in check after move {} board:\n{}", piece.color, this, board);
+        }
+        return !inCheck;
     }
 
     public MoveType getMoveType() {

@@ -43,6 +43,7 @@ public class PositionService {
         notificationService.showPlayerIsConnectedToGame(gameId, true);
 
         return piece.generatePossibleMoves().stream()
+                .filter(move -> { move.simulate(); return move.isLegal(); })
                 .map(Move::getTo)
                 .collect(Collectors.toSet());
 

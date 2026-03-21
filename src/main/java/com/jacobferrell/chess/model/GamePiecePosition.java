@@ -5,8 +5,6 @@ import com.jacobferrell.chess.game.pieces.ChessPiece;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "game_piece_mapping", uniqueConstraints = {
@@ -22,7 +20,7 @@ public class GamePiecePosition {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(nullable = false, name = "game_id")
     @JsonIgnore
     private GameEntity game;

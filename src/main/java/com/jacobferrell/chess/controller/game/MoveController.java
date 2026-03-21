@@ -59,8 +59,14 @@ public class MoveController {
 
         MoveEntity moveEntity = result.moveData();
 
+        if (moveEntity != null) {
+            return ResponseEntity
+                    .created(new URI("/api/game/" + gameEntityData.getId() + "/move/" + moveEntity.getId()))
+                    .body(gameEntityData);
+        }
+
         return ResponseEntity
-                .created(new URI("/api/game/" + gameEntityData.getId() + "/move/" + moveEntity.getId()))
+                .status(HttpStatus.OK)
                 .body(gameEntityData);
     }
 
