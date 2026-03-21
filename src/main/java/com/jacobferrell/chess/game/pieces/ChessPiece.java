@@ -132,16 +132,20 @@ public abstract class ChessPiece {
     protected Optional<ChessPiece> getEnemyPieceFromMoveset(List<Integer[]> movesets, Integer limit, List<PieceType> piecesWithMoveset) {
         for (var moveset : movesets) {
             for (
-                    int i = 0, x = position.x() + moveset[0], y = position.y() + moveset[1];
+                    int i = 0, x = position.x() + moveset[1], y = position.y() + moveset[0];
                     (limit == null || i < limit) && isValidMove(x, y);
-                    x++, y++
+                    i++, x += moveset[1], y += moveset[0]
             ) {
-                Optional<ChessPiece> enemyPiece = board.getPieceAtPosition(x, y)
+                Optional<ChessPiece> atPosition = board.getPieceAtPosition(x, y);
+                Optional<ChessPiece> enemyPiece = atPosition
                         .filter(this::isEnemyPiece)
                         .filter(p -> piecesWithMoveset.contains(p.getType()));
 
                 if (enemyPiece.isPresent()) {
                     return enemyPiece;
+                }
+                if (atPosition.isPresent()) {
+                    break; // piece blocks the line of attack
                 }
             }
 

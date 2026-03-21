@@ -5,6 +5,7 @@ import com.jacobferrell.chess.dto.MoveParams;
 import com.jacobferrell.chess.game.Player;
 import com.jacobferrell.chess.game.chessboard.ChessBoard;
 import com.jacobferrell.chess.game.pieces.ChessPiece;
+import com.jacobferrell.chess.game.pieces.King;
 import com.jacobferrell.chess.game.pieces.Move;
 import com.jacobferrell.chess.game.pieces.PieceColor;
 import com.jacobferrell.chess.model.GameEntity;
@@ -13,8 +14,10 @@ import com.jacobferrell.chess.model.MoveEntity;
 import com.jacobferrell.chess.model.User;
 import com.jacobferrell.chess.service.game.GameService;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 @Getter
+@Slf4j
 public class MoveContext {
 
     private final User user;
@@ -80,9 +83,14 @@ public class MoveContext {
 
 
     private void complete() {
+        var allPieces = board.getAllPieces();
+        boolean hasWhiteKing = allPieces.stream().anyMatch(p -> p instanceof King && p.getColor() == PieceColor.WHITE);
+        boolean hasBlackKing = allPieces.stream().anyMatch(p -> p instanceof King && p.getColor() == PieceColor.BLACK);
+        log.info("complete() board piece count={} hasWhiteKing={} hasBlackKing={} board:\n{}",
+                allPieces.size(), hasWhiteKing, hasBlackKing, board);
 
         gameEntity.overwritePieces(
-                board.getAllPieces().stream()
+                allPieces.stream()
                         .map(ChessPiece::copyToGamePieceMapping)
                         .toList()
         );

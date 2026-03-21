@@ -24,12 +24,13 @@ public class King extends ChessPiece {
 
     public Set<Position> getCastleTravelPositions(Rook rook) {
         Set<Position> travelPositions = new HashSet<>();
-        int x = rook.getPosition().x();
-        int y = rook.getPosition().y();
-        int direction = x == 0 ? -1 : 1;
-        // King will move 2 spaces towards the rook it is castling with
-        for (int i = 0; i < 2; i++) {
-            travelPositions.add(new Position(x + direction, y));
+        int rookX = rook.getPosition().x();
+        int kingX = this.position.x();
+        int y = this.position.y();
+        // King moves 2 squares toward the rook
+        int direction = rookX < kingX ? -1 : 1;
+        for (int i = 1; i <= 2; i++) {
+            travelPositions.add(new Position(kingX + direction * i, y));
         }
 
         return travelPositions;

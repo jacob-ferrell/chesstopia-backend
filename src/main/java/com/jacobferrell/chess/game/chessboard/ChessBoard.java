@@ -175,7 +175,14 @@ public class ChessBoard {
         Position position = piece.getPosition();
         board[position.y()][position.x()] = null;
         getPiecesByColor(piece.getColor()).remove(piece);
-        gamePiecePositionsById.remove(piece.getGamePiecePositionId());
+        if (piece instanceof King) {
+            log.warn("removePiece called on KING {} at {}", piece.getColor(), position,
+                    new RuntimeException("KING REMOVAL STACK TRACE"));
+        }
+        // Do NOT remove from gamePiecePositionsById here — simulate()/reverse() cycles
+        // remove and re-add pieces, but addPiece() cannot restore the map entry.
+        // The map is only queried via copyToGamePieceMapping() which is called on
+        // getAllPieces() (live pieces only), so stale entries are harmless.
     }
 
     public void removePiece(Position pos) {

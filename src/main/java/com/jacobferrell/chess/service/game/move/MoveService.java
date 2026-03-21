@@ -37,6 +37,17 @@ public class MoveService {
     public MoveResult finalize(MoveContext context) {
         GameEntity gameEntity = context.getGameEntity();
 
+        if (context.isOpponentInCheckMate()) {
+            PieceColor loserColor = context.getPlayerColor().enemy();
+            User loser = loserColor == PieceColor.WHITE
+                    ? gameEntity.getWhitePlayer()
+                    : gameEntity.getBlackPlayer();
+            gameEntity.setWinnerFromLoser(loser);
+            gameEntity.setGameOver(true);
+            gameEntityRepository.save(gameEntity);
+            return new MoveResult(gameEntity, context.getMoveEntity());
+        }
+
         // TODO: revisit: End game as draw if king is lone piece and has moved >= 50 times
         if (context.getBoard().isStalemate(context.getPlayerColor())) {
             return handleDraw(gameEntity);

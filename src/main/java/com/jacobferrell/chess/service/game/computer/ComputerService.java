@@ -51,7 +51,11 @@ public class ComputerService {
                 game.board().getAllPossibleMoves(computerColor);
 
         if (allPossibleComputerMoves.isEmpty()) {
-            return handleCheckmate(gameEntity, computer);
+            if (game.board().getPlayerKing(computerColor).isInCheck()) {
+                return handleCheckmate(gameEntity, computer);
+            } else {
+                return moveService.handleDraw(gameEntity);
+            }
         }
 
         Move move = selectMove(allPossibleComputerMoves);
@@ -136,6 +140,7 @@ public class ComputerService {
 
     private MoveResult handleCheckmate(GameEntity gameEntity, User computer) {
         gameEntity.setWinnerFromLoser(computer);
+        gameEntity.setGameOver(true);
         gameEntityRepository.save(gameEntity);
         return new MoveResult(gameEntity, null);
     }
