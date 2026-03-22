@@ -149,6 +149,7 @@
 				<includes>
 					<include>application.properties</include>
 					<include>application-packaged.properties</include>
+					<include>application-docker.properties</include>
 				</includes>
 			</resource>
 		</resources>
