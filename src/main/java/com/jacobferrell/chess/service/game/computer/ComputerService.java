@@ -50,7 +50,9 @@ public class ComputerService {
         Set<Move> allPossibleComputerMoves =
                 game.board().getAllPossibleMoves(computerColor);
 
-        if (allPossibleComputerMoves.isEmpty()) {
+        Optional<Move> moveOpt = selectMove(allPossibleComputerMoves);
+
+        if (moveOpt.isEmpty()) {
             if (game.board().getPlayerKing(computerColor).isInCheck()) {
                 return handleCheckmate(gameEntity, computer);
             } else {
@@ -58,7 +60,7 @@ public class ComputerService {
             }
         }
 
-        Move move = selectMove(allPossibleComputerMoves);
+        Move move = moveOpt.get();
         log.info(move.toString());
         return moveService.makeMove(gameEntity, move, computer);
 
@@ -91,7 +93,7 @@ public class ComputerService {
 
     }
 
-    public static Move selectMove(Set<Move> allPossibleComputerMoves) {
+    public static Optional<Move> selectMove(Set<Move> allPossibleComputerMoves) {
 
         var moveMap = getMoveMap(allPossibleComputerMoves);
 
@@ -99,12 +101,11 @@ public class ComputerService {
 
     }
 
-    private static Move selectMoveFromMap(Map<MoveType, List<Move>> moveMap) {
+    private static Optional<Move> selectMoveFromMap(Map<MoveType, List<Move>> moveMap) {
         return Arrays.stream(MoveType.values())
                 .filter(moveType -> !moveMap.getOrDefault(moveType, List.of()).isEmpty())
                 .map(moveType -> moveType.selectMove(moveMap.get(moveType)))
-                .findFirst()
-                .orElseThrow();
+                .findFirst();
     }
 /*
 
