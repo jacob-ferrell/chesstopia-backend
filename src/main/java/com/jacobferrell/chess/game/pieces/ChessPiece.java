@@ -190,9 +190,9 @@ public abstract class ChessPiece {
     }
 
     public void moveTo(Position newPosition) {
+        board.getBoard()[position.y()][position.x()] = null;
         board.getBoard()[newPosition.y()][newPosition.x()] = this;
         // Original position must be cleared on board
-        board.getBoard()[position.y()][position.x()] = null;
         this.position = newPosition;
         setHasMoved();
     }
