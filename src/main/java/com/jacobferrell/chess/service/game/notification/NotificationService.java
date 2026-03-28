@@ -1,13 +1,11 @@
 package com.jacobferrell.chess.service.game.notification;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.jacobferrell.chess.auth.SecurityUtils;
+import com.jacobferrell.chess.model.GameEntity;
+import com.jacobferrell.chess.model.Notification;
+import com.jacobferrell.chess.model.User;
+import com.jacobferrell.chess.repository.NotificationRepository;
 import com.jacobferrell.chess.service.JsonService;
-import com.jacobferrell.chess.service.JwtService;
 import com.jacobferrell.chess.service.game.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -16,10 +14,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.webjars.NotFoundException;
 
-import com.jacobferrell.chess.model.GameEntity;
-import com.jacobferrell.chess.model.Notification;
-import com.jacobferrell.chess.model.User;
-import com.jacobferrell.chess.repository.NotificationRepository;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -28,8 +26,6 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
 
     private final SimpMessagingTemplate messagingTemplate;
-
-    private final JwtService jwtService;
 
     private final JsonService jsonService;
 

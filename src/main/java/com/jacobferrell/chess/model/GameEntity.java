@@ -37,7 +37,7 @@ public class GameEntity {
     @JoinColumn(nullable = false)
     private User blackPlayer;
 
-    @ManyToOne(optional = false)
+    @ManyToOne
     @ToString.Exclude
     private User currentTurn;
 

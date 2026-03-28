@@ -1,8 +1,10 @@
 package com.jacobferrell.chess.service.game;
 
-import java.util.List;
-
 import com.jacobferrell.chess.auth.SecurityUtils;
+import com.jacobferrell.chess.model.GameEntity;
+import com.jacobferrell.chess.model.User;
+import com.jacobferrell.chess.repository.GameEntityRepository;
+import com.jacobferrell.chess.repository.UserRepository;
 import com.jacobferrell.chess.service.JsonService;
 import com.jacobferrell.chess.service.game.notification.NotificationService;
 import lombok.RequiredArgsConstructor;
@@ -10,10 +12,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
-import com.jacobferrell.chess.model.GameEntity;
-import com.jacobferrell.chess.model.User;
-import com.jacobferrell.chess.repository.GameEntityRepository;
-import com.jacobferrell.chess.repository.UserRepository;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -45,8 +44,6 @@ public class GameService {
     public GameEntity getGame(long id) {
 
         User user = SecurityUtils.getCurrentUser();
-
-        user.setInLobby(false);
 
         userRepository.save(user);
 

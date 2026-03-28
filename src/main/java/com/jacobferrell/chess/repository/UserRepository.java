@@ -13,9 +13,6 @@ import java.util.Set;
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
 
-    @Query("SELECT u FROM User u WHERE u.inLobby = true")
-    Set<User> findByInLobby();
-
     @Query("SELECT u FROM User u WHERE u.role = com.jacobferrell.chess.model.Role.AI ORDER BY u.id ASC")
     Optional<User> findAIUser();
 

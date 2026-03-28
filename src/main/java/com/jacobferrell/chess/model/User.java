@@ -1,17 +1,15 @@
 package com.jacobferrell.chess.model;
 
-import lombok.*;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import java.util.Collection;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.GrantedAuthority;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
 @Data
@@ -43,10 +41,6 @@ public class User implements UserDetails {
     @JsonIgnore
     @Enumerated
     private Role role;
-
-    @JsonIgnore
-    @Builder.Default
-    private boolean inLobby = false;
 
     @JsonIgnore
     @ToString.Exclude

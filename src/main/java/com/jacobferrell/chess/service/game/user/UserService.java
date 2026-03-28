@@ -1,20 +1,16 @@
 package com.jacobferrell.chess.service.game.user;
 
-import java.util.*;
-
 import com.jacobferrell.chess.auth.SecurityUtils;
-import com.jacobferrell.chess.service.JsonService;
-import com.jacobferrell.chess.service.game.GameCreationService;
-import com.jacobferrell.chess.service.game.notification.NotificationService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Service;
-
 import com.jacobferrell.chess.model.FriendshipEntity;
 import com.jacobferrell.chess.model.GameEntity;
 import com.jacobferrell.chess.model.User;
 import com.jacobferrell.chess.repository.FriendshipRepository;
 import com.jacobferrell.chess.repository.UserRepository;
+import com.jacobferrell.chess.service.game.notification.NotificationService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -23,12 +19,6 @@ public class UserService {
     private final UserRepository userRepository;
 
     private final FriendshipRepository friendshipRepository;
-
-    private final JsonService jsonService;
-
-    private final SimpMessagingTemplate messagingTemplate;
-
-    private final GameCreationService gameCreationService;
 
     private final NotificationService notificationService;
 
@@ -69,23 +59,4 @@ public class UserService {
         return friends;
     }
 
-    public Object joinLobby() {
-        User user = SecurityUtils.getCurrentUser();
-        Set<User> lobby = userRepository.findByInLobby();
-        User otherPlayer = lobby.stream().filter(u -> !u.equals(user)).findFirst().orElse(null);
-        if (otherPlayer == null) {
-            user.setInLobby(true);
-            userRepository.save(user);
-            lobby.add(user);
-            return lobby;
-        }
-        GameEntity newGameEntity = gameCreationService.createGame(otherPlayer.getId());
-        otherPlayer.setInLobby(false);
-        user.setInLobby(false);
-        userRepository.save(otherPlayer);
-        Map<String, Object> map = new HashMap<>();
-        map.put("game", newGameEntity.getId());
-        messagingTemplate.convertAndSend("/topic/lobby", jsonService.toJSON(map));
-        return newGameEntity;
-    }
 }

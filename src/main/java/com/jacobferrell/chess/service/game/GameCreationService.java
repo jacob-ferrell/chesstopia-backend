@@ -18,19 +18,23 @@ public class GameCreationService {
 
     private final UserRepository userRepository;
 
-    public GameEntity createGame(long p2) {
-        User player1;
-        User player2;
+    public GameEntity createGame(User player2) {
 
-        player1 = SecurityUtils.getCurrentUser();
-
-        player2 = p2 == -1
-                ? userRepository.findAIUser().orElseThrow()
-                : userRepository.findById(p2).orElseThrow();
+        User player1 = SecurityUtils.getCurrentUser();
 
         User[] playersArray = { player1, player2 };
 
         return buildGame(playersArray, false);
+
+    }
+
+    public GameEntity createGame(long player2Id) {
+
+        User player2 = player2Id == -1
+                ? userRepository.findAIUser().orElseThrow()
+                : userRepository.findById(player2Id).orElseThrow();
+
+        return createGame(player2);
 
     }
 
