@@ -210,7 +210,8 @@ public class ChessBoard {
     public boolean existsOnBoard(ChessPiece piece) {
         if (piece == null) return false;
         Position position = piece.getPosition();
-        return board[position.y()][position.x()].equals(piece);
+        ChessPiece atPosition = board[position.y()][position.x()];
+        return atPosition != null && atPosition.equals(piece);
     }
 
     public void clear() {
