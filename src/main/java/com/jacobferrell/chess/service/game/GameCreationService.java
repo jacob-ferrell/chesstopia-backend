@@ -1,19 +1,14 @@
 package com.jacobferrell.chess.service.game;
 
-import java.util.Random;
-
 import com.jacobferrell.chess.auth.SecurityUtils;
-import com.jacobferrell.chess.service.JwtService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.jacobferrell.chess.model.GameEntity;
 import com.jacobferrell.chess.model.User;
 import com.jacobferrell.chess.repository.GameEntityRepository;
 import com.jacobferrell.chess.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
-import jakarta.servlet.http.HttpServletRequest;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -22,8 +17,6 @@ public class GameCreationService {
     private final GameEntityRepository gameEntityRepository;
 
     private final UserRepository userRepository;
-
-    private final JwtService jwtService;
 
     public GameEntity createGame(long p2) {
         User player1;
