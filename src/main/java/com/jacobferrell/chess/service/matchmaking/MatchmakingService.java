@@ -10,6 +10,9 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
+import org.springframework.security.core.Authentication;
+
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -36,7 +39,7 @@ public class MatchmakingService {
             return;
         }
 
-        GameEntity newGame = gameCreationService.createGame(opponent);
+        GameEntity newGame = gameCreationService.createGame(user, opponent);
 
         var messageBody = Map.of("gameId", newGame.getId());
 
@@ -56,7 +59,8 @@ public class MatchmakingService {
     @EventListener
     public void onDisconnect(SessionDisconnectEvent event) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(event.getMessage());
-        if (accessor.getUser() instanceof User user) {
+        Principal principal = accessor.getUser();
+        if (principal instanceof Authentication auth && auth.getPrincipal() instanceof User user) {
             removeFromQueue(user.getId());
         }
     }

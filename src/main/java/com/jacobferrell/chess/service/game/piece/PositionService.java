@@ -40,7 +40,7 @@ public class PositionService {
 
         ChessPiece piece = ChessPiece.getAndValidatePiece(new Position(x, y), game, user, PieceColor.fromGameAndUser(gameEntityData, user));
 
-        notificationService.showPlayerIsConnectedToGame(gameId, true);
+        notificationService.showPlayerIsConnectedToGame(gameId, user);
 
         return piece.generatePossibleMoves().stream()
                 .filter(move -> { move.simulate(); return move.isLegal(); })

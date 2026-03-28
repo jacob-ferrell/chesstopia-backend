@@ -18,13 +18,17 @@ public class GameCreationService {
 
     private final UserRepository userRepository;
 
-    public GameEntity createGame(User player2) {
-
-        User player1 = SecurityUtils.getCurrentUser();
+    public GameEntity createGame(User player1, User player2) {
 
         User[] playersArray = { player1, player2 };
 
         return buildGame(playersArray, false);
+
+    }
+
+    public GameEntity createGame(User player2) {
+
+        return createGame(SecurityUtils.getCurrentUser(), player2);
 
     }
 

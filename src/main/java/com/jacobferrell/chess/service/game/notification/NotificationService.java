@@ -9,9 +9,12 @@ import com.jacobferrell.chess.service.JsonService;
 import com.jacobferrell.chess.service.game.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.webjars.NotFoundException;
 
 import java.util.Collection;
@@ -27,34 +30,46 @@ public class NotificationService {
 
     private final SimpMessagingTemplate messagingTemplate;
 
+    private final SimpUserRegistry userRegistry;
+
     private final JsonService jsonService;
 
     @Transactional
     public void sendMessageAndNotification(User user, GameEntity gameEntityData) {
         long gameId = gameEntityData.getId();
-        String message = user.getFirstName() + " made a move in game " + gameEntityData.getId();
-        Notification notification = createNotification(user, UserService.getOtherPlayer(user, gameEntityData), message);
-        notification.setGame(gameEntityData);
-        notificationRepository.save(notification);
-        messagingTemplate.convertAndSend("/topic/game/" + gameId,
-                jsonService.toJSON(getMessageBody(gameEntityData, notification)));
-        showPlayerIsConnectedToGame(gameId, true);
+        User recipient = UserService.getOtherPlayer(user, gameEntityData);
+        boolean recipientIsWatching = isUserSubscribedToGame(recipient, gameId);
 
+        if (!recipientIsWatching) {
+            String message = user.getFirstName() + " made a move in game " + gameId;
+            Notification notification = createNotification(user, recipient, message);
+            notification.setGame(gameEntityData);
+            notificationRepository.save(notification);
+        }
+
+        Map<String, Object> messageBody = Map.of("game", gameEntityData);
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                messagingTemplate.convertAndSend("/topic/game/" + gameId, jsonService.toJSON(messageBody));
+            }
+        });
     }
 
-    public void showPlayerIsConnectedToGame(long gameId, boolean isConnected) {
+    public boolean isUserSubscribedToGame(User user, long gameId) {
+        var simpUser = userRegistry.getUser(user.getUsername());
+        if (simpUser == null) return false;
+        String destination = "/topic/game/" + gameId;
+        return simpUser.getSessions().stream()
+                .flatMap(s -> s.getSubscriptions().stream())
+                .anyMatch(sub -> sub.getDestination().equals(destination));
+    }
+
+    public void showPlayerIsConnectedToGame(long gameId, User user) {
         Map<String, Object> map = new HashMap<>();
-        map.put("connected", isConnected);
-        map.put("player", SecurityUtils.getCurrentUser().getId());
+        map.put("connected", true);
+        map.put("player", user.getId());
         messagingTemplate.convertAndSend("/topic/game/" + gameId, jsonService.toJSON(map));
-    }
-
-
-    public Map<String, Object> getMessageBody(GameEntity gameEntity, Notification notification) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("game", gameEntity);
-        body.put("notification", notification);
-        return body;
     }
 
 

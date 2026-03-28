@@ -8,6 +8,7 @@ import com.jacobferrell.chess.game.pieces.*;
 import com.jacobferrell.chess.model.*;
 import com.jacobferrell.chess.repository.GameEntityRepository;
 import com.jacobferrell.chess.service.game.GameService;
+import com.jacobferrell.chess.service.game.notification.NotificationService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,8 @@ public class MoveService {
     private final GameEntityRepository gameEntityRepository;
 
     private final GameService gameService;
+
+    private final NotificationService notificationService;
 
     @Transactional
     public MoveResult makeMove(long gameId, MoveParams moveParams) {
@@ -55,10 +58,7 @@ public class MoveService {
 
         gameEntityRepository.save(gameEntity);
 
-        // Send message to websocket with updated game state and notification
-        // so that if other player is connected, the notification can automatically
-        // be marked as read
-        //notificationService.sendMessageAndNotification(SecurityUtils.getCurrentUser(), gameEntity);
+        notificationService.sendMessageAndNotification(context.getUser(), gameEntity);
         return new MoveResult(gameEntity, context.getMoveEntity());
     }
 

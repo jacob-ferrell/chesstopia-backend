@@ -52,7 +52,7 @@ public class GameService {
 
         game.validatePlayer(user);
 
-        notificationService.showPlayerIsConnectedToGame(game.getId(), true);
+        notificationService.showPlayerIsConnectedToGame(game.getId(), user);
 
         notificationService.markAllAsReadForGame(game, user);
 
